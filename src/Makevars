@@ -1,0 +1,8 @@
+EIGEN3_CXXFLAGS ?= -I$(EIGEN3_INCLUDE_DIR)
+CPPAD_LIB_PATH ?= -L$(CPPAD_LIB_DIR)
+PKG_CXXFLAGS := $(EIGEN3_CXXFLAGS) $(shell pkg-config --cflags cppad 2>/dev/null)
+PKG_LIBS := $(RLAPACK_PATH) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(CPPAD_LIB_PATH) -lcppad_lib -Wl,-rpath,$(CPPAD_LIB_DIR) $(shell pkg-config --libs cppad 2>/dev/null)
+
+ifndef PKG_CXXFLAGS
+$(warning CppAD not found via pkg-config; ensure it's installed and available in PKG_CONFIG_PATH)
+endif

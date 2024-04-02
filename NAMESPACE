@@ -1,0 +1,14 @@
+useDynLib(spVarBayes, .registration=TRUE)
+importFrom(Rcpp, evalCpp)
+exportPattern("^[[:alpha:]]+")
+
+export(spVarBayes_MFA)
+export(spVarBayes_NNGP)
+export(spVarBayes_sampling)
+
+S3method("predict", "spVarBayes")
+
+import(BRISC, RANN, parallel, stats, rdist, matrixStats, pbapply, Matrix)
+importFrom("graphics", "legend", "lines", "plot")
+importFrom("RANN", "nn2")
+importFrom("spam", "rmvnorm")
