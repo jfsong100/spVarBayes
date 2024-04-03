@@ -15,7 +15,7 @@ spVarBayes_NNGP <- function(y, X, coords, zeta.sq = 1,
                               N_phi = 5, Trace_N = 50,
                               covariates = TRUE, initial_mu = 1, phi_max_iter = 50,
                               rho_phi = 0.5, mini_batch_size = 128, mini_batch = F,
-                              phi_methods = "beta", reorder = F, shuffle = F
+                              phi_methods = "beta", reorder = T, shuffle = F
 ){
 
   n <- nrow(coords)
