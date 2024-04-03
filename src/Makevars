@@ -1,2 +1,2 @@
-PKG_LIBS := $(RLAPACK_PATH) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(CPPAD_LIB_PATH) -lcppad_lib -Wl,-rpath,$(CPPAD_LIB_DIR) $(shell pkg-config --libs cppad 2>/dev/null)
+PKG_LIBS := $(RLAPACK_PATH) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
 
