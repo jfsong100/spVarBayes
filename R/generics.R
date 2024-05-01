@@ -71,7 +71,7 @@ predict.spVarBayes <- function(object, X.0, coords.0,
 
   if(covariates){
     beta_cov = matrix(object$beta_cov,ncol(X))
-    beta_cov[upper.tri(beta_cov)] = beta_cov[lower.tri(beta_cov)]
+    beta_cov = beta_cov + t(beta_cov) - diag(diag(beta_cov))
     p.beta.samples = t(as.matrix(rmvnorm(n.samples,object$beta,beta_cov)))
   }
 

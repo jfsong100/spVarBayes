@@ -296,6 +296,14 @@ extern "C" {
     //double *w_mu = (double *) R_alloc(n, sizeof(double));
     F77_NAME(dgemm)(ytran, ntran, &p, &p, &n, &one, X, &n, X, &n, &zero, XtX, &p FCONE FCONE);
 
+    if(verbose){
+      Rprintf("----------------------------------------\n");
+      Rprintf("\tInitializing w\n");
+#ifdef Win32
+      R_FlushConsole();
+#endif
+    }
+
     if(initial_mu){
       //F77_NAME(dcopy)(&n, y, &inc, w_mu, &inc);
       F77_NAME(dgemv)(ytran, &n, &p, &one, X, &n, y, &inc, &zero, tmp_p, &inc FCONE);
@@ -389,7 +397,13 @@ extern "C" {
     double E_phi_sq = 0.0;
     double delta_phi = 0.0;
     double delta_phi_sq = 0.0;
-
+    if(verbose){
+      Rprintf("----------------------------------------\n");
+      Rprintf("\tInitializing B F\n");
+#ifdef Win32
+      R_FlushConsole();
+#endif
+    }
     updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m, theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
 
     double *tmp_n_mb = (double *) R_alloc(n, sizeof(double)); zeros(tmp_n_mb, n);
