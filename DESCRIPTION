@@ -16,3 +16,4 @@ Encoding: UTF-8
 NeedsCompilation: yes
 Imports: Rcpp (>= 1.0.12)
 LinkingTo: Rcpp
+RoxygenNote: 7.3.1

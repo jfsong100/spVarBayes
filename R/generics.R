@@ -1,11 +1,8 @@
-predict.spVarBayes <- function(object, X.0, coords.0,
+predict.spVarBayes <- function(object, X.0, coords.0,covariates = TRUE,
                            n.samples,
                            n.omp.threads = 1,
                            seed = 1,
-                           family = 1,
                            verbose = TRUE,
-                           covariates = TRUE,
-                           method = "NNGP",
                            n.report=100, ...){
 
   ####################################################
@@ -21,11 +18,14 @@ predict.spVarBayes <- function(object, X.0, coords.0,
 
   if(missing(object)){stop("error: predict expects object\n")}
   if(!class(object)[1] == "spVarBayes"){
-    stop("error: requires an output object of class NNGPVI\n")
+    stop("error: requires an output object of class spVarBayes\n")
   }
 
   p <- 0
-  if(!is.null(X.0)){
+
+  if(covariates){
+    if(is.null(X.0)){stop("error: X must be input if covariates is TRUE")}
+    if(!is.matrix(X.0)){stop("error: X must be a matrix")}
     p <- ncol(X.0)
     X <- object$X
   }
@@ -65,14 +65,19 @@ predict.spVarBayes <- function(object, X.0, coords.0,
 
   set.seed(seed)
 
-  p.phi.samples <- rbeta(n.samples,phi.alpha,phi.beta)*(phimax - phimin) + phimin
+  phi.fix = FALSE
+
+  if(phi.fix){
+    p.phi.samples = rep(object$theta[3],n.samples)
+  }else{
+    p.phi.samples <- rbeta(n.samples,phi.alpha,phi.beta)*(phimax - phimin) + phimin
+  }
+
   p.zetasq.samples <- rigamma(n.samples,zetasq.alpha,zetasq.beta)
   p.tausq.samples <- rigamma(n.samples,tausq.alpha,tausq.beta)
 
   if(covariates){
-    beta_cov = matrix(object$beta_cov,ncol(X))
-    beta_cov = beta_cov + t(beta_cov) - diag(diag(beta_cov))
-    p.beta.samples = t(as.matrix(rmvnorm(n.samples,object$beta,beta_cov)))
+    p.beta.samples = t(as.matrix(rmvnorm(n.samples,object$beta,object$beta_cov)))
   }
 
   p.theta.samples <- t(cbind(p.zetasq.samples,
@@ -80,18 +85,16 @@ predict.spVarBayes <- function(object, X.0, coords.0,
                            p.phi.samples))
 
   ##if(class(object)[2] == "latent"){
-  if(method == "NNGP"){
+  if(object$VI_family == "NNGP"){
     print(c("Sampleing using NNGP Gaussian family for Variational Approximation"))
     # p.w.samples <- t(as.matrix(rmvnorm(n.samples,object$w_mu,get_Vw(n, object$n.neighbors.vi,
     #                                                               object$nnIndx_vi,
     #                                                               object$A_vi, object$S_vi))))
-    p.w.samples = matrix(spVarBayes_sampling(object,n.samples = n.samples)$w_sample,
-                         ncol = n.samples)
+    p.w.samples = spVB_w_sampling(object,n.samples = n.samples)$p.w.samples
   }else{
     print(c("Sampleing using Mean-field Approximation family for Variational Approximation"))
     #p.w.samples = t(as.matrix(rmvnorm(n.samples,object$w_mu,diag(object$w_sigma_sq))))
-    p.w.samples = matrix(spVarBayes_sampling(object,n.samples = n.samples,method = "MFA")$w_sample,
-                         ncol = n.samples)
+    p.w.samples = spVB_w_sampling(object,n.samples = n.samples)$p.w.samples
   }
 
   n.neighbors <- object$n.neighbors
@@ -173,3 +176,5 @@ predict.spVarBayes <- function(object, X.0, coords.0,
   class(out) <- "predict.spVarBayes"
   out
 }
+
+

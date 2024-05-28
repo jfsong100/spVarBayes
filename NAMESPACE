@@ -2,11 +2,15 @@ useDynLib(spVarBayes, .registration=TRUE)
 importFrom(Rcpp, evalCpp)
 exportPattern("^[[:alpha:]]+")
 
-export(spVarBayes_MFA)
-export(spVarBayes_NNGP)
-export(spVarBayes_sampling)
+export(spVB_MFA)
+export(spVB_NNGP)
+export(spVB_w_sampling)
+export(spVB_theta_sampling)
+export(spVB_beta_sampling)
+export(spVB_get_Vw)
 
 S3method("predict", "spVarBayes")
+
 
 import(BRISC, RANN, parallel, stats, rdist, matrixStats, pbapply, Matrix)
 importFrom("graphics", "legend", "lines", "plot")

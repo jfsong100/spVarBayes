@@ -60,11 +60,11 @@ extern "C" {
                                                 SEXP zetaSqIG_r, SEXP tauSqIG_r, SEXP phibeta_r, SEXP nuUnif_r,
                                                 SEXP zetaSqStarting_r, SEXP tauSqStarting_r, SEXP phiStarting_r, SEXP nuStarting_r,
                                                 SEXP sType_r, SEXP nThreads_r, SEXP verbose_r, SEXP fix_nugget_r, SEXP N_phi_r, SEXP Trace_N_r,
-                                                SEXP max_iter_r, SEXP vi_threshold_r,
-                                                SEXP converge_per_r,
+                                                SEXP max_iter_r,
                                                 SEXP var_input_r,
-                                                SEXP phi_input_r, SEXP phi_iter_max_r, SEXP rho_phi_r, SEXP initial_mu_r,
-                                                SEXP mini_batch_size_r){
+                                                SEXP phi_input_r, SEXP phi_iter_max_r,SEXP initial_mu_r,
+                                                SEXP mini_batch_size_r,
+                                                SEXP min_iter_r, SEXP K_r, SEXP stop_K_r){
 
     int h, i, j, k, l, s, info, nProtect=0;
     const int inc = 1;
@@ -88,18 +88,23 @@ extern "C" {
     double fix_nugget = REAL(fix_nugget_r)[0];
     int covModel = INTEGER(covModel_r)[0];
     std::string corName = getCorName(covModel);
-    double converge_per  =  REAL(converge_per_r)[0];
+    //double converge_per  =  REAL(converge_per_r)[0];
     double phi_input  =  REAL(phi_input_r)[0];
     double *var_input  =  REAL(var_input_r);
     int initial_mu  =  INTEGER(initial_mu_r)[0];
     int phi_iter_max = INTEGER(phi_iter_max_r)[0];
     int n_mb = INTEGER(mini_batch_size_r)[0];
 
+    int K = INTEGER(K_r)[0];
+    int stop_K = INTEGER(stop_K_r)[0];
+    int min_iter = INTEGER(min_iter_r)[0];
+
+
     int nThreads = INTEGER(nThreads_r)[0];
     int verbose = INTEGER(verbose_r)[0];
-    double  vi_threshold  =  REAL(vi_threshold_r)[0];
+    //double  vi_threshold  =  REAL(vi_threshold_r)[0];
     double  rho  =  REAL(rho_r)[0];
-    double  rho_phi  =  REAL(rho_phi_r)[0];
+    //double  rho_phi  =  REAL(rho_phi_r)[0];
 
     //priors
     double zetaSqIGa = REAL(zetaSqIG_r)[0]; double zetaSqIGb = REAL(zetaSqIG_r)[1];
@@ -365,10 +370,10 @@ extern "C" {
     double rho2 = 0.999;
     double adaptive_adam = 0.001;
 
-    int n_per = n * converge_per;
-    int *sign_vec_old = (int *) R_alloc(n_per, sizeof(int));
-    int *sign_vec_new = (int *) R_alloc(n_per, sizeof(int));
-    int *check_vec = (int *) R_alloc(n_per, sizeof(int));
+    // int n_per = n * converge_per;
+    // int *sign_vec_old = (int *) R_alloc(n_per, sizeof(int));
+    // int *sign_vec_new = (int *) R_alloc(n_per, sizeof(int));
+    // int *check_vec = (int *) R_alloc(n_per, sizeof(int));
     int indicator_converge = 0;
 
     double *trace_vec = (double *) R_alloc(2, sizeof(double));
@@ -617,7 +622,7 @@ extern "C" {
       theta[tauSqIndx] = tau_sq;
 
       if(verbose){
-        Rprintf("the value of tau_sq : %f \n", tau_sq);
+        Rprintf("the value of 1 over E[1/tau_sq] : %f \n", tau_sq);
 #ifdef Win32
         R_FlushConsole();
 #endif
@@ -651,7 +656,7 @@ extern "C" {
         theta[zetaSqIndx] = zeta_sq;
 
         if(verbose){
-          Rprintf("the value of zeta_sq : %f \n", zeta_sq);
+          Rprintf("the value of 1 over E[1/sigma_sq] : %f \n", zeta_sq);
 #ifdef Win32
           R_FlushConsole();
 #endif
@@ -673,9 +678,13 @@ extern "C" {
             if (i % 2 == 0) {
               a_phi_vec[i] = a_phi_vec[0] + 0.01*i;
               b_phi_vec[i] = b_phi_vec[0] + 0.01*i;
+              // a_phi_vec[i] = a_phi_vec[0]*(1+0.1*i);
+              // b_phi_vec[i] = b_phi_vec[0]*(1+0.1*i);
             } else {
               a_phi_vec[i] = a_phi_vec[0] + 0.01*i*(-1);
               b_phi_vec[i] = b_phi_vec[0] + 0.01*i*(-1);
+              // a_phi_vec[i] = a_phi_vec[0]*(1-0.1*i);
+              // b_phi_vec[i] = b_phi_vec[0]*(1-0.1*i);
             }
           }
 
@@ -891,7 +900,7 @@ extern "C" {
           theta[tauSqIndx] = tau_sq;
           //theta[tauSqIndx] = 1.609707;
           if(verbose){
-            Rprintf("the value of tau_sq : %f \n", tau_sq);
+            Rprintf("the value of 1 over E[1/tau_sq] : %f \n", tau_sq);
 #ifdef Win32
             R_FlushConsole();
 #endif
@@ -933,7 +942,7 @@ extern "C" {
           theta[zetaSqIndx] = zeta_sq;
 
           if(verbose){
-            Rprintf("the value of zeta_sq : %f \n", zeta_sq);
+            Rprintf("the value of 1 over E[1/sigma_sq] : %f \n", zeta_sq);
 #ifdef Win32
             R_FlushConsole();
 #endif
@@ -958,9 +967,13 @@ extern "C" {
               if (i % 2 == 0) {
                 a_phi_vec[i] = a_phi_vec[0] + 0.01*i;
                 b_phi_vec[i] = b_phi_vec[0] + 0.01*i;
+                // a_phi_vec[i] = a_phi_vec[0]*(1+0.1*i);
+                // b_phi_vec[i] = b_phi_vec[0]*(1+0.1*i);
               } else {
                 a_phi_vec[i] = a_phi_vec[0] + 0.01*i*(-1);
                 b_phi_vec[i] = b_phi_vec[0] + 0.01*i*(-1);
+                // a_phi_vec[i] = a_phi_vec[0]*(1-0.1*i);
+                // b_phi_vec[i] = b_phi_vec[0]*(1-0.1*i);
               }
             }
 
@@ -1156,16 +1169,30 @@ extern "C" {
 
       ELBO += -sum4;
 
-      if(iter == 1){max_ELBO = - ELBO;}
-      if(iter >2000 & iter % 10){
-        if(- ELBO<max_ELBO){ELBO_convergence_count+=1;}else{ELBO_convergence_count=0;}
-        max_ELBO = max(max_ELBO, - ELBO);
-        if(converge_per==0){
-          indicator_converge = ELBO_convergence_count>=10;
+      ELBO_vec[iter-1] = -ELBO;
+
+      if(iter == min_iter){max_ELBO = - ELBO;}
+      if(iter > min_iter & iter % 10){
+
+        int count = 0;
+        double sum = 0.0;
+        for (int i = iter - 10; i < iter; i++) {
+          sum += ELBO_vec[i];
+          count++;
+        }
+
+        double average =  sum / count;
+
+        if(average < max_ELBO){ELBO_convergence_count+=1;}else{ELBO_convergence_count=0;}
+        max_ELBO = max(max_ELBO, average);
+
+
+        if(stop_K){
+          indicator_converge = ELBO_convergence_count>=K;
         }
       }
 
-      ELBO_vec[iter-1] = -ELBO;
+
 
       if(!verbose){
         int percent = (iter * 100) / max_iter;
@@ -1183,12 +1210,19 @@ extern "C" {
           }
 
           Rprintf("] %d%%\n", percent);
+
 #ifdef Win32
           R_FlushConsole();
 #endif
         }
       }
 
+      if(indicator_converge == 1){
+        Rprintf("Early convergence reached at iteration at %i \n", iter);
+      }
+#ifdef Win32
+      R_FlushConsole();
+#endif
       iter++;
 
 
@@ -1270,7 +1304,7 @@ extern "C" {
     //unprotect
     UNPROTECT(nProtect);
 
-    Rprintf("\t Check BF %f \n", Q(B, F, y, y, n, nnIndx, nnIndxLU));
+    //Rprintf("\t Check BF %f \n", Q(B, F, y, y, n, nnIndx, nnIndxLU));
     return(result_r);
 
   }
@@ -1765,7 +1799,7 @@ extern "C" {
 
 
         if(verbose){
-          Rprintf("the value of tau_sq : %f \n", tau_sq);
+          Rprintf("the value of 1 over E[1/tau_sq] : %f \n", tau_sq);
         }
         ///////////////
         //update zetasq
@@ -1792,7 +1826,7 @@ extern "C" {
         theta[zetaSqIndx] = zeta_sq;
 
         if(verbose){
-          Rprintf("the value of zeta_sq : %f \n", zeta_sq);
+          Rprintf("the value of 1 over E[1/sigma_sq] : %f \n", zeta_sq);
         }
         updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m, theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
 
@@ -1810,9 +1844,13 @@ extern "C" {
             if (i % 2 == 0) {
               a_phi_vec[i] = a_phi_vec[0] + 0.01*i;
               b_phi_vec[i] = b_phi_vec[0] + 0.01*i;
+              // a_phi_vec[i] = a_phi_vec[0]*(1+0.1*i);
+              // b_phi_vec[i] = b_phi_vec[0]*(1+0.1*i);
             } else {
               a_phi_vec[i] = a_phi_vec[0] + 0.01*i*(-1);
               b_phi_vec[i] = b_phi_vec[0] + 0.01*i*(-1);
+              // a_phi_vec[i] = a_phi_vec[0]*(1-0.1*i);
+              // b_phi_vec[i] = b_phi_vec[0]*(1-0.1*i);
             }
           }
 
@@ -1968,7 +2006,7 @@ extern "C" {
 
           zeros(tau_sq_I, one_int);
           zeros(tmp_n_mb, n);
-          Rprintf("the value of tau_sq_I : %f \n", *tau_sq_I);
+          //Rprintf("the value of tau_sq_I : %f \n", *tau_sq_I);
           sum_diags = 0;
           for(i = 0; i < BatchSize; i++){
             tmp_n_mb[i] = y[batch_array[nBatchLU[batch_index] + i]]-w_mu[batch_array[nBatchLU[batch_index] + i]];
@@ -1997,7 +2035,7 @@ extern "C" {
           theta[tauSqIndx] = tau_sq;
           //theta[tauSqIndx] = 1.609707;
           if(verbose){
-            Rprintf("the value of tau_sq : %f \n", tau_sq);
+            Rprintf("the value of 1 over E[1/tau_sq] : %f \n", tau_sq);
           }
 
           ///////////////
@@ -2054,7 +2092,7 @@ extern "C" {
           theta[zetaSqIndx] = zeta_sq;
           //theta[zetaSqIndx] = 17.046391;
           if(verbose){
-            Rprintf("the value of zeta_sq : %f \n", zeta_sq);
+            Rprintf("the value of 1 over E[1/sigma_sq] : %f \n", zeta_sq);
           }
 
           updateBF_minibatch_plus(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
@@ -2076,9 +2114,13 @@ extern "C" {
               if (i % 2 == 0) {
                 a_phi_vec[i] = a_phi_vec[0] + 0.01*i;
                 b_phi_vec[i] = b_phi_vec[0] + 0.01*i;
+                // a_phi_vec[i] = a_phi_vec[0]*(1+0.1*i);
+                // b_phi_vec[i] = b_phi_vec[0]*(1+0.1*i);
               } else {
                 a_phi_vec[i] = a_phi_vec[0] + 0.01*i*(-1);
                 b_phi_vec[i] = b_phi_vec[0] + 0.01*i*(-1);
+                // a_phi_vec[i] = a_phi_vec[0]*(1-0.1*i);
+                // b_phi_vec[i] = b_phi_vec[0]*(1-0.1*i);
               }
             }
 
@@ -2425,7 +2467,7 @@ extern "C" {
     //unprotect
     UNPROTECT(nProtect);
 
-    Rprintf("\t Check BF %f \n", Q(B, F, y, y, n, nnIndx, nnIndxLU));
+    //Rprintf("\t Check BF %f \n", Q(B, F, y, y, n, nnIndx, nnIndxLU));
     return(result_r);
 
   }
@@ -2435,11 +2477,11 @@ extern "C" {
                                            SEXP zetaSqIG_r, SEXP tauSqIG_r, SEXP phibeta_r, SEXP nuUnif_r,
                                            SEXP zetaSqStarting_r, SEXP tauSqStarting_r, SEXP phiStarting_r, SEXP nuStarting_r,
                                            SEXP sType_r, SEXP nThreads_r, SEXP verbose_r, SEXP fix_nugget_r, SEXP N_phi_r, SEXP Trace_N_r,
-                                           SEXP max_iter_r, SEXP vi_threshold_r,
-                                           SEXP converge_per_r,
+                                           SEXP max_iter_r,
                                            SEXP var_input_r,
-                                           SEXP phi_input_r, SEXP phi_iter_max_r, SEXP rho_phi_r, SEXP initial_mu_r,
-                                           SEXP mini_batch_size_r){
+                                           SEXP phi_input_r, SEXP phi_iter_max_r, SEXP initial_mu_r,
+                                           SEXP mini_batch_size_r,
+                                           SEXP min_iter_r, SEXP K_r, SEXP stop_K_r){
 
     int h, i, j, k, l, s, info, nProtect=0;
     const int inc = 1;
@@ -2462,18 +2504,22 @@ extern "C" {
     double fix_nugget = REAL(fix_nugget_r)[0];
     int covModel = INTEGER(covModel_r)[0];
     std::string corName = getCorName(covModel);
-    double converge_per  =  REAL(converge_per_r)[0];
+    //double converge_per  =  REAL(converge_per_r)[0];
     double phi_input  =  REAL(phi_input_r)[0];
     double *var_input  =  REAL(var_input_r);
     int initial_mu  =  INTEGER(initial_mu_r)[0];
     int phi_iter_max = INTEGER(phi_iter_max_r)[0];
     int n_mb = INTEGER(mini_batch_size_r)[0];
 
+    int K = INTEGER(K_r)[0];
+    int stop_K = INTEGER(stop_K_r)[0];
+    int min_iter = INTEGER(min_iter_r)[0];
+
     int nThreads = INTEGER(nThreads_r)[0];
     int verbose = INTEGER(verbose_r)[0];
-    double  vi_threshold  =  REAL(vi_threshold_r)[0];
+    //double  vi_threshold  =  REAL(vi_threshold_r)[0];
     double  rho  =  REAL(rho_r)[0];
-    double  rho_phi  =  REAL(rho_phi_r)[0];
+    //double  rho_phi  =  REAL(rho_phi_r)[0];
 
     //priors
     double zetaSqIGa = REAL(zetaSqIG_r)[0]; double zetaSqIGb = REAL(zetaSqIG_r)[1];
@@ -2503,7 +2549,7 @@ extern "C" {
       Rprintf("----------------------------------------\n");
       Rprintf("\tModel description\n");
       Rprintf("----------------------------------------\n");
-      Rprintf("NNGP Latent model fit with %i observations.\n\n", n);
+      Rprintf("Model fit with %i observations.\n\n", n);
       Rprintf("Number of covariates %i (including intercept if specified).\n\n", p);
       Rprintf("Using the %s spatial correlation model.\n\n", corName.c_str());
       Rprintf("Using %i nearest neighbors.\n\n", m);
@@ -2708,10 +2754,10 @@ extern "C" {
     double rho1 = 0.9;
     double rho2 = 0.999;
     double adaptive_adam = 0.001;
-    int n_per = n * converge_per;
-    int *sign_vec_old = (int *) R_alloc(n_per, sizeof(int));
-    int *sign_vec_new = (int *) R_alloc(n_per, sizeof(int));
-    int *check_vec = (int *) R_alloc(n_per, sizeof(int));
+    // int n_per = n * converge_per;
+    // int *sign_vec_old = (int *) R_alloc(n_per, sizeof(int));
+    // int *sign_vec_new = (int *) R_alloc(n_per, sizeof(int));
+    // int *check_vec = (int *) R_alloc(n_per, sizeof(int));
     int indicator_converge = 0;
 
     double *trace_vec = (double *) R_alloc(2, sizeof(double));
@@ -2880,7 +2926,7 @@ extern "C" {
         theta[tauSqIndx] = tau_sq;
 
         if(verbose){
-          Rprintf("the value of tau_sq : %f \n", tau_sq);
+          Rprintf("the value of 1 over E[1/tau_sq] : %f \n", tau_sq);
 #ifdef Win32
           R_FlushConsole();
 #endif
@@ -2913,7 +2959,7 @@ extern "C" {
         theta[zetaSqIndx] = zeta_sq;
 
         if(verbose){
-          Rprintf("the value of zeta_sq : %f \n", zeta_sq);
+          Rprintf("the value of 1 over E[1/sigma_sq] : %f \n", zeta_sq);
 #ifdef Win32
           R_FlushConsole();
 #endif
@@ -2934,9 +2980,13 @@ extern "C" {
             if (i % 2 == 0) {
               a_phi_vec[i] = a_phi_vec[0] + 0.01*i;
               b_phi_vec[i] = b_phi_vec[0] + 0.01*i;
+              // a_phi_vec[i] = a_phi_vec[0]*(1+0.1*i);
+              // b_phi_vec[i] = b_phi_vec[0]*(1+0.1*i);
             } else {
               a_phi_vec[i] = a_phi_vec[0] + 0.01*i*(-1);
               b_phi_vec[i] = b_phi_vec[0] + 0.01*i*(-1);
+              // a_phi_vec[i] = a_phi_vec[0]*(1-0.1*i);
+              // b_phi_vec[i] = b_phi_vec[0]*(1-0.1*i);
             }
           }
 
@@ -3085,7 +3135,7 @@ extern "C" {
 
           zeros(tau_sq_I, one_int);
           zeros(tmp_n_mb, n);
-          //Rprintf("the value of tau_sq_I : %f \n", *tau_sq_I);
+          //Rprintf("the value of 1 over E[1/tau_sq]_I : %f \n", *tau_sq_I);
           sum_diags = 0;
           for(i = 0; i < BatchSize; i++){
             tmp_n_mb[i] = y[nBatchLU[batch_index] + i]-w_mu[nBatchLU[batch_index] + i];
@@ -3105,7 +3155,7 @@ extern "C" {
           theta[tauSqIndx] = tau_sq;
           //theta[tauSqIndx] = 1.609707;
           if(verbose){
-            Rprintf("the value of tau_sq : %f \n", tau_sq);
+            Rprintf("the value of 1 over E[1/tau_sq] : %f \n", tau_sq);
 #ifdef Win32
             R_FlushConsole();
 #endif
@@ -3145,7 +3195,7 @@ extern "C" {
           theta[zetaSqIndx] = zeta_sq;
           //theta[zetaSqIndx] = 17.046391;
           if(verbose){
-            Rprintf("the value of zeta_sq : %f \n", zeta_sq);
+            Rprintf("the value of 1 over E[1/sigma_sq] : %f \n", zeta_sq);
 #ifdef Win32
             R_FlushConsole();
 #endif
@@ -3170,9 +3220,13 @@ extern "C" {
               if (i % 2 == 0) {
                 a_phi_vec[i] = a_phi_vec[0] + 0.01*i;
                 b_phi_vec[i] = b_phi_vec[0] + 0.01*i;
+                // a_phi_vec[i] = a_phi_vec[0]*(1+0.1*i);
+                // b_phi_vec[i] = b_phi_vec[0]*(1+0.1*i);
               } else {
                 a_phi_vec[i] = a_phi_vec[0] + 0.01*i*(-1);
                 b_phi_vec[i] = b_phi_vec[0] + 0.01*i*(-1);
+                // a_phi_vec[i] = a_phi_vec[0]*(1-0.1*i);
+                // b_phi_vec[i] = b_phi_vec[0]*(1-0.1*i);
               }
             }
 
@@ -3379,16 +3433,37 @@ extern "C" {
       ELBO += -sum4;
 
 
-      if(iter == 1){max_ELBO = - ELBO;}
-      if(iter >2000 & iter % 10){
-        if(- ELBO<max_ELBO){ELBO_convergence_count+=1;}else{ELBO_convergence_count=0;}
-        max_ELBO = max(max_ELBO, - ELBO);
-        if(converge_per==0){
-          indicator_converge = ELBO_convergence_count>=10;
+      ELBO_vec[iter-1] = -ELBO;
+
+      if(iter == min_iter){max_ELBO = - ELBO;}
+      if (iter > min_iter && iter % 10 == 0){
+
+        int count = 0;
+        double sum = 0.0;
+        for (int i = iter - 10; i < iter; i++) {
+          sum += ELBO_vec[i];
+          count++;
+        }
+
+        double average = sum / count;
+
+        if (average < max_ELBO) {
+          ELBO_convergence_count += 1;
+        } else {
+          ELBO_convergence_count = 0;
+        }
+        max_ELBO = max(max_ELBO, average);
+
+        // Rprintf("Max ELBO at interation at %i is %f\n", iter, max_ELBO);
+        // Rprintf("Average window ELBO at interation at %i is %f\n", iter, average);
+
+        if(stop_K){
+          indicator_converge = ELBO_convergence_count>=K;
+          //Rprintf("indicator_converge %i \n", indicator_converge);
         }
       }
 
-      ELBO_vec[iter-1] = -ELBO;
+
 
       if(!verbose){
         int percent = (iter * 100) / max_iter;
@@ -3406,12 +3481,21 @@ extern "C" {
           }
 
           Rprintf("] %d%%\n", percent);
+
+
+
 #ifdef Win32
           R_FlushConsole();
 #endif
         }
       }
 
+      if(indicator_converge == 1){
+        Rprintf("Early convergence reached at iteration at %i \n", iter);
+      }
+#ifdef Win32
+      R_FlushConsole();
+#endif
       iter++;
 
 
