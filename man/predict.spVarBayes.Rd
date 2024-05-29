@@ -20,7 +20,7 @@
   \item{object}{an object of class \code{spVarBayes}. }
   \item{X.0}{the design matrix for prediction locations. An
     intercept should be provided in the first column if one is specified
-    in \code{sp.obj} model.}
+    in \code{spVarBayes} model.}
 
   \item{coords.0}{the spatial coordinates corresponding to
     \code{X.0}. }
@@ -52,7 +52,7 @@
   \code{coords.0} and columns are samples. }
   \item{p.w.0}{a matrix that holds the random effect posterior
     predictive samples where rows are locations corresponding to
-  \code{coords.0} and columns are samples.}}
+  \code{coords.0} and columns are samples.}
   \item{p.w.samples}{posterior samples for the spatial random effects where rows are locations corresponding to fitted data and columns are samples.}
   \item{p.theta.samples}{posterior samples for the spatial covariance parameters where rows are sigma.sq, tau.sq, and phi, columns are samples.}
   \item{p.beta.samples}{posterior samples for the regression coefficients where rows are the number of covariates \code{p} columns are samples.}
