@@ -92,9 +92,9 @@ coords <- cbind(runif(n,0,5), runif(n,0,5))
 x <- cbind(1, rnorm(n))
 B <- as.matrix(c(1,5))
 
-tau2_true <- 0.5
-phi_true <- 1
-sigma2_true <- 10
+sigma2_true <- 5
+tau2_true <- 1
+phi_true <- 6
 
 D <- as.matrix(dist(coords))
 R <- exp(-phi_true*D)
