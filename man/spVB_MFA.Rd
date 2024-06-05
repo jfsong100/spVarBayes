@@ -4,6 +4,7 @@
 
 \description{
   The function \code{spVB_MFA} fits Gaussian Bayesian spatial regression models using Mean Field Approximation Variational Inference.
+  Some code blocks are borrowed from the R packages: spNNGP: Spatial Regression Models for Large Datasets using Nearest Neighbor Gaussian Processes https://CRAN.R-project.org/package=spNNGP and BRISC: Fast Inference for Large Spatial Datasets using BRISC https://CRAN.R-project.org/package=BRISC.
 }
 
 \usage{
@@ -26,7 +27,7 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
 
   \item{covariates}{if \code{TRUE}, matrix of the covariates is needed as the input.}
 
-  \item{n.neighbors}{number of neighbors used in the NNGP prior.}
+  \item{n.neighbors}{number of neighbors used in the NNGP prior. This must be an integer.}
 
   \item{sigma.sq}{starting value of sigma square. Default value is 1. }
 
@@ -150,6 +151,7 @@ in the \code{starting} and \code{tuning} lists.
   Jiafang Song \email{jsong100@jhu.edu}, \cr
   Abhirup Datta \email{abhidatta@jhu.edu}
 }
+
 
 \examples{
 

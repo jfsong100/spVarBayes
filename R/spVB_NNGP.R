@@ -4,7 +4,7 @@ spVB_NNGP <- function(y, X, coords, covariates = TRUE, n.neighbors = 15, n.neigh
                       n_omp = 1, cov.model = "exponential", nu = 1.5, search.type = "tree",tol = 12,
                       verbose = FALSE, max_iter = 2000, min_iter = 1000, stop_K = FALSE, K = 20,
                       N_phi = 5, Trace_N = 50, phi_max_iter = 50, rho = 0.85,
-                      mini_batch = F, mini_batch_size = 128, reorder = T){
+                      mini_batch = F, mini_batch_size = 128, reorder = "Sum_coords"){
 
   n <- nrow(coords)
   p <- 0
@@ -28,6 +28,11 @@ spVB_NNGP <- function(y, X, coords, covariates = TRUE, n.neighbors = 15, n.neigh
 
   if(!is.null(n.neighbors)){
     if(n.neighbors < n.neighbors.opt) warning('We recommend using higher n.neighbors especially for small Phi')
+    if(n.neighbors < 10) warning('We recommend using higher n.neighbors at least 10')
+  }
+
+  if(!is.null(n.neighbors.vi)){
+    if(n.neighbors.vi == 0) stop("With n.neighbors.vi = 0, the model is reduced to a mean field approximation. Try to use spVB-MFA function")
   }
 
   if(is.null(n.neighbors)){
@@ -49,10 +54,18 @@ spVB_NNGP <- function(y, X, coords, covariates = TRUE, n.neighbors = 15, n.neigh
 
   initial_mu = 1
 
-  ord = 1:n
-  if(reorder){
+  if(reorder == "Sum_coords"){
+    print("Using Sum_coords ordering")
     ord <- order(coords[,1] + coords[,2])
     coords <- coords[ord,]
+  }else if(reorder == "AMMD"){
+    print("Using Maxmin ordering")
+    set.seed(1)
+    ord <- BRISC_order(coords, order = "AMMD")
+    coords <- coords[ord,]
+  }else{
+    print("Do not order the coords")
+    ord = 1:n
   }
 
   if(p>0){X <- X[ord,,drop=FALSE]}

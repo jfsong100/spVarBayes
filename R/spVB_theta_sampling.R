@@ -47,10 +47,10 @@ spVB_theta_sampling <- function(object,
   set.seed(seed)
 
   p.phi.samples <- rbeta(n.samples,phi.alpha,phi.beta)*(phimax - phimin) + phimin
-  p.zetasq.samples <- rigamma(n.samples,zetasq.alpha,zetasq.beta)
+  p.sigmasq.samples <- rigamma(n.samples,zetasq.alpha,zetasq.beta)
   p.tausq.samples <- rigamma(n.samples,tausq.alpha,tausq.beta)
 
-  p.theta.samples <- t(cbind(p.zetasq.samples,
+  p.theta.samples <- t(cbind(p.sigmasq.samples,
                              p.tausq.samples,
                              p.phi.samples))
 

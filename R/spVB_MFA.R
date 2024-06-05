@@ -4,7 +4,7 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
                      n_omp = 1, cov.model = "exponential", nu = 1.5, search.type = "tree",tol = 12,
                      verbose = FALSE, max_iter = 2000, min_iter = 750, stop_K = FALSE, K = 20,
                      N_phi = 5, Trace_N = 50, phi_max_iter = 50, rho = 0.85,
-                     mini_batch = T, mini_batch_size = 256, reorder = T){
+                     mini_batch = T, mini_batch_size = 256, reorder = "Sum_coords"){
 
 
 
@@ -32,6 +32,7 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
 
   if(!is.null(n.neighbors)){
     if(n.neighbors < n.neighbors.opt) warning('We recommend using higher n.neighbors especially for small Phi')
+    if(n.neighbors < 10) warning('We recommend using higher n.neighbors at least 10')
   }
 
   if(is.null(n.neighbors)){
@@ -68,10 +69,18 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
   # }
   initial_mu = 1
 
-  ord = 1:n
-  if(reorder){
+  if(reorder == "Sum_coords"){
+    print("Using Sum_coords ordering")
     ord <- order(coords[,1] + coords[,2])
     coords <- coords[ord,]
+  }else if(reorder == "AMMD"){
+    print("Using Maxmin ordering")
+    set.seed(1)
+    ord <- BRISC_order(coords, order = "AMMD")
+    coords <- coords[ord,]
+  }else{
+    print("Do not order the coords")
+    ord = 1:n
   }
 
   if(p>0){X <- X[ord,,drop=FALSE]}

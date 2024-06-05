@@ -547,6 +547,18 @@ extern "C" {
       total_size_complement_second += complement_second_sizes[i];
     }
 
+    if(verbose){
+
+      for (int i = 0; i < nBatch; ++i) {
+        Rprintf("intersect_sizes is %i \n", intersect_sizes[i]);
+        Rprintf("complement_first_sizes is %i \n", complement_first_sizes[i]);
+        Rprintf("complement_second_sizes is %i \n", complement_second_sizes[i]);
+      }
+      Rprintf("\n");
+#ifdef Win32
+      R_FlushConsole();
+#endif
+    }
 
     int* final_intersect_vec = (int *) R_alloc(total_size_intersect, sizeof(int));
     int* final_complement_1_vec = (int *) R_alloc(total_size_complement_first, sizeof(int));
@@ -2001,6 +2013,18 @@ extern "C" {
       total_size_complement_second += complement_second_sizes[i];
     }
 
+    if(verbose){
+
+      for (int i = 0; i < nBatch; ++i) {
+        Rprintf("intersect_sizes is %i ", intersect_sizes[i]);
+        Rprintf("complement_first_sizes is %i ", complement_first_sizes[i]);
+        Rprintf("complement_second_sizes is %i ", complement_second_sizes[i]);
+      }
+      Rprintf("\n");
+#ifdef Win32
+      R_FlushConsole();
+#endif
+    }
 
     int* final_intersect_vec = (int *) R_alloc(total_size_intersect, sizeof(int));
     int* final_complement_1_vec = (int *) R_alloc(total_size_complement_first, sizeof(int));

@@ -73,14 +73,14 @@ predict.spVarBayes <- function(object, X.0, coords.0,covariates = TRUE,
     p.phi.samples <- rbeta(n.samples,phi.alpha,phi.beta)*(phimax - phimin) + phimin
   }
 
-  p.zetasq.samples <- rigamma(n.samples,zetasq.alpha,zetasq.beta)
+  p.sigmasq.samples <- rigamma(n.samples,zetasq.alpha,zetasq.beta)
   p.tausq.samples <- rigamma(n.samples,tausq.alpha,tausq.beta)
 
   if(covariates){
     p.beta.samples = t(as.matrix(rmvnorm(n.samples,object$beta,object$beta_cov)))
   }
 
-  p.theta.samples <- t(cbind(p.zetasq.samples,
+  p.theta.samples <- t(cbind(p.sigmasq.samples,
                            p.tausq.samples,
                            p.phi.samples))
 

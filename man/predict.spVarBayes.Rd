@@ -7,7 +7,7 @@
 \description{
   The function \code{predict} collects posterior predictive samples
   for a set of new locations given an object of
-  class \code{spVarBayes}.
+  class \code{spVarBayes}. Some code blocks are borrowed from the R packages: spNNGP: Spatial Regression Models for Large Datasets using Nearest Neighbor Gaussian Processes https://CRAN.R-project.org/package=spNNGP and BRISC: Fast Inference for Large Spatial Datasets using BRISC https://CRAN.R-project.org/package=BRISC.
 }
 
 \usage{
@@ -72,6 +72,8 @@
   Jiafang Song \email{jsong100@jhu.edu}, \cr
   Abhirup Datta \email{abhidatta@jhu.edu}
 }
+
+
 
 \examples{
 
