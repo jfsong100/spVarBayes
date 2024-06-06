@@ -780,12 +780,12 @@ void mu_grad(double *w_mu, double *B, double *F, int n,
 void find_set(int n, int *nnIndx, int *nnIndxLU, int *nnIndxCol,
               int *numIndxCol, int *nnIndxnnCol, int *cumnumIndxCol,
               int BatchSize, int *nBatchLU, int batch_index,
-              int *result_arr, int &result_index, int *temp_arr, 
+              int *result_arr, int &result_index, int *temp_arr,
               int &temp_index, int *tempsize_vec, int *seen_values) {
-  
+
   // Use a binary flag array for quick lookup
-  
-  
+
+
   temp_index = 0; // Clear the temporary array
   //Rprintf("val is ");
   // Populate temp_arr and seen_values for the current batch_index
@@ -796,7 +796,7 @@ void find_set(int n, int *nnIndx, int *nnIndxLU, int *nnIndxCol,
     //Rprintf("%i ", val);
   }
   //Rprintf("\n");
-  
+
   for (int i_mb = 0; i_mb < BatchSize; i_mb++) {
     int i = nBatchLU[batch_index] + i_mb;
     // Rprintf("nnIndxLU is ");
@@ -820,18 +820,18 @@ void find_set(int n, int *nnIndx, int *nnIndxLU, int *nnIndxCol,
     }
     //Rprintf("\n");
   }
-  
+
   tempsize_vec[batch_index] = temp_index;
   qsort(temp_arr, temp_index, sizeof(int), [](const void *a, const void *b) {
     return (*(int*)a - *(int*)b);
   });
-  
+
   // Append temp_arr to result_arr
   for (int i = 0; i < temp_index; i++) {
     result_arr[result_index++] = temp_arr[i];
   }
-  
-  
+
+
 }
 
 
@@ -988,7 +988,7 @@ void product_B_F_vec_minibatch_plus(double *B, double *F, double *input_vec,
 
 }
 
-void zeros_minibatch_plus(double *a, int n, int batch_index, 
+void zeros_minibatch_plus(double *a, int n, int batch_index,
                           int *final_result_vec, int *nBatchLU_temp, int tempsize){
   int i_mb;
   int i;
@@ -997,7 +997,7 @@ void zeros_minibatch_plus(double *a, int n, int batch_index,
     a[i] = 0.0;
 }
 
-void vecsum_minibatch_plus(double *cum_vec, double *input_vec, int scale,int n, 
+void vecsum_minibatch_plus(double *cum_vec, double *input_vec, int scale,int n,
                            int batch_index, int *final_result_vec, int *nBatchLU_temp, int tempsize){
   int i_mb;
   int i;
@@ -1116,12 +1116,12 @@ void a_gradient_fun_minibatch_plus(double *u_vec, double *epsilon_vec, double *a
 void find_set_mb(int n, int *nnIndx, int *nnIndxLU, int *nnIndxCol,
               int *numIndxCol, int *nnIndxnnCol, int *cumnumIndxCol,
               int BatchSize, int *nBatchLU, int batch_index,
-              int *result_arr, int &result_index, int *temp_arr, 
+              int *result_arr, int &result_index, int *temp_arr,
               int &temp_index, int *tempsize_vec, int *seen_values) {
-  
+
   // Use a binary flag array for quick lookup
-  
-  
+
+
   temp_index = 0; // Clear the temporary array
   //Rprintf("val is ");
   // Populate temp_arr and seen_values for the current batch_index
@@ -1132,7 +1132,7 @@ void find_set_mb(int n, int *nnIndx, int *nnIndxLU, int *nnIndxCol,
     //Rprintf("%i ", val);
   }
   //Rprintf("\n");
-  
+
   for (int i_mb = 0; i_mb < BatchSize; i_mb++) {
     int i = nBatchLU[batch_index] + i_mb;
     //Rprintf("nnIndxLU is ");
@@ -1156,22 +1156,22 @@ void find_set_mb(int n, int *nnIndx, int *nnIndxLU, int *nnIndxCol,
     // }
     //Rprintf("\n");
   }
-  
+
   tempsize_vec[batch_index] = temp_index;
   qsort(temp_arr, temp_index, sizeof(int), [](const void *a, const void *b) {
     return (*(int*)a - *(int*)b);
   });
-  
+
   // Append temp_arr to result_arr
   for (int i = 0; i < temp_index; i++) {
     result_arr[result_index++] = temp_arr[i];
   }
-  
-  
+
+
 }
 
 double Expectation_B_F(double *B, double *F, double *w_mu, double *u_vec,
-                     int n, int *nnIndxLU, int *nnIndx, 
+                     int n, int *nnIndxLU, int *nnIndx,
                      int BatchSize, int *nBatchLU, int batch_index){
   int i;
   double sum;
@@ -1188,9 +1188,9 @@ double Expectation_B_F(double *B, double *F, double *w_mu, double *u_vec,
       var += pow(sum,2) / F[i];
     }
   }
-  
+
   return(var);
-  
+
 }
 
 
@@ -1198,7 +1198,7 @@ double Expectation_B_F(double *B, double *F, double *w_mu, double *u_vec,
 int compare_ints(const void* a, const void* b) {
   int arg1 = *(const int*)a;
   int arg2 = *(const int*)b;
-  
+
   if (arg1 < arg2) return -1;
   if (arg1 > arg2) return 1;
   return 0;
@@ -1211,25 +1211,25 @@ void find_set_nngp(int n, int *nnIndx, int *nnIndxLU, int BatchSize, int *nBatch
                    int *complement_first_result, int *complement_first_sizes, int *complement_first_start_indices,
                    int *complement_second_result, int *complement_second_sizes, int *complement_second_start_indices,
                    int &intersect_result_index, int &complement_first_result_index, int &complement_second_result_index) {
-  
+
   int current_intersect_size = 0;
   int current_complement_first_size = 0;
   int current_complement_second_size = 0;
   zeros_int(seen_values, n);
-  
+
   // First, mark the elements of the first set
   for (int i = 0; i < BatchSize; ++i) {
     int val = nBatchLU[batch_index] + i;
     // Do not add to intersect_result here, wait until confirmation that it's an intersection
     seen_values[val] = 1; // Mark as seen in the first set
   }
-  
+
   // Second, go through the elements of the second set and determine intersection and complements
   for (int i_mb = 0; i_mb < BatchSize; i_mb++) {
     int i = nBatchLU[batch_index] + i_mb;
     for (int l = 0; l < nnIndxLU[n + i]; l++) {
       int new_index = nnIndx[nnIndxLU[i] + l];
-      
+
       if (seen_values[new_index] == 0) { // If not seen in the first set
         // Add to complement of second set if it's not already added
         if (seen_values[new_index] != 2) {
@@ -1245,31 +1245,31 @@ void find_set_nngp(int n, int *nnIndx, int *nnIndxLU, int BatchSize, int *nBatch
       }
     }
   }
-  
+
   // Now determine the complement of the first set
   for (int i = 0; i < BatchSize; ++i) {
     int val = nBatchLU[batch_index] + i;
-    
+
     // If only in the first set, it's part of the complement of the first set
     if (seen_values[val] == 1) {
       complement_first_result[complement_first_result_index + current_complement_first_size++] = val;
     }
   }
-  
+
   // Sort each set
   qsort(intersect_result + intersect_result_index, current_intersect_size, sizeof(int), compare_ints);
   qsort(complement_first_result + complement_first_result_index, current_complement_first_size, sizeof(int), compare_ints);
   qsort(complement_second_result + complement_second_result_index, current_complement_second_size, sizeof(int), compare_ints);
-  
+
   // Update indices and sizes
   intersect_start_indices[batch_index] = intersect_result_index;
   intersect_sizes[batch_index] = current_intersect_size;
   intersect_result_index += current_intersect_size;
-  
+
   complement_first_start_indices[batch_index] = complement_first_result_index;
   complement_first_sizes[batch_index] = current_complement_first_size;
   complement_first_result_index += current_complement_first_size;
-  
+
   complement_second_start_indices[batch_index] = complement_second_result_index; // Should point to the start of this batch's segment
   complement_second_sizes[batch_index] = current_complement_second_size;
   complement_second_result_index += current_complement_second_size; // Should accumulate the size
@@ -1285,7 +1285,7 @@ void mu_grad_intersect(double *y, double *w_mu,
                          int *intersect_start_indices, int *intersect_sizes,
                          int* final_intersect_vec,
                          double *gradient_mu_temp) {
-  
+
   int i;
   double sum;
   int i_mb;
@@ -1302,14 +1302,14 @@ void mu_grad_intersect(double *y, double *w_mu,
    }
    sum1 = sum1/F[i];
 
-   
+
    sum3 = 0;
    if(numIndxCol[i] > 0){
      for (int l = 0; l < numIndxCol[i]; l++) {
        // l is the lth that the i is whose neighbor
        // transfer to i_l
        i_l = nnIndxnnCol[cumnumIndxCol[i] - i + l];
-      
+
        sum2 = w_mu[i_l];
        for (int k = 0; k < nnIndxLU[n + i_l]; k++) {
          sum2 = sum2 - B[nnIndxLU[i_l] + k] * w_mu[nnIndx[nnIndxLU[i_l] + k]];
@@ -1319,7 +1319,7 @@ void mu_grad_intersect(double *y, double *w_mu,
        sum3 += sum2;
      }
    }
-   
+
    gradient_mu_temp[i] = (y[i] - w_mu[i])/theta[tauSqIndx] - sum1 + sum3;
   }
 
@@ -1334,11 +1334,11 @@ void mu_grad_complement_1(double *y, double *w_mu,
                          int *complement_first_start_indices, int *complement_first_sizes,
                          int* final_complement_1_vec,
                          double *gradient_mu_temp) {
-  
+
   int i;
   double sum;
   int i_mb;
-  
+
   int i_l;
   double sum1, sum2, sum3;
   for (i_mb = 0; i_mb < complement_first_sizes[batch_index]; i_mb++) {
@@ -1350,11 +1350,11 @@ void mu_grad_complement_1(double *y, double *w_mu,
       }
     }
     sum1 = sum1/F[i];
-    
-    
+
+
     gradient_mu_temp[i] =  (y[i] - w_mu[i])/theta[tauSqIndx] - sum1;
   }
-  
+
 }
 
 void mu_grad_complement_2(double *w_mu,
@@ -1366,11 +1366,11 @@ void mu_grad_complement_2(double *w_mu,
                          int *complement_second_start_indices, int *complement_second_sizes,
                          int* final_complement_2_vec,
                          double *gradient_mu_temp) {
-  
+
   int i;
   double sum;
   int i_mb;
-  
+
   int i_l;
   double sum1, sum2, sum3;
   for (i_mb = 0; i_mb < complement_second_sizes[batch_index]; i_mb++) {
@@ -1382,20 +1382,20 @@ void mu_grad_complement_2(double *w_mu,
         // l is the lth that the i is whose neighbor
         // transfer to i_l
         i_l = nnIndxnnCol[cumnumIndxCol[i] - i + l];
-        
+
         sum2 = w_mu[i_l];
         for (int k = 0; k < nnIndxLU[n + i_l]; k++) {
           sum2 = sum2 - B[nnIndxLU[i_l] + k] * w_mu[nnIndx[nnIndxLU[i_l] + k]];
         }
-        
+
         sum2 = sum2*B[ nnIndxCol[ 1 + cumnumIndxCol[i] + l] ]/F[i_l];
         sum3 += sum2;
       }
     }
-    
+
     gradient_mu_temp[i] =  sum3;
   }
-  
+
 }
 
 
@@ -1404,7 +1404,7 @@ void gamma_gradient_fun_minibatch_nngp(double *y, double *w_mu, double *u_vec,
                                        double *B, double *F, int *nnIndx, int *nnIndxLU, double *theta, int tauSqIndx, int *cumnumIndxCol, int *numIndxCol, int *nnIndxCol, int *nnIndxnnCol,
                                        int *cumnumIndxCol_vi, int *numIndxCol_vi, int *nnIndxCol_vi, int *nnIndxnnCol_vi,
                                        double *gradient, double *w_mu_temp,
-                                       int batch_index, int BatchSize, int *nBatchLU, 
+                                       int batch_index, int BatchSize, int *nBatchLU,
                                        int *final_result_vec, int *nBatchLU_temp, int tempsize,
                                        int *intersect_start_indices, int *intersect_sizes, int* final_intersect_vec,
                                        int *complement_first_start_indices, int *complement_first_sizes, int* final_complement_1_vec,
@@ -1413,15 +1413,15 @@ void gamma_gradient_fun_minibatch_nngp(double *y, double *w_mu, double *u_vec,
   double sum;
   int i_mb;
   int i;
-  
+
   update_uvec_minibatch_plus(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi,
                              batch_index, final_result_vec, nBatchLU_temp, tempsize);
-  
+
   for (int i_mb = 0; i_mb < tempsize; i_mb++) {
     i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
     w_mu_temp[i] = w_mu[i] + u_vec[i];
   }
-  
+
   mu_grad_intersect(y, w_mu_temp, n, nnIndx, nnIndxLU, nnIndxCol,
                     BatchSize, nBatchLU, batch_index,
                     numIndxCol, nnIndxnnCol, cumnumIndxCol, theta, tauSqIndx,
@@ -1442,7 +1442,7 @@ void gamma_gradient_fun_minibatch_nngp(double *y, double *w_mu, double *u_vec,
                     B, F, complement_second_start_indices, complement_second_sizes,
                     final_complement_2_vec,
                     gradient);
-  
+
   for (int i_mb = 0; i_mb < tempsize; i_mb++) {
     i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
     //Rprintf("gamma i is : %i",i);
@@ -1459,21 +1459,21 @@ void gamma_gradient_fun_minibatch_nngp(double *y, double *w_mu, double *u_vec,
       }
       gamma_gradient[i] = sum * epsilon_vec[i] * sqrt(S_vi[i]);
     }
-    
+
   }
-  
+
   for(i = 0; i < BatchSize; i++){
     gamma_gradient[nBatchLU[batch_index] + i] += 1;
   }
-  
-  
+
+
 }
 
-void a_gradient_fun_minibatch_nngp(double *y, double *w_mu, double *u_vec, 
+void a_gradient_fun_minibatch_nngp(double *y, double *w_mu, double *u_vec,
                                    double *epsilon_vec, double *a_gradient, double *A_vi, double *S_vi, int n, int *nnIndxLU_vi, int *nnIndx_vi,
                                    double *B, double *F, int *nnIndx, int *nnIndxLU, double *theta, int tauSqIndx, int *cumnumIndxCol, int *numIndxCol, int *nnIndxCol, int *nnIndxnnCol,
                                    double *gradient, double *w_mu_temp,
-                                   int batch_index, int BatchSize, int *nBatchLU, 
+                                   int batch_index, int BatchSize, int *nBatchLU,
                                    int *final_result_vec, int *nBatchLU_temp, int tempsize,
                                    int *intersect_start_indices, int *intersect_sizes, int* final_intersect_vec,
                                    int *complement_first_start_indices, int *complement_first_sizes, int* final_complement_1_vec,
@@ -1481,38 +1481,38 @@ void a_gradient_fun_minibatch_nngp(double *y, double *w_mu, double *u_vec,
   // similar code as solve_B_F in BRISC package
   double sum;
   int i;
-  
-  
+
+
   update_uvec_minibatch_plus(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi,
                              batch_index, final_result_vec, nBatchLU_temp, tempsize);
-  
+
   for (int i_mb = 0; i_mb < tempsize; i_mb++) {
     i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
     w_mu_temp[i] = w_mu[i] + u_vec[i];
   }
-  
+
   mu_grad_intersect(y, w_mu_temp, n, nnIndx, nnIndxLU, nnIndxCol,
                     BatchSize, nBatchLU, batch_index,
                     numIndxCol, nnIndxnnCol, cumnumIndxCol, theta, tauSqIndx,
                     B, F, intersect_start_indices, intersect_sizes,
                     final_intersect_vec,
                     gradient);
-  
+
   mu_grad_complement_1(y, w_mu_temp, n, nnIndx, nnIndxLU, nnIndxCol,
                        BatchSize, nBatchLU, batch_index,
                        numIndxCol, nnIndxnnCol, cumnumIndxCol, theta, tauSqIndx,
                        B, F, complement_first_start_indices, complement_first_sizes,
                        final_complement_1_vec,
                        gradient);
-  
+
   mu_grad_complement_2(w_mu_temp, n, nnIndx, nnIndxLU, nnIndxCol,
                        BatchSize, nBatchLU, batch_index,
                        numIndxCol, nnIndxnnCol, cumnumIndxCol, theta, tauSqIndx,
                        B, F, complement_second_start_indices, complement_second_sizes,
                        final_complement_2_vec,
                        gradient);
-  
-  
+
+
   for(int i_mb = 0; i_mb < tempsize; i_mb++){
     i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
     if(i>0){
@@ -1522,8 +1522,8 @@ void a_gradient_fun_minibatch_nngp(double *y, double *w_mu, double *u_vec,
       }
     }
   }
-  
-  
+
+
 }
 
 
@@ -1534,8 +1534,8 @@ void product_B_F_minibatch_term1(double *B, double *F, double *residual_nngp,
   int i;
   double sum;
   int i_mb;
-  
-  
+
+
   for (i_mb = 0; i_mb < tempsize; i_mb++) {
     i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
     if(i == 0){norm_residual_nngp[0] = residual_nngp[0]/(F[0]);}else{
@@ -1546,20 +1546,20 @@ void product_B_F_minibatch_term1(double *B, double *F, double *residual_nngp,
       norm_residual_nngp[i] = sum + residual_nngp[i] / (F[i]);
     }
   }
-  
-  
+
+
 }
 
 
-void gamma_gradient_fun_minibatch_test(double *y, double *w_mu_update, 
+void gamma_gradient_fun_minibatch_test(double *y, double *w_mu_update,
                                        double *w_vec_temp_dF, double *w_vec_temp2,
-                                       double *u_vec, double *epsilon_vec, double *gamma_gradient, 
+                                       double *u_vec, double *epsilon_vec, double *gamma_gradient,
                                        double *A_vi, double *S_vi, int n, int *nnIndxLU_vi, int *nnIndx_vi,
-                                       double *B, double *F, int *nnIndx, int *nnIndxLU, double *theta, int tauSqIndx, 
+                                       double *B, double *F, int *nnIndx, int *nnIndxLU, double *theta, int tauSqIndx,
                                        int *cumnumIndxCol, int *numIndxCol, int *nnIndxCol, int *nnIndxnnCol,
                                        int *cumnumIndxCol_vi, int *numIndxCol_vi, int *nnIndxCol_vi, int *nnIndxnnCol_vi,
                                        double *u_vec_temp, double *u_vec_temp2, double *u_vec_temp_dF, double *gradient,
-                                       int batch_index, int BatchSize, int *nBatchLU, 
+                                       int batch_index, int BatchSize, int *nBatchLU,
                                        int *final_result_vec, int *nBatchLU_temp, int tempsize,
                                        int *intersect_start_indices, int *intersect_sizes, int* final_intersect_vec,
                                        int *complement_first_start_indices, int *complement_first_sizes, int* final_complement_1_vec,
@@ -1568,38 +1568,38 @@ void gamma_gradient_fun_minibatch_test(double *y, double *w_mu_update,
   double sum;
   int i_mb;
   int i;
-  
-  
+
+
   update_uvec_minibatch_plus(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi,
                              batch_index, final_result_vec, nBatchLU_temp, tempsize);
-  
+
   zeros(u_vec_temp, n);
   zeros(u_vec_temp_dF, n);
   zeros(u_vec_temp2, n);
-  
+
   product_B_F_minibatch_plus(B, F, u_vec, n, nnIndxLU, nnIndx, u_vec_temp, batch_index, final_result_vec, nBatchLU_temp, tempsize);
   product_B_F_vec_minibatch_plus_fix(B, F, u_vec_temp, n, nnIndxLU, nnIndx, u_vec_temp2, cumnumIndxCol, numIndxCol, nnIndxCol, nnIndxnnCol, BatchSize, nBatchLU, batch_index, final_result_vec, nBatchLU_temp, tempsize);
   product_B_F_minibatch_term1(B, F, u_vec, n, nnIndxLU, nnIndx, u_vec_temp_dF, batch_index, final_result_vec, nBatchLU_temp, tempsize);
-  
+
   //double *gradient = (double *) R_alloc(n, sizeof(double));
   for (i_mb = 0; i_mb < intersect_sizes[batch_index]; i_mb++) {
     i = final_intersect_vec[intersect_start_indices[batch_index] + i_mb];
     gradient[i] =  - u_vec_temp2[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp2[i];
   }
-  
+
   for (i_mb = 0; i_mb < complement_first_sizes[batch_index]; i_mb++) {
     i = final_complement_1_vec[complement_first_start_indices[batch_index] + i_mb];
     gradient[i] =  - u_vec_temp_dF[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp_dF[i];
     //gradient[i] =  - u_vec_temp2[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp2[i];
-  }  
-  
+  }
+
   for (i_mb = 0; i_mb < complement_second_sizes[batch_index]; i_mb++) {
     i = final_complement_2_vec[complement_second_start_indices[batch_index] + i_mb];
     gradient[i] = - u_vec_temp2[i] + u_vec_temp_dF[i] - w_vec_temp2[i] + w_vec_temp_dF[i];
     //gradient[i] =  - u_vec_temp2[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp2[i];
   }
-  
-  
+
+
   for (int i_mb = 0; i_mb < tempsize; i_mb++) {
     i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
     if(i == (n-1)){
@@ -1613,28 +1613,28 @@ void gamma_gradient_fun_minibatch_test(double *y, double *w_mu_update,
       }
       gamma_gradient[i] = sum * epsilon_vec[i] * sqrt(S_vi[i]) ;
     }
-    
+
   }
-  
+
   // for (int i_mb = 0; i_mb < tempsize; i_mb++) {
   //   i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
   //   gamma_gradient[i] += 1;
-  // }  
+  // }
   for(i = 0; i < BatchSize; i++){
     gamma_gradient[nBatchLU[batch_index] + i] += 1;
   }
-  
-  
+
+
 }
 
 void a_gradient_fun_minibatch_test(double *y, double *w_mu_update,
-                                   double *w_vec_temp_dF, double *w_vec_temp2, 
-                                   double *u_vec, double *epsilon_vec, double *a_gradient, double *gradient_const, 
+                                   double *w_vec_temp_dF, double *w_vec_temp2,
+                                   double *u_vec, double *epsilon_vec, double *a_gradient, double *gradient_const,
                                    double *A_vi, double *S_vi, int n, int *nnIndxLU_vi, int *nnIndx_vi,
-                                   double *B, double *F, int *nnIndx, int *nnIndxLU, double *theta, int tauSqIndx, 
+                                   double *B, double *F, int *nnIndx, int *nnIndxLU, double *theta, int tauSqIndx,
                                    int *cumnumIndxCol, int *numIndxCol, int *nnIndxCol, int *nnIndxnnCol,
                                    double *u_vec_temp, double *u_vec_temp2, double *u_vec_temp_dF, double *gradient,
-                                   int batch_index, int BatchSize, int *nBatchLU, 
+                                   int batch_index, int BatchSize, int *nBatchLU,
                                    int *final_result_vec, int *nBatchLU_temp, int tempsize,
                                    int *intersect_start_indices, int *intersect_sizes, int* final_intersect_vec,
                                    int *complement_first_start_indices, int *complement_first_sizes, int* final_complement_1_vec,
@@ -1642,37 +1642,37 @@ void a_gradient_fun_minibatch_test(double *y, double *w_mu_update,
   // similar code as solve_B_F in BRISC package
   double sum;
   int i, i_mb;
-  
-  
+
+
   update_uvec_minibatch_plus(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi,
                              batch_index, final_result_vec, nBatchLU_temp, tempsize);
-  
+
   zeros(u_vec_temp, n);
   zeros(u_vec_temp_dF, n);
   zeros(u_vec_temp2, n);
-  
+
   product_B_F_minibatch_plus(B, F, u_vec, n, nnIndxLU, nnIndx, u_vec_temp, batch_index, final_result_vec, nBatchLU_temp, tempsize);
   product_B_F_vec_minibatch_plus_fix(B, F, u_vec_temp, n, nnIndxLU, nnIndx, u_vec_temp2, cumnumIndxCol, numIndxCol, nnIndxCol, nnIndxnnCol, BatchSize, nBatchLU, batch_index, final_result_vec, nBatchLU_temp, tempsize);
   product_B_F_minibatch_term1(B, F, u_vec, n, nnIndxLU, nnIndx, u_vec_temp_dF, batch_index, final_result_vec, nBatchLU_temp, tempsize);
-  
+
   //double *gradient = (double *) R_alloc(n, sizeof(double));
   for (i_mb = 0; i_mb < intersect_sizes[batch_index]; i_mb++) {
     i = final_intersect_vec[intersect_start_indices[batch_index] + i_mb];
     gradient[i] =  - u_vec_temp2[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp2[i];
   }
-  
+
   for (i_mb = 0; i_mb < complement_first_sizes[batch_index]; i_mb++) {
     i = final_complement_1_vec[complement_first_start_indices[batch_index] + i_mb];
     gradient[i] =  - u_vec_temp_dF[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp_dF[i];
     //gradient[i] =  - u_vec_temp2[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp2[i];
-  }  
-  
+  }
+
   for (i_mb = 0; i_mb < complement_second_sizes[batch_index]; i_mb++) {
     i = final_complement_2_vec[complement_second_start_indices[batch_index] + i_mb];
     gradient[i] = - u_vec_temp2[i] + u_vec_temp_dF[i] - w_vec_temp2[i] + w_vec_temp_dF[i];
     //gradient[i] =  - u_vec_temp2[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp2[i];
   }
-  
+
   for(int i_mb = 0; i_mb < tempsize; i_mb++){
     i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
     if(i>0){
@@ -1681,20 +1681,20 @@ void a_gradient_fun_minibatch_test(double *y, double *w_mu_update,
       }
     }
   }
-  
-  
+
+
 }
 
 
-void gamma_gradient_fun_minibatch_beta(double *y, double *X, double *beta, int p, double *w_mu_update, 
+void gamma_gradient_fun_minibatch_beta(double *y, double *X, double *beta, int p, double *w_mu_update,
                                        double *w_vec_temp_dF, double *w_vec_temp2,
-                                       double *u_vec, double *epsilon_vec, double *gamma_gradient, 
+                                       double *u_vec, double *epsilon_vec, double *gamma_gradient,
                                        double *A_vi, double *S_vi, int n, int *nnIndxLU_vi, int *nnIndx_vi,
-                                       double *B, double *F, int *nnIndx, int *nnIndxLU, double *theta, int tauSqIndx, 
+                                       double *B, double *F, int *nnIndx, int *nnIndxLU, double *theta, int tauSqIndx,
                                        int *cumnumIndxCol, int *numIndxCol, int *nnIndxCol, int *nnIndxnnCol,
                                        int *cumnumIndxCol_vi, int *numIndxCol_vi, int *nnIndxCol_vi, int *nnIndxnnCol_vi,
                                        double *u_vec_temp, double *u_vec_temp2, double *u_vec_temp_dF, double *gradient,
-                                       int batch_index, int BatchSize, int *nBatchLU, 
+                                       int batch_index, int BatchSize, int *nBatchLU,
                                        int *final_result_vec, int *nBatchLU_temp, int tempsize,
                                        int *intersect_start_indices, int *intersect_sizes, int* final_intersect_vec,
                                        int *complement_first_start_indices, int *complement_first_sizes, int* final_complement_1_vec,
@@ -1704,37 +1704,37 @@ void gamma_gradient_fun_minibatch_beta(double *y, double *X, double *beta, int p
   int i_mb;
   int i;
   const int inc = 1;
-  
+
   update_uvec_minibatch_plus(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi,
                              batch_index, final_result_vec, nBatchLU_temp, tempsize);
-  
+
   zeros(u_vec_temp, n);
   zeros(u_vec_temp_dF, n);
   zeros(u_vec_temp2, n);
-  
+
   product_B_F_minibatch_plus(B, F, u_vec, n, nnIndxLU, nnIndx, u_vec_temp, batch_index, final_result_vec, nBatchLU_temp, tempsize);
   product_B_F_vec_minibatch_plus_fix(B, F, u_vec_temp, n, nnIndxLU, nnIndx, u_vec_temp2, cumnumIndxCol, numIndxCol, nnIndxCol, nnIndxnnCol, BatchSize, nBatchLU, batch_index, final_result_vec, nBatchLU_temp, tempsize);
   product_B_F_minibatch_term1(B, F, u_vec, n, nnIndxLU, nnIndx, u_vec_temp_dF, batch_index, final_result_vec, nBatchLU_temp, tempsize);
-  
+
   //double *gradient = (double *) R_alloc(n, sizeof(double));
   for (i_mb = 0; i_mb < intersect_sizes[batch_index]; i_mb++) {
     i = final_intersect_vec[intersect_start_indices[batch_index] + i_mb];
     gradient[i] =  - u_vec_temp2[i] + (y[i] - F77_NAME(ddot)(&p, &X[i], &n, beta, &inc) - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp2[i];
   }
-  
+
   for (i_mb = 0; i_mb < complement_first_sizes[batch_index]; i_mb++) {
     i = final_complement_1_vec[complement_first_start_indices[batch_index] + i_mb];
     gradient[i] =  - u_vec_temp_dF[i] + (y[i] - F77_NAME(ddot)(&p, &X[i], &n, beta, &inc) - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp_dF[i];
     //gradient[i] =  - u_vec_temp2[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp2[i];
-  }  
-  
+  }
+
   for (i_mb = 0; i_mb < complement_second_sizes[batch_index]; i_mb++) {
     i = final_complement_2_vec[complement_second_start_indices[batch_index] + i_mb];
     gradient[i] = - u_vec_temp2[i] + u_vec_temp_dF[i] - w_vec_temp2[i] + w_vec_temp_dF[i];
     //gradient[i] =  - u_vec_temp2[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp2[i];
   }
-  
-  
+
+
   for (int i_mb = 0; i_mb < tempsize; i_mb++) {
     i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
     if(i == (n-1)){
@@ -1748,28 +1748,28 @@ void gamma_gradient_fun_minibatch_beta(double *y, double *X, double *beta, int p
       }
       gamma_gradient[i] = sum * epsilon_vec[i] * sqrt(S_vi[i]) ;
     }
-    
+
   }
-  
+
   // for (int i_mb = 0; i_mb < tempsize; i_mb++) {
   //   i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
   //   gamma_gradient[i] += 1;
-  // }  
+  // }
   for(i = 0; i < BatchSize; i++){
     gamma_gradient[nBatchLU[batch_index] + i] += 1;
   }
-  
-  
+
+
 }
 
 void a_gradient_fun_minibatch_beta(double *y, double *X, double *beta, int p, double *w_mu_update,
-                                   double *w_vec_temp_dF, double *w_vec_temp2, 
-                                   double *u_vec, double *epsilon_vec, double *a_gradient, double *gradient_const, 
+                                   double *w_vec_temp_dF, double *w_vec_temp2,
+                                   double *u_vec, double *epsilon_vec, double *a_gradient, double *gradient_const,
                                    double *A_vi, double *S_vi, int n, int *nnIndxLU_vi, int *nnIndx_vi,
-                                   double *B, double *F, int *nnIndx, int *nnIndxLU, double *theta, int tauSqIndx, 
+                                   double *B, double *F, int *nnIndx, int *nnIndxLU, double *theta, int tauSqIndx,
                                    int *cumnumIndxCol, int *numIndxCol, int *nnIndxCol, int *nnIndxnnCol,
                                    double *u_vec_temp, double *u_vec_temp2, double *u_vec_temp_dF, double *gradient,
-                                   int batch_index, int BatchSize, int *nBatchLU, 
+                                   int batch_index, int BatchSize, int *nBatchLU,
                                    int *final_result_vec, int *nBatchLU_temp, int tempsize,
                                    int *intersect_start_indices, int *intersect_sizes, int* final_intersect_vec,
                                    int *complement_first_start_indices, int *complement_first_sizes, int* final_complement_1_vec,
@@ -1778,36 +1778,36 @@ void a_gradient_fun_minibatch_beta(double *y, double *X, double *beta, int p, do
   double sum;
   int i, i_mb;
   const int inc = 1;
-  
+
   update_uvec_minibatch_plus(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi,
                              batch_index, final_result_vec, nBatchLU_temp, tempsize);
-  
+
   zeros(u_vec_temp, n);
   zeros(u_vec_temp_dF, n);
   zeros(u_vec_temp2, n);
-  
+
   product_B_F_minibatch_plus(B, F, u_vec, n, nnIndxLU, nnIndx, u_vec_temp, batch_index, final_result_vec, nBatchLU_temp, tempsize);
   product_B_F_vec_minibatch_plus_fix(B, F, u_vec_temp, n, nnIndxLU, nnIndx, u_vec_temp2, cumnumIndxCol, numIndxCol, nnIndxCol, nnIndxnnCol, BatchSize, nBatchLU, batch_index, final_result_vec, nBatchLU_temp, tempsize);
   product_B_F_minibatch_term1(B, F, u_vec, n, nnIndxLU, nnIndx, u_vec_temp_dF, batch_index, final_result_vec, nBatchLU_temp, tempsize);
-  
+
   //double *gradient = (double *) R_alloc(n, sizeof(double));
   for (i_mb = 0; i_mb < intersect_sizes[batch_index]; i_mb++) {
     i = final_intersect_vec[intersect_start_indices[batch_index] + i_mb];
     gradient[i] =  - u_vec_temp2[i] + (y[i] - F77_NAME(ddot)(&p, &X[i], &n, beta, &inc) - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp2[i];
   }
-  
+
   for (i_mb = 0; i_mb < complement_first_sizes[batch_index]; i_mb++) {
     i = final_complement_1_vec[complement_first_start_indices[batch_index] + i_mb];
     gradient[i] =  - u_vec_temp_dF[i] + (y[i] - F77_NAME(ddot)(&p, &X[i], &n, beta, &inc) - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp_dF[i];
     //gradient[i] =  - u_vec_temp2[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp2[i];
-  }  
-  
+  }
+
   for (i_mb = 0; i_mb < complement_second_sizes[batch_index]; i_mb++) {
     i = final_complement_2_vec[complement_second_start_indices[batch_index] + i_mb];
     gradient[i] = - u_vec_temp2[i] + u_vec_temp_dF[i] - w_vec_temp2[i] + w_vec_temp_dF[i];
     //gradient[i] =  - u_vec_temp2[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp2[i];
   }
-  
+
   for(int i_mb = 0; i_mb < tempsize; i_mb++){
     i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
     if(i>0){
@@ -1816,21 +1816,21 @@ void a_gradient_fun_minibatch_beta(double *y, double *X, double *beta, int p, do
       }
     }
   }
-  
-  
+
+
 }
 
 
 
-void gamma_gradient_fun_minibatch_all(double *y, double *w_mu_update, 
+void gamma_gradient_fun_minibatch_all(double *y, double *w_mu_update,
                                        double *w_vec_temp_dF, double *w_vec_temp2,
-                                       double *u_vec, double *epsilon_vec, double *gamma_gradient, 
+                                       double *u_vec, double *epsilon_vec, double *gamma_gradient,
                                        double *A_vi, double *S_vi, int n, int *nnIndxLU_vi, int *nnIndx_vi,
-                                       double *B, double *F, int *nnIndx, int *nnIndxLU, double *theta, int tauSqIndx, 
+                                       double *B, double *F, int *nnIndx, int *nnIndxLU, double *theta, int tauSqIndx,
                                        int *cumnumIndxCol, int *numIndxCol, int *nnIndxCol, int *nnIndxnnCol,
                                        int *cumnumIndxCol_vi, int *numIndxCol_vi, int *nnIndxCol_vi, int *nnIndxnnCol_vi,
                                        double *u_vec_temp, double *u_vec_temp2, double *u_vec_temp_dF, double *gradient,
-                                       int batch_index, int BatchSize, int *nBatchLU, 
+                                       int batch_index, int BatchSize, int *nBatchLU,
                                        int *final_result_vec, int *nBatchLU_temp, int tempsize,
                                        int *intersect_start_indices, int *intersect_sizes, int* final_intersect_vec,
                                        int *complement_first_start_indices, int *complement_first_sizes, int* final_complement_1_vec,
@@ -1841,38 +1841,38 @@ void gamma_gradient_fun_minibatch_all(double *y, double *w_mu_update,
   double sum;
   int i_mb;
   int i, end_int;
-  
-  
+
+
   update_uvec_minibatch_plus(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi,
                              batch_index, final_result_vec, nBatchLU_temp, tempsize);
-  
+
   zeros(u_vec_temp, n);
   zeros(u_vec_temp_dF, n);
   zeros(u_vec_temp2, n);
-  
+
   product_B_F_minibatch_plus(B, F, u_vec, n, nnIndxLU, nnIndx, u_vec_temp, batch_index, final_result_vec, nBatchLU_temp, tempsize);
   product_B_F_vec_minibatch_plus(B, F, u_vec_temp, n, nnIndxLU, nnIndx, u_vec_temp2, cumnumIndxCol, numIndxCol, nnIndxCol, nnIndxnnCol, batch_index, final_result_vec, nBatchLU_temp, tempsize);
   product_B_F_minibatch_term1(B, F, u_vec, n, nnIndxLU, nnIndx, u_vec_temp_dF, batch_index, final_result_vec, nBatchLU_temp, tempsize);
-  
+
   //double *gradient = (double *) R_alloc(n, sizeof(double));
   for (i_mb = 0; i_mb < intersect_sizes[batch_index]; i_mb++) {
     i = final_intersect_vec[intersect_start_indices[batch_index] + i_mb];
     gradient[i] =  - u_vec_temp2[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp2[i];
   }
-  
+
   for (i_mb = 0; i_mb < complement_first_sizes[batch_index]; i_mb++) {
     i = final_complement_1_vec[complement_first_start_indices[batch_index] + i_mb];
     gradient[i] =  - u_vec_temp_dF[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp_dF[i];
     //gradient[i] =  - u_vec_temp2[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp2[i];
-  }  
-  
+  }
+
   for (i_mb = 0; i_mb < complement_second_sizes[batch_index]; i_mb++) {
     i = final_complement_2_vec[complement_second_start_indices[batch_index] + i_mb];
     gradient[i] = - u_vec_temp2[i] + u_vec_temp_dF[i] - w_vec_temp2[i] + w_vec_temp_dF[i];
     //gradient[i] =  - u_vec_temp2[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp2[i];
   }
-  
-  
+
+
   for (int i_mb = 0; i_mb < tempsize; i_mb++) {
     i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
     end_int = final_result_vec[nBatchLU_temp[batch_index] + tempsize - 1] + 1;
@@ -1888,7 +1888,7 @@ void gamma_gradient_fun_minibatch_all(double *y, double *w_mu_update,
       // gamma_gradient[i] = sum * epsilon_vec[i] * sqrt(S_vi[i]) ;
       derivative_store_gamma[i] = epsilon_vec[i] * sqrt(S_vi[i]);
       gamma_gradient[i] += gradient[i] * derivative_store_gamma[i];
-      
+
       for(int j = i + 1; j < end_int; j++){
         if(derivative_neighbour[j]>0){
           derivative_store_gamma[j] = derivative_store_gamma[j-1] * derivative_neighbour_a[j];
@@ -1896,28 +1896,28 @@ void gamma_gradient_fun_minibatch_all(double *y, double *w_mu_update,
         }
       }
     }
-    
+
   }
-  
+
   // for (int i_mb = 0; i_mb < tempsize; i_mb++) {
   //   i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
   //   gamma_gradient[i] += 1;
-  // }  
+  // }
   for(i = 0; i < BatchSize; i++){
     gamma_gradient[nBatchLU[batch_index] + i] += 1;
   }
-  
-  
+
+
 }
 
 void a_gradient_fun_minibatch_all(double *y, double *w_mu_update,
-                                   double *w_vec_temp_dF, double *w_vec_temp2, 
-                                   double *u_vec, double *epsilon_vec, double *a_gradient, double *gradient_const, 
+                                   double *w_vec_temp_dF, double *w_vec_temp2,
+                                   double *u_vec, double *epsilon_vec, double *a_gradient, double *gradient_const,
                                    double *A_vi, double *S_vi, int n, int *nnIndxLU_vi, int *nnIndx_vi,
-                                   double *B, double *F, int *nnIndx, int *nnIndxLU, double *theta, int tauSqIndx, 
+                                   double *B, double *F, int *nnIndx, int *nnIndxLU, double *theta, int tauSqIndx,
                                    int *cumnumIndxCol, int *numIndxCol, int *nnIndxCol, int *nnIndxnnCol,
                                    double *u_vec_temp, double *u_vec_temp2, double *u_vec_temp_dF, double *gradient,
-                                   int batch_index, int BatchSize, int *nBatchLU, 
+                                   int batch_index, int BatchSize, int *nBatchLU,
                                    int *final_result_vec, int *nBatchLU_temp, int tempsize,
                                    int *intersect_start_indices, int *intersect_sizes, int* final_intersect_vec,
                                    int *complement_first_start_indices, int *complement_first_sizes, int* final_complement_1_vec,
@@ -1926,37 +1926,37 @@ void a_gradient_fun_minibatch_all(double *y, double *w_mu_update,
   // similar code as solve_B_F in BRISC package
   double sum;
   int i, i_mb, end_int;
-  
-  
+
+
   update_uvec_minibatch_plus(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi,
                              batch_index, final_result_vec, nBatchLU_temp, tempsize);
-  
+
   zeros(u_vec_temp, n);
   zeros(u_vec_temp_dF, n);
   zeros(u_vec_temp2, n);
-  
+
   product_B_F_minibatch_plus(B, F, u_vec, n, nnIndxLU, nnIndx, u_vec_temp, batch_index, final_result_vec, nBatchLU_temp, tempsize);
   product_B_F_vec_minibatch_plus(B, F, u_vec_temp, n, nnIndxLU, nnIndx, u_vec_temp2, cumnumIndxCol, numIndxCol, nnIndxCol, nnIndxnnCol, batch_index, final_result_vec, nBatchLU_temp, tempsize);
   product_B_F_minibatch_term1(B, F, u_vec, n, nnIndxLU, nnIndx, u_vec_temp_dF, batch_index, final_result_vec, nBatchLU_temp, tempsize);
-  
+
   //double *gradient = (double *) R_alloc(n, sizeof(double));
   for (i_mb = 0; i_mb < intersect_sizes[batch_index]; i_mb++) {
     i = final_intersect_vec[intersect_start_indices[batch_index] + i_mb];
     gradient[i] =  - u_vec_temp2[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp2[i];
   }
-  
+
   for (i_mb = 0; i_mb < complement_first_sizes[batch_index]; i_mb++) {
     i = final_complement_1_vec[complement_first_start_indices[batch_index] + i_mb];
     gradient[i] =  - u_vec_temp_dF[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp_dF[i];
     //gradient[i] =  - u_vec_temp2[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp2[i];
-  }  
-  
+  }
+
   for (i_mb = 0; i_mb < complement_second_sizes[batch_index]; i_mb++) {
     i = final_complement_2_vec[complement_second_start_indices[batch_index] + i_mb];
     gradient[i] = - u_vec_temp2[i] + u_vec_temp_dF[i] - w_vec_temp2[i] + w_vec_temp_dF[i];
     //gradient[i] =  - u_vec_temp2[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp2[i];
   }
-  
+
   for(int i_mb = 0; i_mb < tempsize; i_mb++){
     i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
     end_int = final_result_vec[nBatchLU_temp[batch_index] + tempsize - 1] + 1;
@@ -1964,14 +1964,14 @@ void a_gradient_fun_minibatch_all(double *y, double *w_mu_update,
       // for (int l = 0; l < nnIndxLU_vi[n + i]; l++) {
       //   a_gradient[nnIndxLU_vi[i] + l] = u_vec[nnIndx_vi[nnIndxLU_vi[i] + l]] * (gradient[i]);
       // }
-      
+
       int num_m_vi_k = nnIndxLU_vi[n + i];
       for(int l = 0; l < nnIndxLU_vi[n + i]; l++){
         derivative_store[(i)*num_m_vi_k+l] = u_vec[nnIndx_vi[nnIndxLU_vi[i] + l]];
         a_gradient[nnIndxLU_vi[i] + l] += derivative_store[(i)*num_m_vi_k+l] * (gradient[i]);
       }
-      
-      
+
+
       for(int j = i+1; j < end_int; j++){
         if(derivative_neighbour[j]>0){
           for(int l = 0; l < nnIndxLU_vi[n + i]; l++){
@@ -1980,7 +1980,7 @@ void a_gradient_fun_minibatch_all(double *y, double *w_mu_update,
           }
         }
       }
-      
+
     }if(i == n-1){
       int num_m_vi_k = nnIndxLU_vi[n + n - 1];
       for(int l = 0; l < nnIndxLU_vi[n + n - 1]; l++){
@@ -1989,8 +1989,8 @@ void a_gradient_fun_minibatch_all(double *y, double *w_mu_update,
       }
     }
   }
-  
-  
+
+
 }
 
 
@@ -2000,7 +2000,7 @@ void MFA_sigmasq_grad_term1(int n, int *nnIndx, int *nnIndxLU, int *nnIndxCol,
                             double *theta, int tauSqIndx,
                             double *B, double *F, int *final_result_vec, int *nBatchLU_temp, int tempsize,
                             double *gradient_sigmasq_temp) {
-  
+
   int i;
   double sum;
   int i_mb;
@@ -2027,7 +2027,7 @@ void MFA_sigmasq_grad_term1(int n, int *nnIndx, int *nnIndxLU, int *nnIndxCol,
     // Rprintf("\n");
     gradient_sigmasq_temp[i] =  sum3;
   }
-  
+
 }
 
 
@@ -2040,7 +2040,7 @@ void MFA_sigmasq_grad(double *MFA_sigmasq_grad_vec, double *gradient_sigmasq_tem
                       int *intersect_start_indices, int *intersect_sizes, int* final_intersect_vec,
                       int *complement_first_start_indices, int *complement_first_sizes, int* final_complement_1_vec,
                       int *complement_second_start_indices, int *complement_second_sizes, int* final_complement_2_vec){
-  
+
   int i_mb, i;
   // Rprintf("intersect: ");
   for (i_mb = 0; i_mb < intersect_sizes[batch_index]; i_mb++) {
@@ -2055,8 +2055,8 @@ void MFA_sigmasq_grad(double *MFA_sigmasq_grad_vec, double *gradient_sigmasq_tem
     // Rprintf("%i ",i);
     MFA_sigmasq_grad_vec[i] =  (1/sigma_sq[i] - 1/theta[tauSqIndx] - 1/F[i]) * 0.5 * sigma_sq[i];
     //MFA_sigmasq_grad_vec[i] = (1/sigma_sq[i] - 1/theta[tauSqIndx] - 1/F[i] - gradient_sigmasq_temp[i]) * 0.5;
-    
-  }  
+
+  }
   // Rprintf("\n");
   // Rprintf("complement_second: ");
   for (i_mb = 0; i_mb < complement_second_sizes[batch_index]; i_mb++) {
@@ -2066,7 +2066,7 @@ void MFA_sigmasq_grad(double *MFA_sigmasq_grad_vec, double *gradient_sigmasq_tem
     //MFA_sigmasq_grad_vec[i] = (1/sigma_sq[i] - 1/theta[tauSqIndx] - 1/F[i] - gradient_sigmasq_temp[i]) * 0.5;
   }
   // Rprintf("\n");
-  
+
 }
 
 void product_B_F_minibatch_dF(double *B, double *F, double *residual_nngp,
@@ -2075,8 +2075,8 @@ void product_B_F_minibatch_dF(double *B, double *F, double *residual_nngp,
   int i;
   double sum;
   int i_mb;
-  
-  
+
+
   for (i_mb = 0; i_mb < BatchSize; i_mb++) {
     i = nBatchLU[batch_index] + i_mb;
     if(i == 0){norm_residual_nngp[0] = residual_nngp[0]/(F[0]);}else{
@@ -2087,8 +2087,8 @@ void product_B_F_minibatch_dF(double *B, double *F, double *residual_nngp,
       norm_residual_nngp[i] = sum + residual_nngp[i] / (F[i]);
     }
   }
-  
-  
+
+
 }
 
 
@@ -2101,13 +2101,13 @@ void mu_grad_intersect_fix(double *y, double *w_mu,
                        int *intersect_start_indices, int *intersect_sizes,
                        int* final_intersect_vec,
                        double *gradient_mu_temp) {
-  
+
   int i;
   double sum;
   int i_mb;
   int ini_point = nBatchLU[batch_index] - 1;
   int end_point = nBatchLU[batch_index] + BatchSize;
-  
+
   int i_l;
   double sum1, sum2, sum3;
   // Rprintf("w mu intersect: \n");
@@ -2131,7 +2131,7 @@ void mu_grad_intersect_fix(double *y, double *w_mu,
         // l is the lth that the i is whose neighbor
         // transfer to i_l
         i_l = nnIndxnnCol[cumnumIndxCol[i] - i + l];
-        
+
         if(i_l < end_point & i_l > ini_point){
           // Rprintf("%i ",i_l);
           sum2 = w_mu[i_l];
@@ -2139,7 +2139,7 @@ void mu_grad_intersect_fix(double *y, double *w_mu,
             sum2 = sum2 - B[nnIndxLU[i_l] + k] * w_mu[nnIndx[nnIndxLU[i_l] + k]];
             // Rprintf("B at %i * w at %i \n",nnIndxLU[i_l] + k,nnIndx[nnIndxLU[i_l] + k]);
           }
-          
+
           sum2 = sum2*B[ nnIndxCol[ 1 + cumnumIndxCol[i] + l] ]/F[i_l];
           // Rprintf("times B at %i \n", nnIndxCol[ 1 + cumnumIndxCol[i] + l] );
           sum3 += sum2;
@@ -2150,7 +2150,7 @@ void mu_grad_intersect_fix(double *y, double *w_mu,
     // Rprintf("\n");
     gradient_mu_temp[i] = (y[i] - w_mu[i])/theta[tauSqIndx] - sum1 + sum3;
   }
-  
+
 }
 
 void mu_grad_complement_1_fix(double *y, double *w_mu,
@@ -2162,7 +2162,7 @@ void mu_grad_complement_1_fix(double *y, double *w_mu,
                           int *complement_first_start_indices, int *complement_first_sizes,
                           int* final_complement_1_vec,
                           double *gradient_mu_temp) {
-  
+
   int i;
   double sum;
   int i_mb;
@@ -2181,8 +2181,8 @@ void mu_grad_complement_1_fix(double *y, double *w_mu,
       }
     }
     sum1 = sum1/F[i];
-    
-    
+
+
     gradient_mu_temp[i] =  (y[i] - w_mu[i])/theta[tauSqIndx] - sum1;
   }
   // Rprintf("\n");
@@ -2197,7 +2197,7 @@ void mu_grad_complement_2_fix(double *w_mu,
                           int *complement_second_start_indices, int *complement_second_sizes,
                           int* final_complement_2_vec,
                           double *gradient_mu_temp) {
-  
+
   int i;
   double sum;
   int i_mb;
@@ -2222,14 +2222,14 @@ void mu_grad_complement_2_fix(double *w_mu,
           for (int k = 0; k < nnIndxLU[n + i_l]; k++) {
             sum2 = sum2 - B[nnIndxLU[i_l] + k] * w_mu[nnIndx[nnIndxLU[i_l] + k]];
           }
-          
+
           sum2 = sum2*B[ nnIndxCol[ 1 + cumnumIndxCol[i] + l] ]/F[i_l];
           sum3 += sum2;
         }
 
       }
     }
-    
+
     gradient_mu_temp[i] =  sum3;
   }
   // Rprintf("\n");
@@ -2247,13 +2247,13 @@ void product_B_F_vec_minibatch_plus_fix(double *B, double *F, double *input_vec,
   int i_l;
   int ini_point = nBatchLU[batch_index] - 1;
   int end_point = nBatchLU[batch_index] + BatchSize;
-  
+
   // for(i_mb = 0; i_mb < BatchSize; i_mb++){
   //   i = nBatchLU[batch_index] + i_mb;
   //   input_vec[i] = input_vec[i]/sqrt(F[i]);
   // }
-  
-  
+
+
   for (i_mb = 0; i_mb < tempsize; i_mb++) {
     i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
     if(i == (n-1)){output_vec[n-1] = input_vec[n-1]/sqrt(F[n-1]);}else{
@@ -2263,14 +2263,14 @@ void product_B_F_vec_minibatch_plus_fix(double *B, double *F, double *input_vec,
           i_l = nnIndxnnCol[cumnumIndxCol[i] - i + l];
           if(i_l < end_point & i_l > ini_point){
             sum = sum - B[ nnIndxCol[ 1 + cumnumIndxCol[i] + l] ] * input_vec[nnIndxnnCol[cumnumIndxCol[i] - i + l]] / sqrt(F[nnIndxnnCol[cumnumIndxCol[i] - i + l]]);
-            
+
           }
         }
       }
       output_vec[i] = sum + input_vec[i]/sqrt(F[i]);
     }
   }
-  
+
 }
 
 
@@ -2282,35 +2282,35 @@ void shuffleArray(int *array, int n) {
     array[i] = array[j];
     array[j] = temp;
   }
-  
+
 }
 
 
-void find_set_nngp_shuffle(int *shuffle_array, int n, int *nnIndx, int *nnIndxLU, 
+void find_set_nngp_shuffle(int *shuffle_array, int n, int *nnIndx, int *nnIndxLU,
                            int BatchSize, int *nBatchLU, int batch_index,
                            int *seen_values,
                            int *intersect_result, int *intersect_sizes, int *intersect_start_indices,
                            int *complement_first_result, int *complement_first_sizes, int *complement_first_start_indices,
                            int *complement_second_result, int *complement_second_sizes, int *complement_second_start_indices,
                            int &intersect_result_index, int &complement_first_result_index, int &complement_second_result_index) {
-  
+
   int current_intersect_size = 0;
   int current_complement_first_size = 0;
   int current_complement_second_size = 0;
   zeros_int(seen_values, n);
-  
+
   // First, mark the elements of the first set
   for (int i = 0; i < BatchSize; ++i) {
     int val = shuffle_array[nBatchLU[batch_index] + i]; // Using shuffled value directly
     seen_values[val] = 1; // Mark as seen in the first set
   }
-  
+
   // Second, go through the elements of the second set and determine intersection and complements
   for (int i_mb = 0; i_mb < BatchSize; i_mb++) {
     int i = shuffle_array[nBatchLU[batch_index] + i_mb];
     for (int l = 0; l < nnIndxLU[n + i]; l++) {
       int new_index = nnIndx[nnIndxLU[i] + l];
-      
+
       if (seen_values[new_index] == 0) { // If not seen in the first set
         // Add to complement of second set if it's not already added
         if (seen_values[new_index] != 2) {
@@ -2326,31 +2326,31 @@ void find_set_nngp_shuffle(int *shuffle_array, int n, int *nnIndx, int *nnIndxLU
       }
     }
   }
-  
+
   // Now determine the complement of the first set
   for (int i = 0; i < BatchSize; ++i) {
-    int val = shuffle_array[nBatchLU[batch_index] + i]; 
-    
+    int val = shuffle_array[nBatchLU[batch_index] + i];
+
     // If only in the first set, it's part of the complement of the first set
     if (seen_values[val] == 1) {
       complement_first_result[complement_first_result_index + current_complement_first_size++] = val;
     }
   }
-  
+
   // Sort each set
   qsort(intersect_result + intersect_result_index, current_intersect_size, sizeof(int), compare_ints);
   qsort(complement_first_result + complement_first_result_index, current_complement_first_size, sizeof(int), compare_ints);
   qsort(complement_second_result + complement_second_result_index, current_complement_second_size, sizeof(int), compare_ints);
-  
+
   // Update indices and sizes
   intersect_start_indices[batch_index] = intersect_result_index;
   intersect_sizes[batch_index] = current_intersect_size;
   intersect_result_index += current_intersect_size;
-  
+
   complement_first_start_indices[batch_index] = complement_first_result_index;
   complement_first_sizes[batch_index] = current_complement_first_size;
   complement_first_result_index += current_complement_first_size;
-  
+
   complement_second_start_indices[batch_index] = complement_second_result_index; // Should point to the start of this batch's segment
   complement_second_sizes[batch_index] = current_complement_second_size;
   complement_second_result_index += current_complement_second_size; // Should accumulate the size
@@ -2361,18 +2361,18 @@ void find_set_mb_shuffle(int *shuffle_array, // Added shuffled_array parameter
                          int n, int *nnIndx, int *nnIndxLU, int *nnIndxCol,
                  int *numIndxCol, int *nnIndxnnCol, int *cumnumIndxCol,
                  int BatchSize, int *nBatchLU, int batch_index,
-                 int *result_arr, int &result_index, int *temp_arr, 
+                 int *result_arr, int &result_index, int *temp_arr,
                  int &temp_index, int *tempsize_vec, int *seen_values) {
-  
+
   temp_index = 0; // Clear the temporary array
-  
+
   // Populate temp_arr and seen_values for the current batch_index using shuffle_array
   for (int i_mb = 0; i_mb < BatchSize; i_mb++) {
     int val = shuffle_array[nBatchLU[batch_index] + i_mb]; // Use shuffled index
     temp_arr[temp_index++] = val;
     seen_values[val] = 1;
   }
-  
+
   for (int i_mb = 0; i_mb < BatchSize; i_mb++) {
     int i = shuffle_array[nBatchLU[batch_index] + i_mb]; // Use shuffled index
     for (int l = 0; l < nnIndxLU[n + i]; l++) {
@@ -2383,12 +2383,12 @@ void find_set_mb_shuffle(int *shuffle_array, // Added shuffled_array parameter
       }
     }
   }
-  
+
   tempsize_vec[batch_index] = temp_index;
   qsort(temp_arr, temp_index, sizeof(int), [](const void *a, const void *b) {
     return (*(int*)a - *(int*)b);
   });
-  
+
   // Append temp_arr to result_arr
   for (int i = 0; i < temp_index; i++) {
     result_arr[result_index++] = temp_arr[i];
@@ -2406,14 +2406,14 @@ bool isValueInArraySubset(int value, int *array, int startIndex, int endIndex) {
 
 
 void update_inFlags(int *shuffle_array, int *inFlags, int nm,
-                    int n, int *nnIndxLU, int *nnIndx, 
+                    int n, int *nnIndxLU, int *nnIndx,
                     int *cumnumIndxCol, int *numIndxCol, int *nnIndxCol, int *nnIndxnnCol,
                     int BatchSize, int *nBatchLU, int batch_index,
                     int *final_result_vec, int *nBatchLU_temp, int tempsize) {
   int i, i_mb, i_l;
   int ini_point = nBatchLU[batch_index];
   int end_point = ini_point + BatchSize;
-  
+
   // Iterate over each element in final_result_vec
   for (i_mb = 0; i_mb < tempsize; i_mb++) {
     i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
@@ -2441,13 +2441,13 @@ void product_B_F_vec_minibatch_plus_shuffle(int *shuffle_array, int *inFlags, in
   int i_l;
   int ini_point = nBatchLU[batch_index] ;
   int end_point = nBatchLU[batch_index] + BatchSize;
-  
+
   // for(i_mb = 0; i_mb < BatchSize; i_mb++){
   //   i = nBatchLU[batch_index] + i_mb;
   //   input_vec[i] = input_vec[i]/sqrt(F[i]);
   // }
-  
-  
+
+
   for (i_mb = 0; i_mb < tempsize; i_mb++) {
     i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
     if(i == (n-1)){output_vec[n-1] = input_vec[n-1]/sqrt(F[n-1]);}else{
@@ -2459,14 +2459,14 @@ void product_B_F_vec_minibatch_plus_shuffle(int *shuffle_array, int *inFlags, in
           //Rprintf("i_l %i at bool is: %i \n",i_l, inFlags[nm*batch_index + nnIndxCol[ 1 + cumnumIndxCol[i] + l]]);
           if(inFlags[nm*batch_index + nnIndxCol[ 1 + cumnumIndxCol[i] + l]] ){
             sum = sum - B[ nnIndxCol[ 1 + cumnumIndxCol[i] + l] ] * input_vec[nnIndxnnCol[cumnumIndxCol[i] - i + l]] / sqrt(F[nnIndxnnCol[cumnumIndxCol[i] - i + l]]);
-            
+
           }
         }
       }
       output_vec[i] = sum + input_vec[i]/sqrt(F[i]);
     }
   }
-  
+
 }
 
 
@@ -2477,7 +2477,7 @@ void MFA_sigmasq_grad_term1_shuffle(int *shuffle_array, int *inFlags, int nm,
                             double *theta, int tauSqIndx,
                             double *B, double *F, int *final_result_vec, int *nBatchLU_temp, int tempsize,
                             double *gradient_sigmasq_temp) {
-  
+
   int i;
   double sum;
   int i_mb;
@@ -2504,20 +2504,20 @@ void MFA_sigmasq_grad_term1_shuffle(int *shuffle_array, int *inFlags, int nm,
     // Rprintf("\n");
     gradient_sigmasq_temp[i] =  sum3;
   }
-  
+
 }
 
 
 void gamma_gradient_fun_minibatch_shuffle(int *shuffle_array, int *inFlags, int nm,
-                                          double *y, double *w_mu_update, 
+                                          double *y, double *w_mu_update,
                                        double *w_vec_temp_dF, double *w_vec_temp2,
-                                       double *u_vec, double *epsilon_vec, double *gamma_gradient, 
+                                       double *u_vec, double *epsilon_vec, double *gamma_gradient,
                                        double *A_vi, double *S_vi, int n, int *nnIndxLU_vi, int *nnIndx_vi,
-                                       double *B, double *F, int *nnIndx, int *nnIndxLU, double *theta, int tauSqIndx, 
+                                       double *B, double *F, int *nnIndx, int *nnIndxLU, double *theta, int tauSqIndx,
                                        int *cumnumIndxCol, int *numIndxCol, int *nnIndxCol, int *nnIndxnnCol,
                                        int *cumnumIndxCol_vi, int *numIndxCol_vi, int *nnIndxCol_vi, int *nnIndxnnCol_vi,
                                        double *u_vec_temp, double *u_vec_temp2, double *u_vec_temp_dF, double *gradient,
-                                       int batch_index, int BatchSize, int *nBatchLU, 
+                                       int batch_index, int BatchSize, int *nBatchLU,
                                        int *final_result_vec, int *nBatchLU_temp, int tempsize,
                                        int *intersect_start_indices, int *intersect_sizes, int* final_intersect_vec,
                                        int *complement_first_start_indices, int *complement_first_sizes, int* final_complement_1_vec,
@@ -2526,40 +2526,40 @@ void gamma_gradient_fun_minibatch_shuffle(int *shuffle_array, int *inFlags, int 
   double sum;
   int i_mb;
   int i;
-  
-  
+
+
   update_uvec_minibatch_plus(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi,
                              batch_index, final_result_vec, nBatchLU_temp, tempsize);
-  
+
   zeros(u_vec_temp, n);
   zeros(u_vec_temp_dF, n);
   zeros(u_vec_temp2, n);
-  
+
   product_B_F_minibatch_plus(B, F, u_vec, n, nnIndxLU, nnIndx, u_vec_temp, batch_index, final_result_vec, nBatchLU_temp, tempsize);
   //product_B_F_vec_minibatch_plus_fix(B, F, u_vec_temp, n, nnIndxLU, nnIndx, u_vec_temp2, cumnumIndxCol, numIndxCol, nnIndxCol, nnIndxnnCol, BatchSize, nBatchLU, batch_index, final_result_vec, nBatchLU_temp, tempsize);
   product_B_F_vec_minibatch_plus_shuffle(shuffle_array , inFlags, nm, B, F, u_vec_temp, n, nnIndxLU, nnIndx, u_vec_temp2, cumnumIndxCol, numIndxCol, nnIndxCol, nnIndxnnCol, BatchSize, nBatchLU, batch_index, final_result_vec, nBatchLU_temp, tempsize);
-  
+
   product_B_F_minibatch_term1(B, F, u_vec, n, nnIndxLU, nnIndx, u_vec_temp_dF, batch_index, final_result_vec, nBatchLU_temp, tempsize);
-  
+
   //double *gradient = (double *) R_alloc(n, sizeof(double));
   for (i_mb = 0; i_mb < intersect_sizes[batch_index]; i_mb++) {
     i = final_intersect_vec[intersect_start_indices[batch_index] + i_mb];
     gradient[i] =  - u_vec_temp2[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp2[i];
   }
-  
+
   for (i_mb = 0; i_mb < complement_first_sizes[batch_index]; i_mb++) {
     i = final_complement_1_vec[complement_first_start_indices[batch_index] + i_mb];
     gradient[i] =  - u_vec_temp_dF[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp_dF[i];
     //gradient[i] =  - u_vec_temp2[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp2[i];
-  }  
-  
+  }
+
   for (i_mb = 0; i_mb < complement_second_sizes[batch_index]; i_mb++) {
     i = final_complement_2_vec[complement_second_start_indices[batch_index] + i_mb];
     gradient[i] = - u_vec_temp2[i] + u_vec_temp_dF[i] - w_vec_temp2[i] + w_vec_temp_dF[i];
     //gradient[i] =  - u_vec_temp2[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp2[i];
   }
-  
-  
+
+
   for (int i_mb = 0; i_mb < tempsize; i_mb++) {
     i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
     if(i == (n-1)){
@@ -2573,31 +2573,31 @@ void gamma_gradient_fun_minibatch_shuffle(int *shuffle_array, int *inFlags, int 
       }
       gamma_gradient[i] = sum * epsilon_vec[i] * sqrt(S_vi[i]) ;
     }
-    
+
   }
-  
+
   // for (int i_mb = 0; i_mb < tempsize; i_mb++) {
   //   i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
   //   gamma_gradient[i] += 1;
-  // }  
+  // }
   // for(i = 0; i < BatchSize; i++){
   //   gamma_gradient[nBatchLU[batch_index] + i] += 1;
   // }
   for(i = 0; i < BatchSize; i++){
     gamma_gradient[shuffle_array[nBatchLU[batch_index] + i]] += 1;
   }
-  
+
 }
 
 void a_gradient_fun_minibatch_shuffle(int *shuffle_array, int *inFlags, int nm,
                                       double *y, double *w_mu_update,
-                                   double *w_vec_temp_dF, double *w_vec_temp2, 
-                                   double *u_vec, double *epsilon_vec, double *a_gradient, double *gradient_const, 
+                                   double *w_vec_temp_dF, double *w_vec_temp2,
+                                   double *u_vec, double *epsilon_vec, double *a_gradient, double *gradient_const,
                                    double *A_vi, double *S_vi, int n, int *nnIndxLU_vi, int *nnIndx_vi,
-                                   double *B, double *F, int *nnIndx, int *nnIndxLU, double *theta, int tauSqIndx, 
+                                   double *B, double *F, int *nnIndx, int *nnIndxLU, double *theta, int tauSqIndx,
                                    int *cumnumIndxCol, int *numIndxCol, int *nnIndxCol, int *nnIndxnnCol,
                                    double *u_vec_temp, double *u_vec_temp2, double *u_vec_temp_dF, double *gradient,
-                                   int batch_index, int BatchSize, int *nBatchLU, 
+                                   int batch_index, int BatchSize, int *nBatchLU,
                                    int *final_result_vec, int *nBatchLU_temp, int tempsize,
                                    int *intersect_start_indices, int *intersect_sizes, int* final_intersect_vec,
                                    int *complement_first_start_indices, int *complement_first_sizes, int* final_complement_1_vec,
@@ -2605,39 +2605,39 @@ void a_gradient_fun_minibatch_shuffle(int *shuffle_array, int *inFlags, int nm,
   // similar code as solve_B_F in BRISC package
   double sum;
   int i, i_mb;
-  
-  
+
+
   update_uvec_minibatch_plus(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi,
                              batch_index, final_result_vec, nBatchLU_temp, tempsize);
-  
+
   zeros(u_vec_temp, n);
   zeros(u_vec_temp_dF, n);
   zeros(u_vec_temp2, n);
-  
+
   product_B_F_minibatch_plus(B, F, u_vec, n, nnIndxLU, nnIndx, u_vec_temp, batch_index, final_result_vec, nBatchLU_temp, tempsize);
   //product_B_F_vec_minibatch_plus_fix(B, F, u_vec_temp, n, nnIndxLU, nnIndx, u_vec_temp2, cumnumIndxCol, numIndxCol, nnIndxCol, nnIndxnnCol, BatchSize, nBatchLU, batch_index, final_result_vec, nBatchLU_temp, tempsize);
   product_B_F_vec_minibatch_plus_shuffle(shuffle_array ,inFlags, nm, B, F, u_vec_temp, n, nnIndxLU, nnIndx, u_vec_temp2, cumnumIndxCol, numIndxCol, nnIndxCol, nnIndxnnCol, BatchSize, nBatchLU, batch_index, final_result_vec, nBatchLU_temp, tempsize);
-  
+
   product_B_F_minibatch_term1(B, F, u_vec, n, nnIndxLU, nnIndx, u_vec_temp_dF, batch_index, final_result_vec, nBatchLU_temp, tempsize);
-  
+
   //double *gradient = (double *) R_alloc(n, sizeof(double));
   for (i_mb = 0; i_mb < intersect_sizes[batch_index]; i_mb++) {
     i = final_intersect_vec[intersect_start_indices[batch_index] + i_mb];
     gradient[i] =  - u_vec_temp2[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp2[i];
   }
-  
+
   for (i_mb = 0; i_mb < complement_first_sizes[batch_index]; i_mb++) {
     i = final_complement_1_vec[complement_first_start_indices[batch_index] + i_mb];
     gradient[i] =  - u_vec_temp_dF[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp_dF[i];
     //gradient[i] =  - u_vec_temp2[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp2[i];
-  }  
-  
+  }
+
   for (i_mb = 0; i_mb < complement_second_sizes[batch_index]; i_mb++) {
     i = final_complement_2_vec[complement_second_start_indices[batch_index] + i_mb];
     gradient[i] = - u_vec_temp2[i] + u_vec_temp_dF[i] - w_vec_temp2[i] + w_vec_temp_dF[i];
     //gradient[i] =  - u_vec_temp2[i] + (y[i] - w_mu_update[i] - u_vec[i])/theta[tauSqIndx] - w_vec_temp2[i];
   }
-  
+
   for(int i_mb = 0; i_mb < tempsize; i_mb++){
     i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
     if(i>0){
@@ -2646,8 +2646,8 @@ void a_gradient_fun_minibatch_shuffle(int *shuffle_array, int *inFlags, int nm,
       }
     }
   }
-  
-  
+
+
 }
 
 
@@ -2657,15 +2657,15 @@ void a_gradient_fun_minibatch_shuffle(int *shuffle_array, int *inFlags, int nm,
 double Q_mini_batch_shuffle(int *shuffle_array, double *B, double *F, double *u_mb, double *v_mb,
                     int BatchSize, int *nBatchLU, int batch_index, int n,
                     int *nnIndx, int *nnIndxLU){
-  
+
   double a, b, q = 0;
   int i, j;
-  
+
 #ifdef _OPENMP
 #pragma omp parallel for private(a, b, j) reduction(+:q)
 #endif
-  int i_mb;
-  for(i_mb = 0; i_mb < BatchSize; i_mb++){
+
+  for(int i_mb = 0; i_mb < BatchSize; i_mb++){
     i = shuffle_array[nBatchLU[batch_index] + i_mb];
     a = 0;
     b = 0;
@@ -2675,6 +2675,6 @@ double Q_mini_batch_shuffle(int *shuffle_array, double *B, double *F, double *u_
     }
     q += (u_mb[i] - a)*(v_mb[i] - b)/F[i];
   }
-  
+
   return(q);
 }
