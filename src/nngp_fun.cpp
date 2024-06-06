@@ -582,8 +582,8 @@ double Q_mini_batch(double *B, double *F, double *u_mb, double *v_mb,
 #ifdef _OPENMP
 #pragma omp parallel for private(a, b, j) reduction(+:q)
 #endif
-  int i_mb;
-  for(i_mb = 0; i_mb < BatchSize; i_mb++){
+
+  for(int i_mb = 0; i_mb < BatchSize; i_mb++){
     i = nBatchLU[batch_index] + i_mb;
     a = 0;
     b = 0;
@@ -870,8 +870,8 @@ double Q_mini_batch_plus(double *B, double *F, double *u_mb, double *v_mb,
 #ifdef _OPENMP
 #pragma omp parallel for private(a, b, j) reduction(+:q)
 #endif
-  int i_mb;
-  for(i_mb = 0; i_mb < tempsize; i_mb++){
+
+  for(int i_mb = 0; i_mb < tempsize; i_mb++){
     i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
     a = 0;
     b = 0;
