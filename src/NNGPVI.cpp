@@ -762,6 +762,12 @@ extern "C" {
       }
       ELBO = 0.0;
       zeros(sum_v,n);
+
+      double sum2 = 0.0;
+      double sum3 = 0.0;
+      double sum4 = 0.0;
+      double sum5 = 0.0;
+
       for(int k = 0; k < Trace_N; k++){
         for(int i = 0; i < n; i++){
           epsilon_vec[i] = rnorm(0, 1);
@@ -769,14 +775,25 @@ extern "C" {
         update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
         sum_two_vec(u_vec, w_mu_update, sum_v, n);
         for(int i = 0; i < n; i++){
-          ELBO += pow((y[i] - sum_v[i] -F77_NAME(ddot)(&p, &X[i], &n, beta, &inc)),2)/theta[tauSqIndx]*0.5;
+          sum3 += pow((y[i] - sum_v[i] -F77_NAME(ddot)(&p, &X[i], &n, beta, &inc)),2)/theta[tauSqIndx]*0.5;
         }
-        ELBO += Q(B, F, sum_v, sum_v, n, nnIndx, nnIndxLU)*0.5;
+        sum2 += Q(B, F, sum_v, sum_v, n, nnIndx, nnIndxLU)*0.5;
       }
-      ELBO = ELBO/Trace_N;
+
       for(int i = 0; i < n; i++){
-        ELBO += -log(S_vi[i]);
+        sum4 += log(2*pi*S_vi[i]);
+        sum5 += log(2*pi*F[i]);
       }
+
+      ELBO = (sum2 + sum3)/Trace_N;
+
+      ELBO += -0.5*sum4;
+
+      ELBO += 0.5*n*log(2*pi*theta[tauSqIndx]);
+
+      ELBO += 0.5*sum5;
+
+      ELBO += -0.5*n;
 
       ELBO_vec[iter-1] = -ELBO;
 
@@ -1623,6 +1640,12 @@ extern "C" {
       }
       ELBO = 0.0;
       zeros(sum_v,n);
+
+      double sum2 = 0.0;
+      double sum3 = 0.0;
+      double sum4 = 0.0;
+      double sum5 = 0.0;
+
       for(int k = 0; k < Trace_N; k++){
         for(int i = 0; i < n; i++){
           epsilon_vec[i] = rnorm(0, 1);
@@ -1630,15 +1653,27 @@ extern "C" {
         update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
         sum_two_vec(u_vec, w_mu_update, sum_v, n);
         for(int i = 0; i < n; i++){
-          ELBO += pow((y[i] - sum_v[i]),2)/theta[tauSqIndx]*0.5;
+          sum3 += pow((y[i] - sum_v[i]),2)/theta[tauSqIndx]*0.5;
         }
-        ELBO += Q(B, F, sum_v, sum_v, n, nnIndx, nnIndxLU)*0.5;
-      }
-      ELBO = ELBO/Trace_N;
-      for(int i = 0; i < n; i++){
-        ELBO += -log(S_vi[i]);
+        sum2 += Q(B, F, sum_v, sum_v, n, nnIndx, nnIndxLU)*0.5;
       }
 
+      for(int i = 0; i < n; i++){
+        sum4 += log(2*pi*S_vi[i]);
+        sum5 += log(2*pi*F[i]);
+      }
+
+      ELBO = (sum2 + sum3)/Trace_N;
+
+      ELBO += -0.5*sum4;
+
+      ELBO += 0.5*n*log(2*pi*theta[tauSqIndx]);
+
+      ELBO += 0.5*sum5;
+
+      ELBO += -0.5*n;
+
+      //Rprintf("the value of ELBO: %f \n", ELBO);
       ELBO_vec[iter-1] = -ELBO;
 
 

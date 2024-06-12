@@ -47,6 +47,10 @@ spVB_NNGP <- function(y, X, coords, covariates = TRUE, n.neighbors = 15, n.neigh
     stop("error: mini batch size must be smaller or equal to n")
   }
 
+  if(rho <=0 | rho>=1){
+    stop("error: rho should be a value between 0 and 1")
+  }
+
   ##Covariance model
   cov.model.names <- c("exponential","spherical","matern","gaussian")
   cov.model.indx <- which(cov.model == cov.model.names) - 1
@@ -64,8 +68,7 @@ spVB_NNGP <- function(y, X, coords, covariates = TRUE, n.neighbors = 15, n.neigh
     ord <- BRISC_order(coords, order = "AMMD")
     coords <- coords[ord,]
   }else{
-    print("Do not order the coords")
-    ord = 1:n
+    stop("error: Please insert a valid ordering scheme choice given by Sum_coords or AMMD.")
   }
 
   if(p>0){X <- X[ord,,drop=FALSE]}

@@ -77,6 +77,7 @@ extern "C" {
     char const *ytran = "T";
     char const *rside = "R";
     char const *lside = "L";
+    double pi = 3.1415926;
 
     //get args
     double *y = REAL(y_r);
@@ -394,9 +395,13 @@ extern "C" {
     double *w_mu_temp_dF = (double *) R_alloc(n, sizeof(double));
     double *w_mu_temp2 = (double *) R_alloc(n, sizeof(double));
     double *gradient_sigmasq_temp = (double *) R_alloc(n, sizeof(double));
-    double *MFA_sigmasq_grad_vec = (double *) R_alloc(n, sizeof(double));
+    // double *MFA_sigmasq_grad_vec = (double *) R_alloc(n, sizeof(double));
     double *MFA_sigmasq_grad_vec_cum = (double *) R_alloc(n, sizeof(double));
-    double *gradient_mu_vec = (double *) R_alloc(n, sizeof(double));
+    // double *gradient_mu_vec = (double *) R_alloc(n, sizeof(double));
+    SEXP gradient_mu_vec_r; PROTECT(gradient_mu_vec_r = allocVector(REALSXP, n)); nProtect++;
+    double *gradient_mu_vec = REAL(gradient_mu_vec_r);
+    SEXP MFA_sigmasq_grad_vec_r; PROTECT(MFA_sigmasq_grad_vec_r = allocVector(REALSXP, n)); nProtect++;
+    double *MFA_sigmasq_grad_vec = REAL(MFA_sigmasq_grad_vec_r);
 
 
     double E_phi_sq = 0.0;
@@ -550,6 +555,10 @@ extern "C" {
       }
     }
 
+    double *a_tau_vec = (double *) R_alloc(nBatch, sizeof(double)); zeros(a_tau_vec, nBatch);
+    double *b_tau_vec = (double *) R_alloc(nBatch, sizeof(double)); zeros(b_tau_vec, nBatch);
+    double *a_zeta_vec = (double *) R_alloc(nBatch, sizeof(double));zeros(a_zeta_vec, nBatch);
+    double *b_zeta_vec = (double *) R_alloc(nBatch, sizeof(double));zeros(b_zeta_vec, nBatch);
 
     if(verbose){
       Rprintf("----------------------------------------\n");
@@ -816,7 +825,7 @@ extern "C" {
         tempsize = tempsize_vec[batch_index];
         BatchSize = nBatchIndx[batch_index];
         //if(batch_index == iter % nBatch)
-        if(batch_index == iter % nBatch){
+        if(batch_index == (iter-1) % nBatch){
           if(verbose){
             Rprintf("the value of batch_index global : %i \n", batch_index);
 #ifdef Win32
@@ -906,6 +915,9 @@ extern "C" {
 #endif
           }
 
+          a_tau_vec[batch_index] = a_tau_update;
+          b_tau_vec[batch_index] = b_tau_update;
+
           ///////////////
           //update zetasq
           ///////////////
@@ -951,6 +963,9 @@ extern "C" {
           updateBF_minibatch_plus(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
                                   theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb,
                                   batch_index, final_result_vec, nBatchLU_temp, tempsize);
+
+          a_zeta_vec[batch_index] = a_zeta_update;
+          b_zeta_vec[batch_index] = b_zeta_update;
 
           ///////////////
           //update phi
@@ -1048,7 +1063,43 @@ extern "C" {
             R_FlushConsole();
 #endif
           }
+
+          // if(batch_index == (nBatch-1)){
+          //   Rprintf("the value of iter global : %i \n", iter);
+          //   double a_tau = 0.0;
+          //   double b_tau = 0.0;
+          //   double a_zeta = 0.0;
+          //   double b_zeta = 0.0;
+          //
+          //   for(int batch_index = 0; batch_index < nBatch; batch_index++){
+          //     a_tau += a_tau_vec[batch_index] * nBatchIndx[batch_index] /n ;
+          //     b_tau += b_tau_vec[batch_index]* nBatchIndx[batch_index] /n ;
+          //     a_zeta += a_zeta_vec[batch_index]* nBatchIndx[batch_index] /n ;
+          //     b_zeta += b_zeta_vec[batch_index]* nBatchIndx[batch_index] /n ;
+          //   }
+          //   a_tau_update = a_tau;
+          //   b_tau_update = b_tau;
+          //   a_zeta_update = a_zeta;
+          //   b_zeta_update = b_zeta;
+          //
+          //   Rprintf("the value of a_tau_update : %f \n", a_tau_update);
+          //   Rprintf("the value of b_tau_update : %f \n", b_tau_update);
+          //   Rprintf("the value of a_zeta_update : %f \n", a_zeta_update);
+          //   Rprintf("the value of b_zeta_update : %f \n", b_zeta_update);
+          //
+          //   tau_sq = b_tau_update/a_tau_update;
+          //   theta[tauSqIndx] = tau_sq;
+          //
+          //   zeta_sq = b_zeta_update/a_zeta_update;
+          //   theta[zetaSqIndx] = zeta_sq;
+          //
+          //   updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m, theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
+          //
+          //
+          // }
         }
+
+
 
 
         ///////////////
@@ -1153,10 +1204,13 @@ extern "C" {
       }
       double sum3 = 0.0;
       double sum4 = 0.0;
+      double sum5 = 0.0;
+
       for(int i = 0; i < n; i++){
-        sum3 += pow((y[i]- w_mu_update[i]),2);
+        sum3 += pow((y[i]- w_mu_update[i] - F77_NAME(ddot)(&p, &X[i], &n, beta, &inc)),2);
         sum3 += sigma_sq_update[i];
-        sum4 += log(sigma_sq_update[i]);
+        sum4 += log(2*pi*sigma_sq_update[i]);
+        sum5 += log(2*pi*F[i]);
       }
 
       ELBO = 0.0;
@@ -1169,9 +1223,15 @@ extern "C" {
 
       ELBO += -sum4;
 
-      ELBO_vec[iter-1] = -ELBO;
+      ELBO += n*log(2*pi*theta[tauSqIndx]);
 
-      if(iter == min_iter){max_ELBO = - ELBO;}
+      ELBO += sum5;
+
+      ELBO += -n;
+
+      ELBO_vec[iter-1] = -0.5*ELBO;
+
+      if(iter == min_iter){max_ELBO = - 0.5*ELBO;}
       if(iter > min_iter & iter % 10){
 
         int count = 0;
@@ -1300,6 +1360,13 @@ extern "C" {
     SET_VECTOR_ELT(result_r, 16, beta_cov_r);
     SET_VECTOR_ELT(resultName_r, 16, mkChar("beta_cov"));
 
+    // SET_VECTOR_ELT(result_r, 17, gradient_mu_vec_r);
+    // SET_VECTOR_ELT(resultName_r, 17, mkChar("gradient_mu_vec"));
+    //
+    // SET_VECTOR_ELT(result_r, 18, MFA_sigmasq_grad_vec_r);
+    // SET_VECTOR_ELT(resultName_r, 18, mkChar("MFA_sigmasq_grad_vec"));
+
+
     namesgets(result_r, resultName_r);
     //unprotect
     UNPROTECT(nProtect);
@@ -1329,7 +1396,7 @@ extern "C" {
     char const *ytran = "T";
     char const *rside = "R";
     char const *lside = "L";
-
+    double pi = 3.1415926;
     //get args
     double *y = REAL(y_r);
     int p = INTEGER(p_r)[0];
@@ -1766,6 +1833,12 @@ extern "C" {
     int nm = n*m;
     int *inFlags = (int *) R_alloc(n*m*nBatch, sizeof(int));
 
+    double *a_tau_vec = (double *) R_alloc(nBatch, sizeof(double)); zeros(a_tau_vec, nBatch);
+    double *b_tau_vec = (double *) R_alloc(nBatch, sizeof(double)); zeros(b_tau_vec, nBatch);
+    double *a_zeta_vec = (double *) R_alloc(nBatch, sizeof(double));zeros(a_zeta_vec, nBatch);
+    double *b_zeta_vec = (double *) R_alloc(nBatch, sizeof(double));zeros(b_zeta_vec, nBatch);
+
+
     for(int batch_index = 0; batch_index < nBatch; batch_index++) {
 
       BatchSize = nBatchIndx[batch_index];
@@ -1991,6 +2064,7 @@ extern "C" {
     }
     Rprintf("Updating Process \n: ");
     while(iter < max_iter & !indicator_converge){
+      Rprintf("Begin iter : %i \n", iter);
       zeros(diag_ouput,n);
       //diagonal of C^-1(\theta)
       zeros(u_vec,n);
@@ -1999,7 +2073,7 @@ extern "C" {
         tempsize = tempsize_vec[batch_index];
         BatchSize = nBatchIndx[batch_index];
         //if(batch_index == iter % nBatch)
-        if(batch_index == iter % nBatch){
+        if(batch_index == (iter-1) % nBatch){
           Rprintf("the value of batch_index global : %i \n", batch_index);
           a_tau_update = BatchSize * 0.5 + tauSqIGa;
           a_zeta_update = BatchSize * 0.5 + zetaSqIGa;
@@ -2037,6 +2111,9 @@ extern "C" {
           if(verbose){
             Rprintf("the value of 1 over E[1/tau_sq] : %f \n", tau_sq);
           }
+
+          a_tau_vec[batch_index] = a_tau_update;
+          b_tau_vec[batch_index] = b_tau_update;
 
           ///////////////
           //update zetasq
@@ -2098,6 +2175,10 @@ extern "C" {
           updateBF_minibatch_plus(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
                                   theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb,
                                   batch_index, final_result_vec, nBatchLU_temp, tempsize);
+
+          a_zeta_vec[batch_index] = a_zeta_update;
+          b_zeta_vec[batch_index] = b_zeta_update;
+
 
           ///////////////
           //update phi
@@ -2204,7 +2285,34 @@ extern "C" {
           }
         }
 
+        if(batch_index == (nBatch-1)){
+          Rprintf("the value of iter global : %i \n", iter);
+          double a_tau = 0.0;
+          double b_tau = 0.0;
+          double a_zeta = 0.0;
+          double b_zeta = 0.0;
 
+          for(int batch_index = 0; batch_index < nBatch; batch_index++){
+            a_tau += a_tau_vec[batch_index] * nBatchIndx[batch_index] /n ;
+            b_tau += b_tau_vec[batch_index]* nBatchIndx[batch_index] /n ;
+            a_zeta += a_zeta_vec[batch_index]* nBatchIndx[batch_index] /n ;
+            b_zeta += b_zeta_vec[batch_index]* nBatchIndx[batch_index] /n ;
+          }
+          a_tau_update = a_tau;
+          b_tau_update = b_tau;
+          a_zeta_update = a_zeta;
+          b_zeta_update = b_zeta;
+
+          tau_sq = b_tau_update/a_tau_update;
+          theta[tauSqIndx] = tau_sq;
+
+          zeta_sq = b_zeta_update/a_zeta_update;
+          theta[zetaSqIndx] = zeta_sq;
+
+          updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m, theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
+
+
+        }
         ///////////////
         //update w
         ///////////////
@@ -2494,7 +2602,7 @@ extern "C" {
     char const *ytran = "T";
     char const *rside = "R";
     char const *lside = "L";
-
+    double pi = 3.1415926;
     //get args
     double *y = REAL(y_r);
     int p = INTEGER(p_r)[0];
@@ -3414,12 +3522,15 @@ extern "C" {
       }
 
 
+
       double sum3 = 0.0;
       double sum4 = 0.0;
+      double sum5 = 0.0;
       for(int i = 0; i < n; i++){
         sum3 += pow((y[i]- w_mu_update[i]),2);
         sum3 += sigma_sq_update[i];
-        sum4 += log(sigma_sq_update[i]);
+        sum4 += log(2*pi*sigma_sq_update[i]);
+        sum5 += log(2*pi*F[i]);
       }
 
       ELBO = 0.0;
@@ -3432,10 +3543,15 @@ extern "C" {
 
       ELBO += -sum4;
 
+      ELBO += n*log(2*pi*theta[tauSqIndx]);
 
-      ELBO_vec[iter-1] = -ELBO;
+      ELBO += sum5;
 
-      if(iter == min_iter){max_ELBO = - ELBO;}
+      ELBO += -n;
+
+      ELBO_vec[iter-1] = -0.5*ELBO;
+
+      if(iter == min_iter){max_ELBO = - 0.5*ELBO;}
       if (iter > min_iter && iter % 10 == 0){
 
         int count = 0;

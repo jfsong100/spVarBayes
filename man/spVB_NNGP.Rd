@@ -9,12 +9,12 @@
 
 \usage{
 spVB_NNGP <- function(y, X, coords, covariates = TRUE, n.neighbors = 15, n.neighbors.vi = 3,
-                      sigma.sq = 1, tau.sq = 0.5, phi = 1, sigma.sq.IG = c(0.1,1),
-                      tau.sq.IG = c(0.1,0.1), phi.range = NULL, var_input = NULL, phi_input = NULL,
+                      sigma.sq = 1, tau.sq = 0.5, phi = NULL, sigma.sq.IG = c(0.1,1),
+                      tau.sq.IG = c(0.1,0.1), phi.range = NULL, var_input = NULL,
                       n_omp = 1, cov.model = "exponential", nu = 1.5, search.type = "tree",tol = 12,
                       verbose = FALSE, max_iter = 2000, min_iter = 1000, stop_K = FALSE, K = 20,
                       N_phi = 5, Trace_N = 50, phi_max_iter = 50, rho = 0.85,
-                      mini_batch = F, mini_batch_size = 128, reorder = T,...)
+                      mini_batch = F, mini_batch_size = 128, reorder = "Sum_coords",...)
 }
 
 \arguments{
@@ -102,7 +102,9 @@ spVB_NNGP <- function(y, X, coords, covariates = TRUE, n.neighbors = 15, n.neigh
 
     \item{mini_batch_size}{the number of batch size when using mini batch. Default is 256.}
 
-    \item{reorder}{if \code{TRUE}, the coordinates are ordered based on the sum of coordinates. }
+    \item{reorder}{keyword that specifies the ordering scheme to be used in ordering the observations.
+    Supported keywords are: "AMMD" and "Sum_coords" for approximate Maximum Minimum Distance and sum of
+    coordinate based ordering, respectively. "AMMD" ordering is implemented using BRISC pacakge. Default value is "Sum_coords". \code{n>65} is required for "AMMD".}
 
 
   \item{...}{currently no additional arguments.  }
@@ -144,10 +146,13 @@ in the \code{starting} and \code{tuning} lists.
 }
 
 \references{
-  Datta, A., S. Banerjee, A.O. Finley, and A.E. Gelfand. (2016)
-  Hierarchical Nearest-Neighbor Gaussian process models for large
-  geostatistical datasets. \emph{Journal of the American Statistical
-    Association}, \doi{10.1080/01621459.2015.1044091}.
+
+Datta, A., S. Banerjee, A.O. Finley, and A.E. Gelfand. (2016) Hierarchical Nearest-Neighbor Gaussian process models for large geostatistical datasets. Journal of the American Statistical Association, 111:800-812.
+
+Saha, A., & Datta, A. (2018). BRISC: bootstrap for rapid inference on spatial covariances. Stat, e184, DOI: 10.1002/sta4.184.
+
+Guinness, J. (2018) Permutation and Grouping Methods for Sharpening Gaussian Process Approximations, Technometrics, DOI: 10.1080/00401706.2018.1437476,
+https://github.com/joeguinness/gp_reorder/tree/master/R .
 
 }
 

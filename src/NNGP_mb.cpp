@@ -1209,6 +1209,14 @@ extern "C" {
         zeros(w_mu_temp,n);
         zeros(w_mu_temp_dF,n);
         zeros(w_mu_temp2,n);
+        zeros(gradient_const,n);
+        zeros(gradient,n);
+        zeros(gamma_gradient_sum, n);
+        zeros(gamma_gradient,n);
+        zeros(a_gradient,nIndx_vi);
+        zeros(a_gradient_sum, nIndx_vi);
+
+
         product_B_F_minibatch_plus(B, F, w_mu, n, nnIndxLU, nnIndx, w_mu_temp, batch_index, final_result_vec, nBatchLU_temp, tempsize);
         product_B_F_minibatch_term1(B, F, w_mu, n, nnIndxLU, nnIndx, w_mu_temp_dF, batch_index, final_result_vec, nBatchLU_temp, tempsize);
         product_B_F_vec_minibatch_plus_fix(B, F, w_mu_temp, n, nnIndxLU, nnIndx, w_mu_temp2, cumnumIndxCol, numIndxCol, nnIndxCol, nnIndxnnCol, BatchSize, nBatchLU, batch_index, final_result_vec, nBatchLU_temp, tempsize);
@@ -1276,6 +1284,20 @@ extern "C" {
 
         }
 
+//         if(verbose){
+//           for(int i_mb = 0; i_mb < 25; i_mb++){
+//             i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
+//             Rprintf("the value of gamma_gradient_sum[%i] : %f \n",i, gamma_gradient_sum[i]);
+//           }
+//           for(int i_mb = 0; i_mb < 25; i_mb++){
+//             i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
+//             Rprintf("the value of delta_gamma[%i] : %f \n",i, delta_gamma[i]);
+//           }
+// #ifdef Win32
+//           R_FlushConsole();
+// #endif
+//         }
+
         for(i_mb = 0; i_mb < tempsize; i_mb++){
           i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
           //Rprintf("gamma gradient[%i],: %f \n",i, gamma_gradient_sum[i]);
@@ -1317,6 +1339,22 @@ extern "C" {
 
 
         }
+
+//         if(verbose){
+//           for(i_mb = 0; i_mb < 25; i_mb++){
+//             i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
+//             for (int l = 0; l < nnIndxLU_vi[n + i]; l++) {
+//               int sub_index = nnIndxLU_vi[i] + l;
+//               Rprintf("the value of a_gradient_sum[%i] : %f \n",sub_index, a_gradient_sum[sub_index]);
+//
+//             }
+//           }
+//
+// #ifdef Win32
+//               R_FlushConsole();
+// #endif
+//         }
+
         int sub_index;
         //Rprintf("A_vi: ");
         for(int i_mb = 0; i_mb < tempsize; i_mb++){
@@ -1342,6 +1380,12 @@ extern "C" {
       //Calculate the first part of ELBO
       ELBO = 0.0;
       zeros(sum_v,n);
+
+      double sum2 = 0.0;
+      double sum3 = 0.0;
+      double sum4 = 0.0;
+      double sum5 = 0.0;
+
       for(int k = 0; k < Trace_N; k++){
         for(int i = 0; i < n; i++){
           epsilon_vec[i] = rnorm(0, 1);
@@ -1349,15 +1393,25 @@ extern "C" {
         update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
         sum_two_vec(u_vec, w_mu_update, sum_v, n);
         for(int i = 0; i < n; i++){
-          ELBO += pow((y[i] - sum_v[i]- F77_NAME(ddot)(&p, &X[i], &n, beta, &inc)),2)/theta[tauSqIndx]*0.5;
+          sum3 += pow((y[i] - sum_v[i] -F77_NAME(ddot)(&p, &X[i], &n, beta, &inc)),2)/theta[tauSqIndx]*0.5;
         }
-        ELBO += Q(B, F, sum_v, sum_v, n, nnIndx, nnIndxLU)*0.5;
-      }
-      ELBO = ELBO/Trace_N;
-      for(int i = 0; i < n; i++){
-        ELBO += -log(S_vi[i]);
+        sum2 += Q(B, F, sum_v, sum_v, n, nnIndx, nnIndxLU)*0.5;
       }
 
+      for(int i = 0; i < n; i++){
+        sum4 += log(2*pi*S_vi[i]);
+        sum5 += log(2*pi*F[i]);
+      }
+
+      ELBO = (sum2 + sum3)/Trace_N;
+
+      ELBO += -0.5*sum4;
+
+      ELBO += 0.5*n*log(2*pi*theta[tauSqIndx]);
+
+      ELBO += 0.5*sum5;
+
+      ELBO += -0.5*n;
 
       ELBO_vec[iter-1] = - ELBO;
 
@@ -2703,6 +2757,11 @@ extern "C" {
 
       ELBO = 0.0;
       zeros(sum_v,n);
+      double sum2 = 0.0;
+      double sum3 = 0.0;
+      double sum4 = 0.0;
+      double sum5 = 0.0;
+
       for(int k = 0; k < Trace_N; k++){
         for(int i = 0; i < n; i++){
           epsilon_vec[i] = rnorm(0, 1);
@@ -2710,14 +2769,25 @@ extern "C" {
         update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
         sum_two_vec(u_vec, w_mu_update, sum_v, n);
         for(int i = 0; i < n; i++){
-          ELBO += pow((y[i] - sum_v[i]),2)/theta[tauSqIndx]*0.5;
+          sum3 += pow((y[i] - sum_v[i]),2)/theta[tauSqIndx]*0.5;
         }
-        ELBO += Q(B, F, sum_v, sum_v, n, nnIndx, nnIndxLU)*0.5;
+        sum2 += Q(B, F, sum_v, sum_v, n, nnIndx, nnIndxLU)*0.5;
       }
-      ELBO = ELBO/Trace_N;
+
       for(int i = 0; i < n; i++){
-        ELBO += -log(S_vi[i]);
+        sum4 += log(2*pi*S_vi[i]);
+        sum5 += log(2*pi*F[i]);
       }
+
+      ELBO = (sum2 + sum3)/Trace_N;
+
+      ELBO += -0.5*sum4;
+
+      ELBO += 0.5*n*log(2*pi*theta[tauSqIndx]);
+
+      ELBO += 0.5*sum5;
+
+      ELBO += -0.5*n;
 
       ELBO_vec[iter-1] = -ELBO;
       // if(iter == 1){create_sign(delta_a, sign_vec_old, n_per);}
