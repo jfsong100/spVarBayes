@@ -99,7 +99,7 @@ extern "C" {
 
     if(verbose){
       Rprintf("----------------------------------------\n");
-      Rprintf("\tPrediction description\n");
+      Rprintf("\t     Prediction description\n");
       Rprintf("----------------------------------------\n");
       Rprintf("Model fit with %i observations.\n\n", n);
       Rprintf("Using the %s spatial correlation model.\n\n", corName.c_str());
@@ -162,9 +162,9 @@ extern "C" {
     double *w0 = REAL(w0_r);
 
     if(verbose){
-      Rprintf("-------------------------------------------------\n");
-      Rprintf("\t\tPredicting\n");
-      Rprintf("-------------------------------------------------\n");
+      Rprintf("----------------------------------------\n");
+      Rprintf("\t\t         Predicting\n");
+      Rprintf("----------------------------------------\n");
 #ifdef Win32
       R_FlushConsole();
 #endif
@@ -342,7 +342,7 @@ extern "C" {
 
     if(verbose){
       Rprintf("----------------------------------------\n");
-      Rprintf("\tPrediction description\n");
+      Rprintf("\t     Prediction description\n");
       Rprintf("----------------------------------------\n");
       Rprintf("Model fit with %i observations.\n\n", n);
       Rprintf("Using the %s spatial correlation model.\n\n", corName.c_str());
@@ -405,9 +405,9 @@ extern "C" {
     double *w0 = REAL(w0_r);
 
     if(verbose){
-      Rprintf("-------------------------------------------------\n");
-      Rprintf("\t\tPredicting\n");
-      Rprintf("-------------------------------------------------\n");
+      Rprintf("----------------------------------------\n");
+      Rprintf("\t\t         Predicting\n");
+      Rprintf("----------------------------------------\n");
 #ifdef Win32
       R_FlushConsole();
 #endif
