@@ -31,8 +31,8 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
   n.neighbors.opt <- min(100, n-1)
 
   if(!is.null(n.neighbors)){
-    if(n.neighbors < n.neighbors.opt) warning('We recommend using higher n.neighbors especially for small Phi')
-    if(n.neighbors < 10) warning('We recommend using higher n.neighbors at least 10')
+    if(n.neighbors < n.neighbors.opt) warning('We recommend using higher n.neighbors especially for small Phi.')
+    if(n.neighbors < 10) warning('We recommend using higher n.neighbors at least 10.')
   }
 
   if(is.null(n.neighbors)){
@@ -73,12 +73,20 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
   # }
   initial_mu = 1
 
+
+  cat("----------------------------------------", "\n")
+  cat("          Model description", "\n")
+  cat("----------------------------------------", "\n")
+  cat(c("Using Mean-field Approximation family for Variational Approximation"), "\n")
+  cat("\n")
   if(reorder == "Sum_coords"){
-    print("Using Sum_coords ordering")
+    cat("Data is ordered using Sum_coords ordering.", "\n")
+    cat("\n")
     ord <- order(coords[,1] + coords[,2])
     coords <- coords[ord,]
   }else if(reorder == "AMMD"){
-    print("Using Maxmin ordering")
+    cat("Data is ordered using Max-Min ordering.", "\n")
+    cat("\n")
     set.seed(1)
     ord <- BRISC_order(coords, order = "AMMD")
     coords <- coords[ord,]
@@ -93,43 +101,50 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
   ####################################################
   ##Priors
   ####################################################
-  BRISC_input = BRISC_estimation(coords = coords, y = y, x = X, sigma.sq = 1,
-                                 tau.sq = 0.1, phi = 1,
-                                 nu = 0.5, n.neighbors = 15,
-                                 n_omp = 1,
-                                 cov.model = "exponential",
-                                 search.type = "tree",
-                                 stabilization = NULL,
-                                 pred.stabilization = 1e-5,
-                                 verbose = TRUE, eps = 2e-05,
-                                 nugget_status = 1,
-                                 neighbor = NULL, tol = 12)$Theta
-  BRISC_phi_input = BRISC_input[3]
-  BRISC_var_input = 1/(1/BRISC_input[2]+1/BRISC_input[1])
+  suppressWarnings({
+    sink(tempfile())
+    BRISC_input = BRISC_estimation(coords = coords, y = y, x = X, sigma.sq = 1,
+                                   tau.sq = 0.1, phi = 1,
+                                   nu = 0.5, n.neighbors = 15,
+                                   n_omp = 1,
+                                   cov.model = "exponential",
+                                   search.type = "tree",
+                                   stabilization = NULL,
+                                   pred.stabilization = 1e-5,
+                                   verbose = TRUE, eps = 2e-05,
+                                   nugget_status = 1,
+                                   neighbor = NULL, tol = 12, order = reorder)$Theta
+    BRISC_phi_input = BRISC_input[3]
+    BRISC_var_input = 1/(1/BRISC_input[2]+1/BRISC_input[1])
+    sink()
+  })
 
-  if(BRISC_input[1]<1){
-    warning('We recommend using larger number of Monte Carlo samples especially for small sigma.sq')
-  }
 
   if(is.null(var_input)|is.null(phi)){
     if(is.null(var_input)){
-      print(c("Using BRISC estimation for variance of w"))
-      print(c("BRISC_estimation for var is",BRISC_var_input))
+      cat(c("Using BRISC estimation for diagonals elements in the variational distribuiton for spatial random effects."), "\n")
+      cat("\n")
+      cat(c("BRISC estimation for var is",unname(round(BRISC_var_input,6))),".", "\n")
+      cat("\n")
       var_input = BRISC_var_input
     }
     if(is.null(phi)){
-      print(c("Using BRISC estimation for phi"))
-      print(c("BRISC_estimation for phi is",BRISC_phi_input))
+      cat(c("Using BRISC estimation for phi."), "\n")
+      cat("\n")
+      cat(c("BRISC estimation for phi is",unname(round(BRISC_phi_input,6))), ".","\n")
+      cat("\n")
       phi = BRISC_phi_input
     }
   }
+
+
 
   if(is.null(phi.range)){
     if(n>10000){
       len = max(coords[,1]) - min(coords[,1])
       wid = max(coords[,2]) - min(coords[,2])
       d_max = sqrt(len^2 + wid^2)
-      warning('We recommend a phi range input especially for large sample size')
+      warning('We recommend a phi range input especially for large sample size.')
     }else{
       d_max = max(as.matrix(dist(coords)))
     }
@@ -221,14 +236,31 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
   p1<- proc.time()
 
 
-  print(c("Using Mean-field Approximation family for Variational Approximation"))
+  cat("----------------------------------------", "\n")
+  cat("          Model fitting", "\n")
+  cat("----------------------------------------", "\n")
+
 
   if(covariates){
-    print(c("With covariates"))
+    #print(c("With covariates"))
+    if(mini_batch){
+      cat("spVB-MFA model fit with covariates X and using mini batch", "\n")
+      cat("\n")
+    }else{
+      cat("spVB-MFA model fit with covariates X and using full batch", "\n")
+      cat("\n")
+    }
     result <- .Call("spVarBayes_MFA_mb_betacpp",
                     y, X, n, p, n.neighbors, coords, cov.model.indx, rho, sigma.sq.IG, tau.sq.IG, phi.range, nu.Unif, sigma.sq.starting, tau.sq.starting, phi.starting, nu.starting, search.type.indx, n.omp.threads, verbose, fix_nugget, N_phi, Trace_N, max_iter, var_input,phi, phi_max_iter,initial_mu,mini_batch_size, min_iter, K, stop_K,PACKAGE = "spVarBayes")
   }else{
-    print(c("No covariates"))
+    #print(c("No covariates"))
+    if(mini_batch){
+      cat("spVB-MFA model fit without covariates X and using mini batch", "\n")
+      cat("\n")
+    }else{
+      cat("spVB-MFA model fit without covariates X and using full batch", "\n")
+      cat("\n")
+    }
     result <- .Call("spVarBayes_MFA_nocovariates_mb_betacpp",
                     y,    n, p, n.neighbors, coords, cov.model.indx, rho, sigma.sq.IG, tau.sq.IG, phi.range, nu.Unif, sigma.sq.starting, tau.sq.starting, phi.starting, nu.starting, search.type.indx, n.omp.threads, verbose, fix_nugget, N_phi, Trace_N, max_iter, var_input,phi, phi_max_iter,initial_mu,mini_batch_size, min_iter, K, stop_K,PACKAGE = "spVarBayes")
   }

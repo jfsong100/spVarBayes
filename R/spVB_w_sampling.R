@@ -55,14 +55,14 @@ spVB_w_sampling <- function(object,
   ptm <- proc.time()
 
   if(object$VI_family == "NNGP"){
-    print(c("Using NNGP Gaussian family for Variational Approximation"))
+    cat(c("Sampling from NNGP variational distribution"), "\n")
     result <- .Call("NNGP_samplingcpp",
                     n, nnIndxLU_vi, nnIndx_vi, w_mu, A_vi, S_vi, sim, n.samples, PACKAGE = "spVarBayes")
 
     #out <- c(out, .Call("NNGP_samplingcpp", n, nnIndxLU_vi, nnIndx_vi, w_mu, A_vi, S_vi, sim, n.samples))
 
   }else if(object$VI_family == "MFA"){
-    print(c("Using Mean-field Approximation family for Variational Approximation"))
+    cat(c("Sampling from mean-field variational distribution"), "\n")
     result <- .Call("MFA_samplingcpp",
                     n, w_mu, w_sigma_sq, sim, n.samples, PACKAGE = "spVarBayes")
 

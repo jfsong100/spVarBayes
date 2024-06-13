@@ -86,13 +86,13 @@ predict.spVarBayes <- function(object, X.0, coords.0,covariates = TRUE,
 
   ##if(class(object)[2] == "latent"){
   if(object$VI_family == "NNGP"){
-    print(c("Sampleing using NNGP Gaussian family for Variational Approximation"))
+    cat(c("Sampling from NNGP variational distribution"), "\n")
     # p.w.samples <- t(as.matrix(rmvnorm(n.samples,object$w_mu,get_Vw(n, object$n.neighbors.vi,
     #                                                               object$nnIndx_vi,
     #                                                               object$A_vi, object$S_vi))))
     p.w.samples = spVB_w_sampling(object,n.samples = n.samples)$p.w.samples
   }else{
-    print(c("Sampleing using Mean-field Approximation family for Variational Approximation"))
+    cat(c("Sampling from mean-field variational distribution"), "\n")
     #p.w.samples = t(as.matrix(rmvnorm(n.samples,object$w_mu,diag(object$w_sigma_sq))))
     p.w.samples = spVB_w_sampling(object,n.samples = n.samples)$p.w.samples
   }

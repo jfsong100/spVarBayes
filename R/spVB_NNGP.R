@@ -27,12 +27,12 @@ spVB_NNGP <- function(y, X, coords, covariates = TRUE, n.neighbors = 15, n.neigh
   n.neighbors.opt <- min(100, n-1)
 
   if(!is.null(n.neighbors)){
-    if(n.neighbors < n.neighbors.opt) warning('We recommend using higher n.neighbors especially for small Phi')
-    if(n.neighbors < 10) warning('We recommend using higher n.neighbors at least 10')
+    if(n.neighbors < n.neighbors.opt) warning('We recommend using higher n.neighbors especially for small Phi.')
+    if(n.neighbors < 10) warning('We recommend using higher n.neighbors at least 10.')
   }
 
   if(!is.null(n.neighbors.vi)){
-    if(n.neighbors.vi == 0) stop("With n.neighbors.vi = 0, the model is reduced to a mean field approximation. Try to use spVB-MFA function")
+    if(n.neighbors.vi == 0) stop("error: With n.neighbors.vi = 0, the model is reduced to a mean field approximation. Try to use spVB-MFA function")
   }
 
   if(is.null(n.neighbors)){
@@ -57,13 +57,24 @@ spVB_NNGP <- function(y, X, coords, covariates = TRUE, n.neighbors = 15, n.neigh
   storage.mode(cov.model.indx) <- "integer"
 
   initial_mu = 1
+  cat("----------------------------------------", "\n")
+  cat("          Model description", "\n")
+  cat("----------------------------------------", "\n")
+  cat(c("Using NNGP Gaussian family for Variational Approximation."), "\n")
+  cat("\n")
+  cat(paste("Using",n.neighbors,"nearest neighbors for the prior."), "\n")
+  cat("\n")
+  cat(paste("Using",n.neighbors.vi,"nearest neighbors for the variational family."), "\n")
+  cat("\n")
 
   if(reorder == "Sum_coords"){
-    print("Using Sum_coords ordering")
+    cat("Data is ordered using Sum_coords ordering.", "\n")
+    cat("\n")
     ord <- order(coords[,1] + coords[,2])
     coords <- coords[ord,]
   }else if(reorder == "AMMD"){
-    print("Using Maxmin ordering")
+    cat("Data is ordered using Max-Min ordering.", "\n")
+    cat("\n")
     set.seed(1)
     ord <- BRISC_order(coords, order = "AMMD")
     coords <- coords[ord,]
@@ -74,52 +85,59 @@ spVB_NNGP <- function(y, X, coords, covariates = TRUE, n.neighbors = 15, n.neigh
   if(p>0){X <- X[ord,,drop=FALSE]}
   y <- y[ord]
 
-  print(c("Using NNGP Gaussian family for Variational Approximation"))
-  print(paste("Using",n.neighbors,"nearest neighbors for the prior"))
-  print(paste("Using",n.neighbors.vi,"nearest neighbors for the variational family"))
+
 
 
   ####################################################
   ##Priors
   ####################################################
+  suppressWarnings({
+    sink(tempfile())
+    BRISC_input = BRISC_estimation(coords = coords, y = y, x = X, sigma.sq = 1,
+                                   tau.sq = 0.1, phi = 1,
+                                   nu = 0.5, n.neighbors = 15,
+                                   n_omp = 1,
+                                   cov.model = "exponential",
+                                   search.type = "tree",
+                                   stabilization = NULL,
+                                   pred.stabilization = 1e-5,
+                                   verbose = TRUE, eps = 2e-05,
+                                   nugget_status = 1,
+                                   neighbor = NULL, tol = 12, order = reorder)$Theta
+    BRISC_phi_input = BRISC_input[3]
+    BRISC_var_input = 1/(1/BRISC_input[2]+1/BRISC_input[1])
+    sink()
+  })
 
-  BRISC_input = BRISC_estimation(coords = coords, y = y, x = X, sigma.sq = 1,
-                                 tau.sq = 0.1, phi = 1,
-                                 nu = 0.5, n.neighbors = 15,
-                                 n_omp = 1,
-                                 cov.model = "exponential",
-                                 search.type = "tree",
-                                 stabilization = NULL,
-                                 pred.stabilization = 1e-5,
-                                 verbose = TRUE, eps = 2e-05,
-                                 nugget_status = 1,
-                                 neighbor = NULL, tol = 12)$Theta
-  BRISC_phi_input = BRISC_input[3]
-  BRISC_var_input = 1/(1/BRISC_input[2]+1/BRISC_input[1])
 
   if(BRISC_input[1]<1){
-    warning('We recommend using larger number of Monte Carlo samples especially for small sigma.sq')
+    warning('We recommend using larger number of Monte Carlo samples especially for small sigma.sq.')
   }
 
   if(is.null(var_input)|is.null(phi)){
     if(is.null(var_input)){
-      print(c("Using BRISC estimation for variance of w"))
-      print(c("BRISC_estimation for var is",BRISC_var_input))
+      cat(c("Using BRISC estimation for diagonals elements in the variational distribuiton for spatial random effects."), "\n")
+      cat("\n")
+      cat(c("BRISC estimation for var is",unname(round(BRISC_var_input,6))),".", "\n")
+      cat("\n")
       var_input = BRISC_var_input
     }
     if(is.null(phi)){
-      print(c("Using BRISC estimation for phi"))
-      print(c("BRISC_estimation for phi is",BRISC_phi_input))
+      cat(c("Using BRISC estimation for phi."), "\n")
+      cat("\n")
+      cat(c("BRISC estimation for phi is",unname(round(BRISC_phi_input,6))), ".","\n")
+      cat("\n")
       phi = BRISC_phi_input
     }
   }
+
 
   if(is.null(phi.range)){
     if(n>10000){
       len = max(coords[,1]) - min(coords[,1])
       wid = max(coords[,2]) - min(coords[,2])
       d_max = sqrt(len^2 + wid^2)
-      warning('We recommend a phi range input especially for large sample size')
+      warning('We recommend a phi range input especially for large sample size.')
     }else{
       d_max = max(as.matrix(dist(coords)))
     }
@@ -131,7 +149,7 @@ spVB_NNGP <- function(y, X, coords, covariates = TRUE, n.neighbors = 15, n.neigh
 
 
   if(phi < phi.range[1] | phi > phi.range[2]){
-    stop("error: phi input must be in the phi range")
+    stop("error: phi input must be in the phi range.")
   }
 
 
@@ -209,23 +227,33 @@ spVB_NNGP <- function(y, X, coords, covariates = TRUE, n.neighbors = 15, n.neigh
 
   p1<- proc.time()
 
+  cat("----------------------------------------", "\n")
+  cat("          Model fitting", "\n")
+  cat("----------------------------------------", "\n")
   if(covariates){
     if(mini_batch){
-      print("Include Covariates X and using Mini Batch")
+      cat("spVB-NNGP model fit with covariates X and using mini batch", "\n")
+      cat("\n")
       result <- .Call("spVarBayes_NNGP_mb_betacpp",
                       y, X, n, p, n.neighbors, n.neighbors.vi, coords, cov.model.indx, rho, sigma.sq.IG, tau.sq.IG, phi.range, nu.Unif, sigma.sq.starting, tau.sq.starting, phi.starting, nu.starting, search.type.indx, n.omp.threads, verbose, fix_nugget, N_phi, Trace_N, max_iter,var_input,phi,phi_max_iter, initial_mu, mini_batch_size, min_iter, K, stop_K ,PACKAGE = "spVarBayes")
     }else{
-      print("Include Covariates X and using Full Batch")
+      #cat("Include Covariates X and using Full Batch")
+      cat("spVB-NNGP model fit with covariates X and using full batch", "\n")
+      cat("\n")
       result <- .Call("spVarBayes_NNGP_betacpp",
                       y, X, n, p, n.neighbors, n.neighbors.vi, coords, cov.model.indx, rho, sigma.sq.IG, tau.sq.IG, phi.range, nu.Unif, sigma.sq.starting, tau.sq.starting, phi.starting, nu.starting, search.type.indx, n.omp.threads, verbose, fix_nugget, N_phi, Trace_N, max_iter,var_input,phi,phi_max_iter, initial_mu, min_iter, K, stop_K, PACKAGE = "spVarBayes")
     }
   }else{
     if(mini_batch){
-      print("No Covariates X and using Mini Batch with Scaled Beta for Phi")
+      #cat("No Covariates X and using Mini Batch with Scaled Beta for Phi")
+      cat("spVB-NNGP model fit without covariates X and using mini batch", "\n")
+      cat("\n")
       result <- .Call("spVarBayes_NNGP_nocovariates_mb_betacpp",
                       y,    n, p, n.neighbors, n.neighbors.vi, coords, cov.model.indx, rho, sigma.sq.IG, tau.sq.IG, phi.range, nu.Unif, sigma.sq.starting, tau.sq.starting, phi.starting, nu.starting, search.type.indx, n.omp.threads, verbose, fix_nugget, N_phi, Trace_N, max_iter,var_input,phi,phi_max_iter, initial_mu,mini_batch_size, min_iter, K, stop_K, PACKAGE = "spVarBayes")
     }else{
-      print("No Covariates X and using Full Batch with Scaled Beta for Phi")
+      #cat("No Covariates X and using Full Batch with Scaled Beta for Phi")
+      cat("spVB-NNGP model fit without covariates X and using full batch", "\n")
+      cat("\n")
       result <- .Call("spVarBayes_NNGP_nocovariates_betacpp",
                       y,    n, p, n.neighbors, n.neighbors.vi, coords, cov.model.indx, rho, sigma.sq.IG, tau.sq.IG, phi.range, nu.Unif, sigma.sq.starting, tau.sq.starting, phi.starting, nu.starting, search.type.indx, n.omp.threads, verbose, fix_nugget, N_phi, Trace_N, max_iter, var_input,phi,phi_max_iter, initial_mu, min_iter, K, stop_K, PACKAGE = "spVarBayes")
     }
