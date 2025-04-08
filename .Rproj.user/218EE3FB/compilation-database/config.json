@@ -1,0 +1,24 @@
+{
+    "args": [
+        "-std=gnu++11",
+        "-I/Library/Frameworks/R.framework/Resources/include",
+        "-DNDEBUG",
+        "-I/opt/R/arm64/include",
+        "-fPIC",
+        "-falign-functions=64",
+        "-I/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/Rcpp/include",
+        "-I/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/RcppEigen/include",
+        "-I/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/RcppParallel/include",
+        "-DEIGEN_DONT_VECTORIZE",
+        "-I/Library/Developer/CommandLineTools/usr/lib/clang/16.0.0/include",
+        "-I/opt/homebrew/Cellar/llvm/19.1.7_1/bin/../include/c++/v1",
+        "-I/opt/homebrew/Cellar/llvm/19.1.7_1/lib/clang/19/include",
+        "-I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
+    ],
+    "pch": "RcppEigen",
+    "is_cpp": true,
+    "hash": "1729656370174382044317299073351698684229",
+    "compiler": "4905875172762071621",
+    "rversion": "4.4.0",
+    "dbversion": 4
+}

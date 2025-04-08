@@ -1,0 +1,16 @@
+{
+    "type": [
+        2,
+        2,
+        3,
+        3,
+        2
+    ],
+    "data": [
+        "\nR version 4.4.0 (2024-04-24) -- \"Puppy Cup\"\nCopyright (C) 2024 The R Foundation for Statistical Computing\nPlatform: aarch64-apple-darwin20\n\nR is free software and comes with ABSOLUTELY NO WARRANTY.\nYou are welcome to redistribute it under certain conditions.\nType 'license()' or 'licence()' for distribution details.\n\n  Natural language support but running in an English locale\n\nR is a collaborative project with many contributors.\nType 'contributors()' for more information and\n'citation()' on how to cite R or",
+        " R packages in publications.\n\nType 'demo()' for some demos, 'help()' for on-line help, or\n'help.start()' for an HTML browser interface to help.\nType 'q()' to quit R.\n\n\nRestarting R session...\n\n",
+        "Loading required package: BRISC\nLoading required package: RANN\nLoading required package: parallel\nLoading required package: rdist\nLoading required package: matrixStats\nLoading required package: pbapply\nThe ordering of inputs x (covariates) and y (response) in BRISC_estimation has been changed BRISC 1.0.0 onwards.\n  Please check the new documentation with ?BRISC_estimation.\nLoading required package: fields\nLoading required package: spam\nSpam version 2.10-0 (2023-10-23) is loaded.\nType 'help( Spam)' or 'demo(",
+        " spam)' for a short introduction \nand overview of this package.\nHelp for individual functions is also obtained by adding the\nsuffix '.spam' to the function name, e.g. 'help( chol.spam)'.\n\nAttaching package: ‘spam’\n\nThe following objects are masked from ‘package:base’:\n\n    backsolve, forwardsolve\n\nLoading required package: viridisLite\n\nTry help(fields) to get started.\n\nAttaching package: ‘fields’\n\nThe following object is masked from ‘package:rdist’:\n\n    rdist\n\n",
+        "\nRestarting R session...\n\n"
+    ]
+}

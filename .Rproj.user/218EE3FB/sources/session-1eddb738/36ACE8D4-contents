@@ -1,0 +1,246 @@
+# load packages
+library(BRISC)
+library(MASS)
+#library(sf)
+library(fields)
+library(RColorBrewer)
+library(classInt)
+library(psych)
+library(rstan)
+library(Matrix)
+library(magrittr)
+library(reticulate)
+library(rhdf5)
+
+# args <- commandArgs(T)
+# args
+# for(i in 1:(length(args)-1)){ eval(parse(text=args[[i]])) }
+# t = as.integer(t)
+# n_index = as.integer(n_index)
+
+t
+
+n_index
+
+source("~/Desktop/Spatial/sims_spVarBayes_v6/pred/withoutX/data_generation_cluster_prediction.R")
+
+scenario_path = paste0("n_",n_train[n_index],"_seed_",t)
+general_path = "/Users/jiafangsong/Desktop/Spatial/sims_spVarBayes/coords_order/pred"
+h5_file_path = paste0(general_path, "/data_sim/", scenario_path, "_data.h5")
+
+library(spVarBayes)
+
+BRISC_input = BRISC_estimation(coords = S_train, y = y_train, x = NULL, sigma.sq = 1,
+                               tau.sq = 0.1, phi = 1,
+                               nu = 0.5, n.neighbors = 15,
+                               n_omp = 1, 
+                               cov.model = "exponential",
+                               search.type = "tree",
+                               stabilization = NULL,
+                               pred.stabilization = 1e-5,
+                               verbose = TRUE, eps = 2e-05,
+                               nugget_status = 1, 
+                               neighbor = NULL, tol = 12)$Theta
+BRISC_phi_input = BRISC_input[3]
+BRISC_var_input = 1/(1/BRISC_input[2]+1/BRISC_input[1])
+print(c("BRISC_estimation for phi is",BRISC_phi_input))
+print(c("BRISC_estimation for var is",BRISC_var_input))
+
+if(n>10000){
+  d_max = dist(S_train[c(1,length(y_train)),])
+}else{
+  d_max = max(as.matrix(dist(S_train)))
+}
+#d_max = 10*sqrt(2)
+phi_min = min(3/d_max,max(BRISC_phi_input-0.5,0.01))
+phi_max = max(30/d_max,BRISC_phi_input+0.1)
+BRISC_input
+c(phi_min,phi_max)
+print(c("phi range is",phi_min,phi_max))
+#mini_batch_size_vec = c(256, 512, 1024)
+mini_batch_size_vec =  c(256, 1024, 1024, 2048)
+mini_batch_size_n = mini_batch_size_vec[n_index]
+
+max_iter = 1500
+verbose = 0
+Trace_N = 30
+#### Fit the model
+
+MFA_full = spVB_MFA(y_train,X = NULL,coords=S_train, n.neighbors = m_dat, rho = 0.85,
+                    max_iter = 1000, Trace_N = Trace_N,
+                    verbose = 0, covariates = FALSE, 
+                    phi_max_iter = 0,
+                    var_input = BRISC_var_input,
+                    phi = BRISC_input[3],
+                    phi.range = c(phi_min,phi_max),
+                    ord_type = "Sum_coords", tau_sq_input = BRISC_input[2], sigma_sq_input = BRISC_input[1], LR = F)
+
+MFA_full_LR = spVB_MFA(y_train,X = NULL,coords=S_train, n.neighbors = m_dat, rho = 0.85,
+                       max_iter = 1000, Trace_N = Trace_N,
+                       verbose = 0, covariates = FALSE, 
+                       phi_max_iter = 0,
+                       var_input = BRISC_var_input,
+                       phi = BRISC_input[3],
+                       phi.range = c(phi_min,phi_max),
+                       ord_type = "Sum_coords", tau_sq_input = BRISC_input[2], sigma_sq_input = BRISC_input[1], LR = T)
+
+NNGP_full_m3 = spVB_NNGP(y_train,X = NULL,coords=S_train, n.neighbors = m_dat, 
+                         n.neighbors.vi = 3,
+                         rho = 0.85, max_iter = 1500, Trace_N = Trace_N, 
+                         verbose = 0, covariates = FALSE, 
+                         phi_max_iter = 0,
+                         var_input = BRISC_var_input,
+                         phi = BRISC_phi_input,
+                         mini_batch = F,
+                         phi.range = c(phi_min,phi_max),
+                         ord_type = "Sum_coords")
+
+n.samples.vec <- c(5000,7500,10000)
+n.samples = n.samples.vec[n_index]
+starting <- list("phi"= BRISC_phi_input, "sigma.sq"=1, "tau.sq"=BRISC_var_input,"beta" = 0)
+tuning <- list("phi"=0.15, "sigma.sq"=1.5, "tau.sq"=1.15)
+priors <- list("phi.Unif"=c(1/10, 10), "sigma.sq.IG"=c(0.1, 1), "tau.sq.IG"=c(1,1))
+cov.model <- "exponential"
+
+library(spNNGP)
+intercept = rep(1,length(y_train))
+m.s <- spNNGP(y_train~intercept-1, coords=S_train, starting=starting, method="latent",
+              n.neighbors=m_dat, priors=priors, tuning=tuning, cov.model=cov.model,
+              n.samples=n.samples, n.omp.threads=1, n.report=500, covariates = 0)
+
+burnin = 2000
+
+summary(m.s)
+what = apply(m.s$p.w.samples[,((burnin+1):n.samples)], 1, mean)
+m.s.var = apply(m.s$p.w.samples[,((burnin+1):n.samples)], 1, var)
+
+
+##### Make predictions
+NNGP_full_m3_predict = predict(NNGP_full_m3,
+                               coords.0 = S_test,
+                               X.0 = NULL,
+                               covariates = FALSE,
+                               n.samples = 5000)
+
+MFA_full_predict = predict(MFA_full,
+                             coords.0 = S_test,
+                             X.0 = NULL,
+                             covariates = FALSE,
+                             n.samples = 5000)
+
+MFA_LR_predict = predict(MFA_full_LR,
+                             coords.0 = S_test,
+                             X.0 = NULL,
+                             covariates = FALSE,
+                             n.samples = 5000)
+
+p.s <- predict(m.s, X.0 = as.matrix(rep(1,length(y_test))), coords.0 = S_test, n.omp.threads=1)
+
+
+calculate_IS = function(w_test,p.w.0){
+  library(scoringutils)
+  interval_range = rep(95,length(w_test))
+  quantile = sapply(1:length(y_test), function(i) quantile(p.w.0[i,],probs = c(0.025,0.975)))
+  IS_score = scoringutils:::interval_score(w_test,
+                            lower = quantile[1,],
+                            upper = quantile[2,],
+                            interval_range)
+  return(IS_score)
+}
+
+calculate_coverage= function(w_test,p.w.0){
+  quantile = sapply(1:length(y_test), function(i) quantile(p.w.0[i,],probs = c(0.025,0.975)))
+  coverage = sum(sapply(1:length(y_test), function(i) w_test[i] >= quantile[1,i] && w_test[i] <= quantile[2,i] ))/length(y_test)
+  return(coverage)
+}
+
+#### w
+interval_score_data = data.frame(cbind(calculate_IS(w_test,MFA_full_predict$p.w.0),
+                                       calculate_IS(w_test,MFA_LR_predict$p.w.0),
+                                       calculate_IS(w_test,NNGP_full_m3_predict$p.w.0),
+                                       calculate_IS(w_test,p.s$p.w.0)
+                                       ))
+names(interval_score_data) = c("MFA","MFA.LR","spVB-NNGP",
+                               "spNNGP")
+
+
+w_IS_mean = colMeans(interval_score_data)
+w_MSE = c(mean(scoringutils::se_mean_sample(w_test, MFA_full_predict$p.w.0)),
+          mean(scoringutils::se_mean_sample(w_test, MFA_LR_predict$p.w.0)),
+          mean(scoringutils::se_mean_sample(w_test, NNGP_full_m3_predict$p.w.0)),
+          mean(scoringutils::se_mean_sample(w_test, p.s$p.w.0)))
+
+names(w_MSE) = c("MFA","MFA.LR","spVB-NNGP",
+                 "spNNGP")
+
+w_coverage = c(calculate_coverage(w_test,MFA_full_predict$p.w.0),
+               calculate_coverage(w_test,MFA_LR_predict$p.w.0),
+               calculate_coverage(w_test,NNGP_full_m3_predict$p.w.0),
+               calculate_coverage(w_test,p.s$p.w.0))
+
+names(w_coverage) = c("MFA","MFA.LR","spVB-NNGP",
+                      "spNNGP")
+
+w_crps = c(mean(crps_sample(w_test, MFA_full_predict$p.w.0)),
+           mean(crps_sample(w_test, MFA_LR_predict$p.w.0)),
+           mean(crps_sample(w_test, NNGP_full_m3_predict$p.w.0)),
+           mean(crps_sample(w_test, p.s$p.w.0)))
+
+names(w_crps) = c("MFA","MFA.LR","spVB-NNGP",
+                      "spNNGP")
+
+#### y 
+interval_score_data_y=data.frame(cbind(calculate_IS(y_test,MFA_full_predict$p.y.0),
+                                       calculate_IS(y_test,MFA_LR_predict$p.y.0),
+                                       calculate_IS(y_test,NNGP_full_m3_predict$p.y.0),
+                                       calculate_IS(y_test,p.s$p.y.0)
+))
+names(interval_score_data_y) = c("MFA","MFA.LR","spVB-NNGP",
+                                 "spNNGP")
+
+
+y_IS_mean = colMeans(interval_score_data_y)
+y_MSE = c(mean(se_mean_sample(y_test, MFA_full_predict$p.y.0)),
+          mean(se_mean_sample(y_test, MFA_LR_predict$p.y.0)),
+          mean(se_mean_sample(y_test, NNGP_full_m3_predict$p.y.0)),
+          mean(se_mean_sample(y_test, p.s$p.y.0)))
+
+names(y_MSE) = c("MFA","MFA.LR","spVB-NNGP",
+                 "spNNGP")
+
+y_coverage = c(calculate_coverage(y_test,MFA_full_predict$p.y.0),
+               calculate_coverage(y_test,MFA_LR_predict$p.y.0),
+               calculate_coverage(y_test,NNGP_full_m3_predict$p.y.0),
+               calculate_coverage(y_test,p.s$p.y.0))
+
+names(y_coverage) = c("MFA","MFA.LR","spVB-NNGP",
+                      "spNNGP")
+
+y_crps = c(mean(crps_sample(y_test, MFA_full_predict$p.y.0)),
+           mean(crps_sample(y_test, MFA_LR_predict$p.y.0)),
+           mean(crps_sample(y_test, NNGP_full_m3_predict$p.y.0)),
+           mean(crps_sample(y_test, p.s$p.y.0)))
+
+names(y_crps) = c("MFA","MFA.LR","spVB-NNGP",
+                  "spNNGP")
+
+
+third_elements <- c("interval_score", "crps","MSE", "coverage")
+second_elements <- c("MFA","MFA.LR","spVB-NNGP",
+                     "spNNGP")
+
+combination_w <- apply(expand.grid("w", second_elements, third_elements), 1, function(x) paste(x, collapse = "_"))
+combination_y <- apply(expand.grid("y", second_elements, third_elements), 1, function(x) paste(x, collapse = "_"))
+
+output_vector = c(t,n,
+                  w_IS_mean,w_crps,w_MSE,w_coverage,
+                  y_IS_mean,y_crps,y_MSE,y_coverage)
+
+names(output_vector) = c("t","n",
+                         combination_w,combination_y)
+
+
+file_name_output_vector = paste0("/Users/jiafangsong/Desktop/Spatial/sims_spVarBayes_v6/pred/withoutX/NNGP_results/VI_NNGP_pred_vector","_t",t,"_n",n,".csv")
+
+write.csv(output_vector,file_name_output_vector,row.names = FALSE)
+

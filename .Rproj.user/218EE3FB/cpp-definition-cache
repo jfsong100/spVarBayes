@@ -1,0 +1,2130 @@
+[
+    {
+        "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/MFA_mb.cpp",
+        "file_last_write": 1743818192.0,
+        "definitions": [
+            {
+                "usr": "c:MFA_mb.cpp@8@macro@USE_FC_LEN_T",
+                "kind": 9,
+                "parent_name": "",
+                "name": "USE_FC_LEN_T",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/MFA_mb.cpp",
+                "line": 1,
+                "column": 9,
+                "hidden": false
+            }
+        ],
+        "hidden": false
+    },
+    {
+        "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/NNGPVI.cpp",
+        "file_last_write": 1743859262.0,
+        "definitions": [
+            {
+                "usr": "c:NNGPVI.cpp@8@macro@USE_FC_LEN_T",
+                "kind": 9,
+                "parent_name": "",
+                "name": "USE_FC_LEN_T",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/NNGPVI.cpp",
+                "line": 1,
+                "column": 9,
+                "hidden": false
+            }
+        ],
+        "hidden": false
+    },
+    {
+        "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/NNGP_mb.cpp",
+        "file_last_write": 1732153048.0,
+        "definitions": [
+            {
+                "usr": "c:NNGP_mb.cpp@8@macro@USE_FC_LEN_T",
+                "kind": 9,
+                "parent_name": "",
+                "name": "USE_FC_LEN_T",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/NNGP_mb.cpp",
+                "line": 1,
+                "column": 9,
+                "hidden": false
+            }
+        ],
+        "hidden": false
+    },
+    {
+        "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/Predict.cpp",
+        "file_last_write": 1743965893.0,
+        "definitions": [
+            {
+                "usr": "c:Predict.cpp@8@macro@USE_FC_LEN_T",
+                "kind": 9,
+                "parent_name": "",
+                "name": "USE_FC_LEN_T",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/Predict.cpp",
+                "line": 1,
+                "column": 9,
+                "hidden": false
+            }
+        ],
+        "hidden": false
+    },
+    {
+        "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_ansi.h",
+        "file_last_write": 1678234853.0,
+        "definitions": [
+            {
+                "usr": "c:arithmetic_ansi.h@1397@macro@fsigndiff",
+                "kind": 9,
+                "parent_name": "",
+                "name": "fsigndiff",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_ansi.h",
+                "line": 34,
+                "column": 9,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_ansi.h@F@vecalloc#l#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "vecalloc(size_t)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_ansi.h",
+                "line": 37,
+                "column": 21,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_ansi.h@F@vecfree#*v#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "vecfree(void *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_ansi.h",
+                "line": 46,
+                "column": 20,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_ansi.h@F@vecset#*I#1I#1I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "vecset(int *, const int, const int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_ansi.h",
+                "line": 51,
+                "column": 20,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_ansi.h@F@veccpy#*I#*1I#1I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "veccpy(int *, const int *, const int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_ansi.h",
+                "line": 60,
+                "column": 20,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_ansi.h@F@vecncpy#*I#*1I#1I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "vecncpy(int *, const int *, const int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_ansi.h",
+                "line": 69,
+                "column": 20,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_ansi.h@F@vecadd#*I#*1I#1I#1I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "vecadd(int *, const int *, const int, const int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_ansi.h",
+                "line": 78,
+                "column": 20,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_ansi.h@F@vecdiff#*I#*1I#S1_#1I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "vecdiff(int *, const int *, const int *, const int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_ansi.h",
+                "line": 87,
+                "column": 20,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_ansi.h@F@vecscale#*I#1I#1I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "vecscale(int *, const int, const int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_ansi.h",
+                "line": 96,
+                "column": 20,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_ansi.h@F@vecmul#*I#*1I#1I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "vecmul(int *, const int *, const int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_ansi.h",
+                "line": 105,
+                "column": 20,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_ansi.h@F@vecdot#*I#*1I#S1_#1I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "vecdot(int *, const int *, const int *, const int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_ansi.h",
+                "line": 114,
+                "column": 20,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_ansi.h@F@vec2norm#*I#*1I#1I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "vec2norm(int *, const int *, const int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_ansi.h",
+                "line": 123,
+                "column": 20,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_ansi.h@F@vec2norminv#*I#*1I#1I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "vec2norminv(int *, const int *, const int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_ansi.h",
+                "line": 129,
+                "column": 20,
+                "hidden": false
+            }
+        ],
+        "hidden": false
+    },
+    {
+        "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_double.h",
+        "file_last_write": 1678234853.0,
+        "definitions": [
+            {
+                "usr": "c:arithmetic_sse_double.h@2042@macro@fsigndiff",
+                "kind": 9,
+                "parent_name": "",
+                "name": "fsigndiff",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_double.h",
+                "line": 69,
+                "column": 9,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_sse_double.h@2129@macro@vecset",
+                "kind": 9,
+                "parent_name": "",
+                "name": "vecset",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_double.h",
+                "line": 72,
+                "column": 9,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_sse_double.h@2411@macro@veccpy",
+                "kind": 9,
+                "parent_name": "",
+                "name": "veccpy",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_double.h",
+                "line": 84,
+                "column": 9,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_sse_double.h@2844@macro@vecncpy",
+                "kind": 9,
+                "parent_name": "",
+                "name": "vecncpy",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_double.h",
+                "line": 99,
+                "column": 9,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_sse_double.h@3614@macro@vecadd",
+                "kind": 9,
+                "parent_name": "",
+                "name": "vecadd",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_double.h",
+                "line": 122,
+                "column": 9,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_sse_double.h@4173@macro@vecdiff",
+                "kind": 9,
+                "parent_name": "",
+                "name": "vecdiff",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_double.h",
+                "line": 140,
+                "column": 9,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_sse_double.h@4962@macro@vecscale",
+                "kind": 9,
+                "parent_name": "",
+                "name": "vecscale",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_double.h",
+                "line": 163,
+                "column": 9,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_sse_double.h@5344@macro@vecmul",
+                "kind": 9,
+                "parent_name": "",
+                "name": "vecmul",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_double.h",
+                "line": 177,
+                "column": 9,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_sse_double.h@6444@macro@__horizontal_sum",
+                "kind": 9,
+                "parent_name": "",
+                "name": "__horizontal_sum",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_double.h",
+                "line": 215,
+                "column": 9,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_sse_double.h@6687@macro@vecdot",
+                "kind": 9,
+                "parent_name": "",
+                "name": "vecdot",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_double.h",
+                "line": 225,
+                "column": 9,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_sse_double.h@7381@macro@vec2norm",
+                "kind": 9,
+                "parent_name": "",
+                "name": "vec2norm",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_double.h",
+                "line": 247,
+                "column": 9,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_sse_double.h@8075@macro@vec2norminv",
+                "kind": 9,
+                "parent_name": "",
+                "name": "vec2norminv",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_double.h",
+                "line": 271,
+                "column": 9,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_sse_double.h@F@vecalloc#l#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "vecalloc(size_t)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_double.h",
+                "line": 42,
+                "column": 21,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_sse_double.h@F@vecfree#*v#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "vecfree(void *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_double.h",
+                "line": 60,
+                "column": 20,
+                "hidden": false
+            }
+        ],
+        "hidden": false
+    },
+    {
+        "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_float.h",
+        "file_last_write": 1678234853.0,
+        "definitions": [
+            {
+                "usr": "c:arithmetic_sse_float.h@1598@macro@fsigndiff",
+                "kind": 9,
+                "parent_name": "",
+                "name": "fsigndiff",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_float.h",
+                "line": 45,
+                "column": 9,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_sse_float.h@2206@macro@vecset",
+                "kind": 9,
+                "parent_name": "",
+                "name": "vecset",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_float.h",
+                "line": 71,
+                "column": 9,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_sse_float.h@2492@macro@veccpy",
+                "kind": 9,
+                "parent_name": "",
+                "name": "veccpy",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_float.h",
+                "line": 83,
+                "column": 9,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_sse_float.h@2930@macro@vecncpy",
+                "kind": 9,
+                "parent_name": "",
+                "name": "vecncpy",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_float.h",
+                "line": 98,
+                "column": 9,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_sse_float.h@3622@macro@vecadd",
+                "kind": 9,
+                "parent_name": "",
+                "name": "vecadd",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_float.h",
+                "line": 119,
+                "column": 9,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_sse_float.h@4176@macro@vecdiff",
+                "kind": 9,
+                "parent_name": "",
+                "name": "vecdiff",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_float.h",
+                "line": 137,
+                "column": 9,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_sse_float.h@4970@macro@vecscale",
+                "kind": 9,
+                "parent_name": "",
+                "name": "vecscale",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_float.h",
+                "line": 160,
+                "column": 9,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_sse_float.h@5349@macro@vecmul",
+                "kind": 9,
+                "parent_name": "",
+                "name": "vecmul",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_float.h",
+                "line": 174,
+                "column": 9,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_sse_float.h@6454@macro@__horizontal_sum",
+                "kind": 9,
+                "parent_name": "",
+                "name": "__horizontal_sum",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_float.h",
+                "line": 212,
+                "column": 9,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_sse_float.h@6697@macro@vecdot",
+                "kind": 9,
+                "parent_name": "",
+                "name": "vecdot",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_float.h",
+                "line": 222,
+                "column": 9,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_sse_float.h@7326@macro@vec2norm",
+                "kind": 9,
+                "parent_name": "",
+                "name": "vec2norm",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_float.h",
+                "line": 243,
+                "column": 9,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_sse_float.h@8219@macro@vec2norminv",
+                "kind": 9,
+                "parent_name": "",
+                "name": "vec2norminv",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_float.h",
+                "line": 272,
+                "column": 9,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_sse_float.h@F@vecalloc#l#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "vecalloc(size_t)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_float.h",
+                "line": 48,
+                "column": 21,
+                "hidden": false
+            },
+            {
+                "usr": "c:arithmetic_sse_float.h@F@vecfree#*v#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "vecfree(void *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/arithmetic_sse_float.h",
+                "line": 66,
+                "column": 20,
+                "hidden": false
+            }
+        ],
+        "hidden": false
+    },
+    {
+        "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/lu_solver.cpp",
+        "file_last_write": 1743819083.0,
+        "definitions": [
+            {
+                "usr": "c:@S@ParallelSolver",
+                "kind": 3,
+                "parent_name": "",
+                "name": "ParallelSolver",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/lu_solver.cpp",
+                "line": 42,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@S@ParallelSolver@F@operator()#l#l#",
+                "kind": 7,
+                "parent_name": "ParallelSolver",
+                "name": "operator(std::size_t, std::size_t)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/lu_solver.cpp",
+                "line": 56,
+                "column": 8,
+                "hidden": false
+            }
+        ],
+        "hidden": false
+    },
+    {
+        "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/lu_solver_mat.cpp",
+        "file_last_write": 1743818983.0,
+        "definitions": [
+            {
+                "usr": "c:@S@ParallelMatSolver",
+                "kind": 3,
+                "parent_name": "",
+                "name": "ParallelMatSolver",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/lu_solver_mat.cpp",
+                "line": 40,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@S@ParallelMatSolver@F@operator()#l#l#",
+                "kind": 7,
+                "parent_name": "ParallelMatSolver",
+                "name": "operator(std::size_t, std::size_t)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/lu_solver_mat.cpp",
+                "line": 54,
+                "column": 8,
+                "hidden": false
+            }
+        ],
+        "hidden": false
+    },
+    {
+        "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/lu_solver_mat_nop.cpp",
+        "file_last_write": 1743773513.0,
+        "definitions": [
+            {
+                "usr": "c:@S@ParallelMatnopSolver",
+                "kind": 3,
+                "parent_name": "",
+                "name": "ParallelMatnopSolver",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/lu_solver_mat_nop.cpp",
+                "line": 32,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@S@ParallelMatnopSolver@F@operator()#l#l#",
+                "kind": 7,
+                "parent_name": "ParallelMatnopSolver",
+                "name": "operator(std::size_t, std::size_t)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/lu_solver_mat_nop.cpp",
+                "line": 44,
+                "column": 8,
+                "hidden": false
+            }
+        ],
+        "hidden": false
+    },
+    {
+        "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/lu_solver_mat_p.cpp",
+        "file_last_write": 1742527937.0,
+        "definitions": [
+            {
+                "usr": "c:@S@ParallelMatpSolver",
+                "kind": 3,
+                "parent_name": "",
+                "name": "ParallelMatpSolver",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/lu_solver_mat_p.cpp",
+                "line": 61,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@S@ParallelMatpSolver@F@operator()#l#l#",
+                "kind": 7,
+                "parent_name": "ParallelMatpSolver",
+                "name": "operator(std::size_t, std::size_t)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/lu_solver_mat_p.cpp",
+                "line": 77,
+                "column": 8,
+                "hidden": false
+            }
+        ],
+        "hidden": false
+    },
+    {
+        "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/lu_solver_p.cpp",
+        "file_last_write": 1743819061.0,
+        "definitions": [
+            {
+                "usr": "c:@S@ParallelSolverp",
+                "kind": 3,
+                "parent_name": "",
+                "name": "ParallelSolverp",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/lu_solver_p.cpp",
+                "line": 63,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@S@ParallelSolverp@F@operator()#l#l#",
+                "kind": 7,
+                "parent_name": "ParallelSolverp",
+                "name": "operator(std::size_t, std::size_t)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/lu_solver_p.cpp",
+                "line": 82,
+                "column": 8,
+                "hidden": false
+            }
+        ],
+        "hidden": false
+    },
+    {
+        "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/matrix_operations.cpp",
+        "file_last_write": 1743819122.0,
+        "definitions": [],
+        "hidden": false
+    },
+    {
+        "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+        "file_last_write": 1743963876.0,
+        "definitions": [
+            {
+                "usr": "c:@F@zeros_minibatch#*d#I#I#*I#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "zeros_minibatch(double *, int, int, int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 24,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@vecsum_minibatch#*d#S0_#I#I#I#*I#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "vecsum_minibatch(double *, double *, int, int, int, int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 30,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@get_num_nIndx_col#*I#I#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "get_num_nIndx_col(int *, int, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 37,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@get_cumnum_nIndx_col#*I#I#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "get_cumnum_nIndx_col(int *, int, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 43,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@get_sum_nnIndx#*I#I#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "get_sum_nnIndx(int *, int, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 51,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@findPositions#*I#S0_#I#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "findPositions(int *, int *, int, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 61,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@get_nnIndx_col#*I#I#I#S0_#S0_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "get_nnIndx_col(int *, int, int, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 72,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@get_nnIndx_nn_col#*I#I#I#I#S0_#S0_#S0_#S0_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "get_nnIndx_nn_col(int *, int, int, int, int *, int *, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 84,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@updateBF_logdet#*d#S0_#S0_#S0_#S0_#S0_#*I#S1_#I#S0_#I#I#d#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "updateBF_logdet(double *, double *, double *, double *, double *, double *, int *, int *, int, double *, int, int, double)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 98,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@solve_B_F#*d#S0_#S0_#I#*I#S1_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "solve_B_F(double *, double *, double *, int, int *, int *, double *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 153,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@product_B_F#*d#S0_#S0_#I#*I#S1_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "product_B_F(double *, double *, double *, int, int *, int *, double *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 166,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@product_B_F_vec#*d#S0_#S0_#I#*I#S1_#S0_#S1_#S1_#S1_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "product_B_F_vec(double *, double *, double *, int, int *, int *, double *, int *, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 179,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@diagonal#*d#S0_#S0_#I#*I#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "diagonal(double *, double *, double *, int, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 198,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@update_uvec#*d#S0_#S0_#S0_#I#*I#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "update_uvec(double *, double *, double *, double *, int, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 226,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@a_gradient_fun#*d#S0_#S0_#S0_#S0_#I#*I#S1_#S0_#S0_#S1_#S1_#S0_#I#S1_#S1_#S1_#S1_#S0_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "a_gradient_fun(double *, double *, double *, double *, double *, int, int *, int *, double *, double *, int *, int *, double *, int, int *, int *, int *, int *, double *, double *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 239,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@a_gradient_fun2#*d#S0_#S0_#S0_#S0_#I#*I#S1_#S1_#S1_#S0_#I#S1_#S1_#S1_#S1_#S0_#S0_#I#S0_#S0_#S0_#S1_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "a_gradient_fun2(double *, double *, double *, double *, double *, int, int *, int *, int *, int *, double *, int, int *, int *, int *, int *, double *, double *, int, double *, double *, double *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 271,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@a_gradient_fun_all#*d#S0_#S0_#S0_#S0_#S0_#I#I#*I#S1_#S0_#S0_#S1_#S1_#S0_#I#S1_#S1_#S1_#S1_#S0_#S0_#S0_#S0_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "a_gradient_fun_all(double *, double *, double *, double *, double *, double *, int, int, int *, int *, double *, double *, int *, int *, double *, int, int *, int *, int *, int *, double *, double *, double *, double *, double *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 311,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@gamma_gradient_fun#*d#S0_#S0_#S0_#S0_#I#*I#S1_#S0_#S0_#S1_#S1_#S0_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S0_#S0_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "gamma_gradient_fun(double *, double *, double *, double *, double *, int, int *, int *, double *, double *, int *, int *, double *, int, int *, int *, int *, int *, int *, int *, int *, int *, double *, double *, double *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 372,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@gamma_gradient_fun2#*d#S0_#S0_#S0_#S0_#I#*I#S1_#S1_#S1_#S0_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S0_#S0_#S0_#I#S0_#S0_#S0_#S1_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "gamma_gradient_fun2(double *, double *, double *, double *, double *, int, int *, int *, int *, int *, double *, int, int *, int *, int *, int *, int *, int *, int *, int *, double *, double *, double *, int, double *, double *, double *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 412,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@gamma_gradient_fun_all#*d#S0_#S0_#S0_#S0_#S0_#I#*I#S1_#S0_#S0_#S1_#S1_#S0_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S0_#S0_#S0_#S0_#S0_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "gamma_gradient_fun_all(double *, double *, double *, double *, double *, double *, int, int *, int *, double *, double *, int *, int *, double *, int, int *, int *, int *, int *, int *, int *, int *, int *, double *, double *, double *, double *, double *, double *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 461,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@ELBO_u_vec#*d#S0_#S0_#S0_#I#*I#S1_#S0_#S0_#S1_#S1_#S0_#I#S0_#I#d#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "ELBO_u_vec(double *, double *, double *, double *, int, int *, int *, double *, double *, int *, int *, double *, int, double *, int, double)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 506,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@product_B_F_minibatch#*d#S0_#S0_#I#*I#S1_#S0_#I#S1_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "product_B_F_minibatch(double *, double *, double *, int, int *, int *, double *, int, int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 530,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@product_B_F_vec_minibatch#*d#S0_#S0_#I#*I#S1_#S0_#S1_#S1_#S1_#S1_#I#S1_#I#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "product_B_F_vec_minibatch(double *, double *, double *, int, int *, int *, double *, int *, int *, int *, int *, int, int *, int, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 552,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@updateBF#*d#S0_#S0_#S0_#S0_#*I#S1_#I#I#d#d#d#I#S0_#d#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "updateBF(double *, double *, double *, double *, double *, int *, int *, int, int, double, double, double, int, double *, double)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 575,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@updateBF2#*d#S0_#S0_#S0_#S0_#*I#S1_#I#I#d#d#I#S0_#d#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "updateBF2(double *, double *, double *, double *, double *, int *, int *, int, int, double, double, int, double *, double)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 618,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@updateBF_minibatch#*d#S0_#S0_#S0_#S0_#*I#S1_#I#I#d#d#d#I#S0_#d#I#S1_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "updateBF_minibatch(double *, double *, double *, double *, double *, int *, int *, int, int, double, double, double, int, double *, double, int, int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 661,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@Q_mini_batch#*d#S0_#S0_#S0_#I#*I#I#I#S1_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "Q_mini_batch(double *, double *, double *, double *, int, int *, int, int, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 710,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@update_uvec_minibatch#*d#S0_#S0_#S0_#I#*I#S1_#I#S1_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "update_uvec_minibatch(double *, double *, double *, double *, int, int *, int *, int, int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 736,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@gamma_gradient_fun_minibatch#*d#S0_#S0_#S0_#S0_#S0_#I#*I#S1_#S0_#S0_#S1_#S1_#S0_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S0_#S0_#S0_#I#S1_#I#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "gamma_gradient_fun_minibatch(double *, double *, double *, double *, double *, double *, int, int *, int *, double *, double *, int *, int *, double *, int, int *, int *, int *, int *, int *, int *, int *, int *, double *, double *, double *, int, int *, int, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 759,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@a_gradient_fun_minibatch#*d#S0_#S0_#S0_#S0_#S0_#I#*I#S1_#S0_#S0_#S1_#S1_#S0_#I#S1_#S1_#S1_#S1_#S0_#S0_#I#S1_#I#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "a_gradient_fun_minibatch(double *, double *, double *, double *, double *, double *, int, int *, int *, double *, double *, int *, int *, double *, int, int *, int *, int *, int *, double *, double *, int, int *, int, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 815,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@var_est#*d#S0_#S0_#S0_#*I#S1_#I#S0_#I#S1_#I#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "var_est(double *, double *, double *, double *, int *, int *, int, double *, int, int *, int, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 855,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@mu_grad#*d#S0_#S0_#I#*I#S1_#S1_#S1_#S1_#S1_#I#S1_#I#I#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "mu_grad(double *, double *, double *, int, int *, int *, int *, int *, int *, int *, int, int *, int, int, double *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 873,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@find_set#I#*I#S0_#S0_#S0_#S0_#S0_#I#S0_#I#S0_#&I#S0_#S1_#S0_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "find_set(int, int *, int *, int *, int *, int *, int *, int, int *, int, int *, int &, int *, int &, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 915,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@update_uvec_minibatch_plus#*d#S0_#S0_#S0_#I#*I#S1_#I#S1_#S1_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "update_uvec_minibatch_plus(double *, double *, double *, double *, int, int *, int *, int, int *, int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 974,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@Q_mini_batch_plus#*d#S0_#S0_#S0_#I#I#*I#S1_#S1_#S1_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "Q_mini_batch_plus(double *, double *, double *, double *, int, int, int *, int *, int *, int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 997,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@updateBF_minibatch_plus#*d#S0_#S0_#S0_#S0_#*I#S1_#I#I#d#d#d#I#S0_#d#I#S1_#S1_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "updateBF_minibatch_plus(double *, double *, double *, double *, double *, int *, int *, int, int, double, double, double, int, double *, double, int, int *, int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 1023,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@product_B_F_minibatch_plus#*d#S0_#S0_#I#*I#S1_#S0_#I#S1_#S1_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "product_B_F_minibatch_plus(double *, double *, double *, int, int *, int *, double *, int, int *, int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 1073,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@product_B_F_vec_minibatch_plus#*d#S0_#S0_#I#*I#S1_#S0_#S1_#S1_#S1_#S1_#I#S1_#S1_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "product_B_F_vec_minibatch_plus(double *, double *, double *, int, int *, int *, double *, int *, int *, int *, int *, int, int *, int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 1096,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@zeros_minibatch_plus#*d#I#I#*I#S1_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "zeros_minibatch_plus(double *, int, int, int *, int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 1126,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@vecsum_minibatch_plus#*d#S0_#I#I#I#*I#S1_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "vecsum_minibatch_plus(double *, double *, int, int, int, int *, int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 1135,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@gamma_gradient_fun_minibatch_plus#*d#S0_#S0_#S0_#S0_#S0_#I#*I#S1_#S0_#S0_#S1_#S1_#S0_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S0_#S0_#S0_#I#S1_#S1_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "gamma_gradient_fun_minibatch_plus(double *, double *, double *, double *, double *, double *, int, int *, int *, double *, double *, int *, int *, double *, int, int *, int *, int *, int *, int *, int *, int *, int *, double *, double *, double *, int, int *, int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 1149,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@a_gradient_fun_minibatch_plus#*d#S0_#S0_#S0_#S0_#S0_#I#*I#S1_#S0_#S0_#S1_#S1_#S0_#I#S1_#S1_#S1_#S1_#S0_#S0_#I#S1_#S1_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "a_gradient_fun_minibatch_plus(double *, double *, double *, double *, double *, double *, int, int *, int *, double *, double *, int *, int *, double *, int, int *, int *, int *, int *, double *, double *, int, int *, int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 1206,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@find_set_mb#I#*I#S0_#S0_#S0_#S0_#S0_#I#S0_#I#S0_#&I#S0_#S1_#S0_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "find_set_mb(int, int *, int *, int *, int *, int *, int *, int, int *, int, int *, int &, int *, int &, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 1251,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@Expectation_B_F#*d#S0_#S0_#S0_#I#*I#S1_#I#S1_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "Expectation_B_F(double *, double *, double *, double *, int, int *, int *, int, int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 1308,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@compare_ints#*1v#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "compare_ints(const void *, const void *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 1333,
+                "column": 5,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@find_set_nngp#I#*I#S0_#I#S0_#I#S0_#S0_#S0_#S0_#S0_#S0_#S0_#S0_#S0_#S0_#&I#S1_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "find_set_nngp(int, int *, int *, int, int *, int, int *, int *, int *, int *, int *, int *, int *, int *, int *, int *, int &, int &, int &)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 1343,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@mu_grad_intersect#*d#S0_#I#*I#S1_#S1_#I#S1_#I#S1_#S1_#S1_#S0_#I#S0_#S0_#S1_#S1_#S1_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "mu_grad_intersect(double *, double *, int, int *, int *, int *, int, int *, int, int *, int *, int *, double *, int, double *, double *, int *, int *, int *, double *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 1414,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@mu_grad_complement_1#*d#S0_#I#*I#S1_#S1_#I#S1_#I#S1_#S1_#S1_#S0_#I#S0_#S0_#S1_#S1_#S1_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "mu_grad_complement_1(double *, double *, int, int *, int *, int *, int, int *, int, int *, int *, int *, double *, int, double *, double *, int *, int *, int *, double *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 1463,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@mu_grad_complement_2#*d#I#*I#S1_#S1_#I#S1_#I#S1_#S1_#S1_#S0_#I#S0_#S0_#S1_#S1_#S1_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "mu_grad_complement_2(double *, int, int *, int *, int *, int, int *, int, int *, int *, int *, double *, int, double *, double *, int *, int *, int *, double *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 1495,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@gamma_gradient_fun_minibatch_nngp#*d#S0_#S0_#S0_#S0_#S0_#S0_#I#*I#S1_#S0_#S0_#S1_#S1_#S0_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S0_#S0_#I#I#S1_#S1_#S1_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "gamma_gradient_fun_minibatch_nngp(double *, double *, double *, double *, double *, double *, double *, int, int *, int *, double *, double *, int *, int *, double *, int, int *, int *, int *, int *, int *, int *, int *, int *, double *, double *, int, int, int *, int *, int *, int, int *, int *, int *, int *, int *, int *, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 1537,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@a_gradient_fun_minibatch_nngp#*d#S0_#S0_#S0_#S0_#S0_#S0_#I#*I#S1_#S0_#S0_#S1_#S1_#S0_#I#S1_#S1_#S1_#S1_#S0_#S0_#I#I#S1_#S1_#S1_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "a_gradient_fun_minibatch_nngp(double *, double *, double *, double *, double *, double *, double *, int, int *, int *, double *, double *, int *, int *, double *, int, int *, int *, int *, int *, double *, double *, int, int, int *, int *, int *, int, int *, int *, int *, int *, int *, int *, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 1607,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@product_B_F_minibatch_term1#*d#S0_#S0_#I#*I#S1_#S0_#I#S1_#S1_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "product_B_F_minibatch_term1(double *, double *, double *, int, int *, int *, double *, int, int *, int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 1665,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@gamma_gradient_fun_minibatch_test#*d#S0_#S0_#S0_#S0_#S0_#S0_#S0_#S0_#I#*I#S1_#S0_#S0_#S1_#S1_#S0_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S0_#S0_#S0_#S0_#I#I#S1_#S1_#S1_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "gamma_gradient_fun_minibatch_test(double *, double *, double *, double *, double *, double *, double *, double *, double *, int, int *, int *, double *, double *, int *, int *, double *, int, int *, int *, int *, int *, int *, int *, int *, int *, double *, double *, double *, double *, int, int, int *, int *, int *, int, int *, int *, int *, int *, int *, int *, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 1689,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@a_gradient_fun_minibatch_test#*d#S0_#S0_#S0_#S0_#S0_#S0_#S0_#S0_#S0_#I#*I#S1_#S0_#S0_#S1_#S1_#S0_#I#S1_#S1_#S1_#S1_#S0_#S0_#S0_#S0_#I#I#S1_#S1_#S1_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "a_gradient_fun_minibatch_test(double *, double *, double *, double *, double *, double *, double *, double *, double *, double *, int, int *, int *, double *, double *, int *, int *, double *, int, int *, int *, int *, int *, double *, double *, double *, double *, int, int, int *, int *, int *, int, int *, int *, int *, int *, int *, int *, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 1771,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@gamma_gradient_fun_minibatch_beta#*d#S0_#S0_#I#S0_#S0_#S0_#S0_#S0_#S0_#S0_#S0_#I#*I#S1_#S0_#S0_#S1_#S1_#S0_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S0_#S0_#S0_#S0_#I#I#S1_#S1_#S1_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "gamma_gradient_fun_minibatch_beta(double *, double *, double *, int, double *, double *, double *, double *, double *, double *, double *, double *, int, int *, int *, double *, double *, int *, int *, double *, int, int *, int *, int *, int *, int *, int *, int *, int *, double *, double *, double *, double *, int, int, int *, int *, int *, int, int *, int *, int *, int *, int *, int *, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 1835,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@a_gradient_fun_minibatch_beta#*d#S0_#S0_#I#S0_#S0_#S0_#S0_#S0_#S0_#S0_#S0_#S0_#I#*I#S1_#S0_#S0_#S1_#S1_#S0_#I#S1_#S1_#S1_#S1_#S0_#S0_#S0_#S0_#I#I#S1_#S1_#S1_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "a_gradient_fun_minibatch_beta(double *, double *, double *, int, double *, double *, double *, double *, double *, double *, double *, double *, double *, int, int *, int *, double *, double *, int *, int *, double *, int, int *, int *, int *, int *, double *, double *, double *, double *, int, int, int *, int *, int *, int, int *, int *, int *, int *, int *, int *, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 1916,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@gamma_gradient_fun_minibatch_all#*d#S0_#S0_#S0_#S0_#S0_#S0_#S0_#S0_#I#*I#S1_#S0_#S0_#S1_#S1_#S0_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S0_#S0_#S0_#S0_#I#I#S1_#S1_#S1_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S0_#S0_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "gamma_gradient_fun_minibatch_all(double *, double *, double *, double *, double *, double *, double *, double *, double *, int, int *, int *, double *, double *, int *, int *, double *, int, int *, int *, int *, int *, int *, int *, int *, int *, double *, double *, double *, double *, int, int, int *, int *, int *, int, int *, int *, int *, int *, int *, int *, int *, int *, int *, double *, double *, double *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 1981,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@a_gradient_fun_minibatch_all#*d#S0_#S0_#S0_#S0_#S0_#S0_#S0_#S0_#S0_#I#*I#S1_#S0_#S0_#S1_#S1_#S0_#I#S1_#S1_#S1_#S1_#S0_#S0_#S0_#S0_#I#I#S1_#S1_#S1_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S0_#S0_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "a_gradient_fun_minibatch_all(double *, double *, double *, double *, double *, double *, double *, double *, double *, double *, int, int *, int *, double *, double *, int *, int *, double *, int, int *, int *, int *, int *, double *, double *, double *, double *, int, int, int *, int *, int *, int, int *, int *, int *, int *, int *, int *, int *, int *, int *, double *, double *, double *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 2069,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@MFA_sigmasq_grad_term1#I#*I#S0_#S0_#I#S0_#I#S0_#S0_#S0_#*d#I#S1_#S1_#S0_#S0_#I#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "MFA_sigmasq_grad_term1(int, int *, int *, int *, int, int *, int, int *, int *, int *, double *, int, double *, double *, int *, int *, int, double *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 2153,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@MFA_sigmasq_grad#*d#S0_#S0_#I#*I#S1_#S1_#I#S1_#I#S1_#S1_#S1_#S0_#I#S0_#S0_#S1_#S1_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "MFA_sigmasq_grad(double *, double *, double *, int, int *, int *, int *, int, int *, int, int *, int *, int *, double *, int, double *, double *, int *, int *, int, int *, int *, int *, int *, int *, int *, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 2190,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@product_B_F_minibatch_dF#*d#S0_#S0_#I#*I#S1_#S0_#I#S1_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "product_B_F_minibatch_dF(double *, double *, double *, int, int *, int *, double *, int, int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 2228,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@mu_grad_intersect_fix#*d#S0_#I#*I#S1_#S1_#I#S1_#I#S1_#S1_#S1_#S0_#I#S0_#S0_#S1_#S1_#S1_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "mu_grad_intersect_fix(double *, double *, int, int *, int *, int *, int, int *, int, int *, int *, int *, double *, int, double *, double *, int *, int *, int *, double *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 2251,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@mu_grad_complement_1_fix#*d#S0_#I#*I#S1_#S1_#I#S1_#I#S1_#S1_#S1_#S0_#I#S0_#S0_#S1_#S1_#S1_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "mu_grad_complement_1_fix(double *, double *, int, int *, int *, int *, int, int *, int, int *, int *, int *, double *, int, double *, double *, int *, int *, int *, double *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 2312,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@mu_grad_complement_2_fix#*d#I#*I#S1_#S1_#I#S1_#I#S1_#S1_#S1_#S0_#I#S0_#S0_#S1_#S1_#S1_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "mu_grad_complement_2_fix(double *, int, int *, int *, int *, int, int *, int, int *, int *, int *, double *, int, double *, double *, int *, int *, int *, double *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 2347,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@product_B_F_vec_minibatch_plus_fix#*d#S0_#S0_#I#*I#S1_#S0_#S1_#S1_#S1_#S1_#I#S1_#I#S1_#S1_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "product_B_F_vec_minibatch_plus_fix(double *, double *, double *, int, int *, int *, double *, int *, int *, int *, int *, int, int *, int, int *, int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 2395,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@shuffleArray#*I#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "shuffleArray(int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 2433,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@find_set_nngp_shuffle#*I#I#S0_#S0_#I#S0_#I#S0_#S0_#S0_#S0_#S0_#S0_#S0_#S0_#S0_#S0_#&I#S1_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "find_set_nngp_shuffle(int *, int, int *, int *, int, int *, int, int *, int *, int *, int *, int *, int *, int *, int *, int *, int *, int &, int &, int &)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 2445,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@find_set_mb_shuffle#*I#I#S0_#S0_#S0_#S0_#S0_#S0_#I#S0_#I#S0_#&I#S0_#S1_#S0_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "find_set_mb_shuffle(int *, int, int *, int *, int *, int *, int *, int *, int, int *, int, int *, int &, int *, int &, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 2516,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@isValueInArraySubset#I#*I#I#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "isValueInArraySubset(int, int *, int, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 2554,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@update_inFlags#*I#S0_#I#I#S0_#S0_#S0_#S0_#S0_#S0_#I#S0_#I#S0_#S0_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "update_inFlags(int *, int *, int, int, int *, int *, int *, int *, int *, int *, int, int *, int, int *, int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 2564,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@product_B_F_vec_minibatch_plus_shuffle#*I#S0_#I#*d#S1_#S1_#I#S0_#S0_#S1_#S0_#S0_#S0_#S0_#I#S0_#I#S0_#S0_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "product_B_F_vec_minibatch_plus_shuffle(int *, int *, int, double *, double *, double *, int, int *, int *, double *, int *, int *, int *, int *, int, int *, int, int *, int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 2588,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@MFA_sigmasq_grad_term1_shuffle#*I#S0_#I#I#S0_#S0_#S0_#I#S0_#I#S0_#S0_#S0_#*d#I#S1_#S1_#S0_#S0_#I#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "MFA_sigmasq_grad_term1_shuffle(int *, int *, int, int, int *, int *, int *, int, int *, int, int *, int *, int *, double *, int, double *, double *, int *, int *, int, double *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 2629,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@gamma_gradient_fun_minibatch_shuffle#*I#S0_#I#*d#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#I#S0_#S0_#S1_#S1_#S0_#S0_#S1_#I#S0_#S0_#S0_#S0_#S0_#S0_#S0_#S0_#S1_#S1_#S1_#S1_#I#I#S0_#S0_#S0_#I#S0_#S0_#S0_#S0_#S0_#S0_#S0_#S0_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "gamma_gradient_fun_minibatch_shuffle(int *, int *, int, double *, double *, double *, double *, double *, double *, double *, double *, double *, int, int *, int *, double *, double *, int *, int *, double *, int, int *, int *, int *, int *, int *, int *, int *, int *, double *, double *, double *, double *, int, int, int *, int *, int *, int, int *, int *, int *, int *, int *, int *, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 2667,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@a_gradient_fun_minibatch_shuffle#*I#S0_#I#*d#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#I#S0_#S0_#S1_#S1_#S0_#S0_#S1_#I#S0_#S0_#S0_#S0_#S1_#S1_#S1_#S1_#I#I#S0_#S0_#S0_#I#S0_#S0_#S0_#S0_#S0_#S0_#S0_#S0_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "a_gradient_fun_minibatch_shuffle(int *, int *, int, double *, double *, double *, double *, double *, double *, double *, double *, double *, double *, int, int *, int *, double *, double *, int *, int *, double *, int, int *, int *, int *, int *, double *, double *, double *, double *, int, int, int *, int *, int *, int, int *, int *, int *, int *, int *, int *, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 2748,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@Q_mini_batch_shuffle#*I#*d#S1_#S1_#S1_#I#S0_#I#I#S0_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "Q_mini_batch_shuffle(int *, double *, double *, double *, double *, int, int *, int, int, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 2813,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@updateBF_quadratic#*d#S0_#S0_#S0_#S0_#S0_#I#I#*I#I#S0_#S0_#S0_#S1_#S1_#I#I#d#I#S0_#d#d#d#d#d#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "updateBF_quadratic(double *, double *, double *, double *, double *, double *, int, int, int *, int, double *, double *, double *, int *, int *, int, int, double, int, double *, double, double, double, double, double)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 2839,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@E_quadratic#*d#S0_#S0_#S0_#I#*I#S1_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "E_quadratic(double *, double *, double *, double *, int, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 2894,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@product_B_F_combine#*d#S0_#S0_#S0_#S0_#S0_#I#*I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "product_B_F_combine(double *, double *, double *, double *, double *, double *, int, int *, int *, int *, int *, int *, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 2924,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@get_nnIndxwhich#*I#I#S0_#S0_#S0_#S0_#S0_#S0_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "get_nnIndxwhich(int *, int, int *, int *, int *, int *, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 2970,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@E_quadratic_mb#*d#S0_#S0_#S0_#I#*I#I#I#S1_#S1_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "E_quadratic_mb(double *, double *, double *, double *, int, int *, int, int, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 2996,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@updateBF_quadratic_mb#*d#S0_#S0_#S0_#S0_#S0_#I#I#*I#I#S0_#S0_#S0_#S1_#S1_#I#S1_#I#S1_#S1_#I#I#I#d#I#S0_#d#d#d#d#d#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "updateBF_quadratic_mb(double *, double *, double *, double *, double *, double *, int, int, int *, int, double *, double *, double *, int *, int *, int, int *, int, int *, int *, int, int, int, double, int, double *, double, double, double, double, double)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 3028,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@updateBF_minibatch_plus2#*d#S0_#S0_#S0_#S0_#*I#S1_#I#I#d#d#I#S0_#d#I#S1_#S1_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "updateBF_minibatch_plus2(double *, double *, double *, double *, double *, int *, int *, int, int, double, double, int, double *, double, int, int *, int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 3109,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@product_B_F_combine_mb#*d#S0_#S0_#S0_#S0_#S0_#S0_#I#*I#I#S1_#S1_#I#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "product_B_F_combine_mb(double *, double *, double *, double *, double *, double *, double *, int, int *, int, int *, int *, int, int, int *, int *, int *, int *, int *, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 3159,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@gamma_gradient_mb_fun2#*d#S0_#S0_#S0_#S0_#I#*I#S1_#S1_#S1_#S0_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S0_#S0_#S0_#S0_#I#S0_#S0_#S0_#S1_#S1_#I#I#S1_#S1_#S1_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "gamma_gradient_mb_fun2(double *, double *, double *, double *, double *, int, int *, int *, int *, int *, double *, int, int *, int *, int *, int *, int *, int *, int *, int *, double *, double *, double *, double *, int, double *, double *, double *, int *, int *, int, int, int *, int *, int *, int, int *, int *, int *, int *, int *, int *, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 3216,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@a_gradient_mb_fun2#*d#S0_#S0_#S0_#S0_#I#*I#S1_#S1_#S1_#S0_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S0_#S0_#S0_#S0_#I#S0_#S0_#S0_#S1_#S1_#I#I#S1_#S1_#S1_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "a_gradient_mb_fun2(double *, double *, double *, double *, double *, int, int *, int *, int *, int *, double *, int, int *, int *, int *, int *, int *, int *, int *, int *, double *, double *, double *, double *, int, double *, double *, double *, int *, int *, int, int, int *, int *, int *, int, int *, int *, int *, int *, int *, int *, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 3297,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@MFA_updateBF_quadratic#*d#S0_#S0_#S0_#S0_#S0_#S0_#I#I#*I#I#S0_#S0_#S0_#S1_#S1_#I#I#d#I#S0_#d#d#d#d#d#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "MFA_updateBF_quadratic(double *, double *, double *, double *, double *, double *, double *, int, int, int *, int, double *, double *, double *, int *, int *, int, int, double, int, double *, double, double, double, double, double)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 3366,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@MFA_sigmasq_grad_term1_rephi#I#*I#S0_#S0_#I#S0_#I#S0_#S0_#S0_#*d#I#S1_#S0_#S0_#S0_#S0_#I#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "MFA_sigmasq_grad_term1_rephi(int, int *, int *, int *, int, int *, int, int *, int *, int *, double *, int, double *, int *, int *, int *, int *, int, double *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 3425,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@MFA_sigmasq_grad_rephi#*d#S0_#S0_#I#*I#S1_#S1_#I#S1_#I#S1_#S1_#S1_#S0_#I#I#S0_#S1_#S1_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "MFA_sigmasq_grad_rephi(double *, double *, double *, int, int *, int *, int *, int, int *, int, int *, int *, int *, double *, int, int, double *, int *, int *, int, int *, int *, int *, int *, int *, int *, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 3467,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@MFA_sigmasq_grad_revise1#*d#S0_#S0_#S0_#I#*I#S1_#S1_#I#S1_#I#S1_#S1_#S1_#S0_#I#I#S0_#S1_#S1_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "MFA_sigmasq_grad_revise1(double *, double *, double *, double *, int, int *, int *, int *, int, int *, int, int *, int *, int *, double *, int, int, double *, int *, int *, int, int *, int *, int *, int *, int *, int *, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 3499,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@asq_over_expJ#*d#S0_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "asq_over_expJ(double *, double *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 3530,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@ad_over_expJ#*d#S0_#S0_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "ad_over_expJ(double *, double *, double *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 3540,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@MFA_sigmasq_grad_revise2#*d#S0_#S0_#S0_#S0_#I#*I#S1_#S1_#I#S1_#I#S1_#S1_#S1_#S0_#I#I#S0_#S1_#S1_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "MFA_sigmasq_grad_revise2(double *, double *, double *, double *, double *, int, int *, int *, int *, int, int *, int, int *, int *, int *, double *, int, int, double *, int *, int *, int, int *, int *, int *, int *, int *, int *, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 3551,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@D_vec_gradient#I#I#*d#S0_#S0_#S0_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "D_vec_gradient(int, int, double *, double *, double *, double *, double *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 3593,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@G_vec_gradient#I#I#*d#S0_#S0_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "G_vec_gradient(int, int, double *, double *, double *, double *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 3642,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@MFA_sigmasq_grad_reviseq#*d#S0_#S0_#S0_#I#*I#S1_#S1_#I#S1_#I#S1_#S1_#S1_#S0_#I#I#S0_#S1_#S1_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "MFA_sigmasq_grad_reviseq(double *, double *, double *, double *, int, int *, int *, int *, int, int *, int, int *, int *, int *, double *, int, int, double *, int *, int *, int, int *, int *, int *, int *, int *, int *, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 3705,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@update_vvec#*d#S0_#S0_#I#*I#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "update_vvec(double *, double *, double *, int, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 3736,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@sum_vec#*d#S0_#I#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "sum_vec(double *, double *, int, double *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 3749,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@update_uvec_ubvec#*d#S0_#S0_#S0_#S0_#S0_#S0_#S0_#S0_#I#I#*I#S1_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "update_uvec_ubvec(double *, double *, double *, double *, double *, double *, double *, double *, double *, int, int, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 3756,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@gamma_l_gradient_fun#*d#S0_#S0_#S0_#S0_#I#*I#S1_#S0_#S0_#S1_#S1_#S0_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S0_#S0_#S0_#S0_#S0_#I#S0_#S0_#S0_#S0_#S0_#S0_#S0_#S0_#S1_#S1_#S1_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "gamma_l_gradient_fun(double *, double *, double *, double *, double *, int, int *, int *, double *, double *, int *, int *, double *, int, int *, int *, int *, int *, int *, int *, int *, int *, double *, double *, double *, double *, double *, int, double *, double *, double *, double *, double *, double *, double *, double *, int *, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 3792,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@a_Abeta_Lbeta_gradient_fun#*d#S0_#S0_#S0_#S0_#I#*I#S1_#S0_#S0_#S1_#S1_#S0_#I#S1_#S1_#S1_#S1_#S0_#S0_#S0_#S0_#I#S0_#S0_#S0_#S0_#S1_#S0_#S0_#S0_#S0_#S0_#S0_#S1_#S1_#S1_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "a_Abeta_Lbeta_gradient_fun(double *, double *, double *, double *, double *, int, int *, int *, double *, double *, int *, int *, double *, int, int *, int *, int *, int *, double *, double *, double *, double *, int, double *, double *, double *, double *, int *, double *, double *, double *, double *, double *, double *, int *, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 3915,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@update_ubvec#*d#S0_#S0_#S0_#S0_#S0_#I#I#I#*I#S1_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "update_ubvec(double *, double *, double *, double *, double *, double *, int, int, int, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 4015,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@gamma_l_gradient_fun2#*d#S0_#S0_#S0_#S0_#I#*I#S1_#S0_#S0_#S1_#S1_#S0_#I#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S1_#S0_#S0_#S0_#S0_#S0_#I#S0_#S0_#S0_#S0_#S0_#S0_#S0_#S0_#S1_#S1_#S1_#S1_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "gamma_l_gradient_fun2(double *, double *, double *, double *, double *, int, int *, int *, double *, double *, int *, int *, double *, int, int *, int *, int *, int *, int *, int *, int *, int *, double *, double *, double *, double *, double *, int, double *, double *, double *, double *, double *, double *, double *, double *, int *, int *, int *, int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 4054,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@a_Abeta_Lbeta_gradient_fun2#*d#S0_#S0_#S0_#S0_#I#*I#S1_#S0_#S0_#S1_#S1_#S0_#I#S1_#S1_#S1_#S1_#S0_#S0_#S0_#S0_#I#S0_#S0_#S0_#S0_#S1_#S0_#S0_#S0_#S0_#S0_#S0_#S1_#S1_#S1_#S1_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "a_Abeta_Lbeta_gradient_fun2(double *, double *, double *, double *, double *, int, int *, int *, double *, double *, int *, int *, double *, int, int *, int *, int *, int *, double *, double *, double *, double *, int, double *, double *, double *, double *, int *, double *, double *, double *, double *, double *, double *, int *, int *, int *, int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 4174,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@updateBFq#*d#S0_#S0_#S0_#S0_#*I#S1_#I#I#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "updateBFq(double *, double *, double *, double *, double *, int *, int *, int, int, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 4303,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@update_uvec_lr#*d#S0_#S0_#S0_#I#*I#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "update_uvec_lr(double *, double *, double *, double *, int, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
+                "line": 4339,
+                "column": 6,
+                "hidden": false
+            }
+        ],
+        "hidden": false
+    },
+    {
+        "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.h",
+        "file_last_write": 1743963885.0,
+        "definitions": [],
+        "hidden": false
+    },
+    {
+        "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/quadratic.cpp",
+        "file_last_write": 1733902558.0,
+        "definitions": [
+            {
+                "usr": "c:quadratic.cpp@8@macro@USE_FC_LEN_T",
+                "kind": 9,
+                "parent_name": "",
+                "name": "USE_FC_LEN_T",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/quadratic.cpp",
+                "line": 1,
+                "column": 9,
+                "hidden": false
+            }
+        ],
+        "hidden": false
+    },
+    {
+        "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/spVB_LR_update.cpp",
+        "file_last_write": 1743785775.0,
+        "definitions": [
+            {
+                "usr": "c:spVB_LR_update.cpp@8@macro@USE_FC_LEN_T",
+                "kind": 9,
+                "parent_name": "",
+                "name": "USE_FC_LEN_T",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/spVB_LR_update.cpp",
+                "line": 1,
+                "column": 9,
+                "hidden": false
+            }
+        ],
+        "hidden": false
+    },
+    {
+        "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/spVB_LR_update_all.cpp",
+        "file_last_write": 1743967483.0,
+        "definitions": [
+            {
+                "usr": "c:spVB_LR_update_all.cpp@8@macro@USE_FC_LEN_T",
+                "kind": 9,
+                "parent_name": "",
+                "name": "USE_FC_LEN_T",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/spVB_LR_update_all.cpp",
+                "line": 1,
+                "column": 9,
+                "hidden": false
+            }
+        ],
+        "hidden": false
+    },
+    {
+        "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+        "file_last_write": 1724703048.0,
+        "definitions": [
+            {
+                "usr": "c:@F@max_ind#*d#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "max_ind(double *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 15,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@zeros#*d#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "zeros(double *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 27,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@zeros_int#*I#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "zeros_int(int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 32,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@ones#*d#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "ones(double *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 37,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@ones_int#*I#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "ones_int(int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 42,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@sumsq#*d#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "sumsq(double *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 46,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@var_est#*d#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "var_est(double *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 55,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@sum_two_vec#*d#S0_#S0_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "sum_two_vec(double *, double *, double *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 68,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@add_to_vec#*d#S0_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "add_to_vec(double *, double *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 74,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@vecsum#*d#S0_#I#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "vecsum(double *, double *, int, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 83,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@vecsumsq#*d#S0_#I#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "vecsumsq(double *, double *, int, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 89,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@get_nBatchIndx#I#I#I#*I#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "get_nBatchIndx(int, int, int, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 95,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@create_sign#*d#*I#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "create_sign(double *, int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 109,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@checksign#*I#S0_#S0_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "checksign(int *, int *, int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 115,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@prodsign#*I#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "prodsign(int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 121,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@dist2#&d#S0_#S0_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "dist2(double &, double &, double &, double &)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 128,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@logit#d#d#d#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "logit(double, double, double)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 131,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@logitInv#d#d#d#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "logitInv(double, double, double)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 135,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@getNNIndx#I#I#&I#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "getNNIndx(int, int, int &, int &)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 138,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@mkNNIndx#I#I#*d#*I#S0_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "mkNNIndx(int, int, double *, int *, double *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 155,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@getCorName#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "getCorName(int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 186,
+                "column": 13,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@spCor#&d#S0_#S0_#&I#*d#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "spCor(double &, double &, double &, int &, double *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 202,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@Q#*d#S0_#S0_#S0_#I#*I#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "Q(double *, double *, double *, double *, int, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 242,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@which#I#*I#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "which(int, int *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 264,
+                "column": 5,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@dmi#*d#S0_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "dmi(double *, double *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 290,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@dei#*d#S0_#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "dei(double *, double *, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 294,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@fastNN#I#I#*d#I#S0_#*I#S1_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "fastNN(int, int, double *, int, double *, int *, int *, double *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 298,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@mkNNIndxCB#I#I#*d#*I#S0_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "mkNNIndxCB(int, int, double *, int *, double *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 376,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@miniInsert#*$@S@Node#*d#I#I#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "miniInsert(Node *, double *, int, int, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 405,
+                "column": 7,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@get_nn#*$@S@Node#I#I#*d#I#S2_#*I#I#I#I#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "get_nn(Node *, int, int, double *, int, double *, int *, int, int, int)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 432,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@mkUIndx0#I#I#*I#S0_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "mkUIndx0(int, int, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 484,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@mkUIndx1#I#I#*I#S0_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "mkUIndx1(int, int, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 505,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@mkUIndx2#I#I#*I#S0_#S0_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "mkUIndx2(int, int, int *, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 527,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@crs_csc#I#*I#S0_#S0_#S0_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "crs_csc(int, int *, int *, int *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 559,
+                "column": 6,
+                "hidden": false
+            },
+            {
+                "usr": "c:@F@mkNNIndxTree0#I#I#*d#*I#S0_#S1_#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "mkNNIndxTree0(int, int, double *, int *, double *, int *)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.cpp",
+                "line": 599,
+                "column": 6,
+                "hidden": false
+            }
+        ],
+        "hidden": false
+    },
+    {
+        "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.h",
+        "file_last_write": 1720606055.0,
+        "definitions": [
+            {
+                "usr": "c:@S@Node",
+                "kind": 3,
+                "parent_name": "",
+                "name": "Node",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/util.h",
+                "line": 49,
+                "column": 8,
+                "hidden": false
+            }
+        ],
+        "hidden": false
+    }
+]
