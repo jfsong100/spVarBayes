@@ -82,7 +82,7 @@ rmvn <- function(n, mu=0, V = matrix(1)){
   if(any(is.na(match(dim(V),p))))
     stop("Dimension problem!")
   D <- chol(V)
-  t(matrix(rnorm(n*p), ncol=p)%*%D + rep(mu,rep(n,p)))
+  t(matrix(rnorm(n*p), ncol=p) \%*\% D + rep(mu,rep(n,p)))
 }
 
 ##Make some data
@@ -102,7 +102,7 @@ D <- as.matrix(dist(coords))
 R <- exp(-phi_true*D)
 
 w <- rmvn(1, rep(0,n), sigma2_true*R)
-y <- rnorm(n, x%*%B + w, sqrt(tau2_true))
+y <- rnorm(n, x \%*\% B + w, sqrt(tau2_true))
 
 ##Split into training data and test data
 set.seed(12)
@@ -120,73 +120,39 @@ x_test <- x[-train_index,]
 # load packages
 library(spVarBayes)
 
-##Fit a NNGP VB model with full batch option
-NNGP_full <- spVB_NNGP(y = y_train, X = x_train, coords=coords_train,
-                       n.neighbors = 15,
-                      n.neighbors.vi = 3,
-                      max_iter = 1500, Trace_N = 50,
-                      covariates = TRUE, phi_max_iter = 50,
-                      mini_batch = F)
-
-##Fit a NNGP VB model with mini batch option
-NNGP_mb <- spVB_NNGP(y = y_train, X = x_train, coords=coords_train, n.neighbors = 15,
-                    n.neighbors.vi = 3,
-                    max_iter = 1500, Trace_N = 50,
-                    verbose = 0, covariates = TRUE,phi_max_iter = 50,
-                    mini_batch = T, mini_batch_size = 256)
-
-##Fit a MFA VB model with full batch option
-MFA_full <- spVB_MFA(y = y_train, X = x_train, coords=coords_train, n.neighbors = 15,
-                    max_iter = 1000, Trace_N = 50, phi_max_iter = 50,
-                    covariates = TRUE,
-                    mini_batch = F)
-
-##Fit a MFA VB model with mini batch option
-MFA_mb <- spVB_MFA(y = y_train, X = x_train, coords=coords_train, n.neighbors = 15,
-                  max_iter = 1000, Trace_N = 50,phi_max_iter = 50,
-                  covariates = TRUE,
-                  mini_batch = T, mini_batch_size = 256)
-
-##Predict on the test data using spVB-NNGP
-NNGP_full_predict <- predict(NNGP_full,
-                            coords.0 = coords_test,
-                            X.0 = x_test,
-                            covariates = TRUE,
-                            n.samples = 5000)
-
-w_pred_mean_NNGP_full <- rowMeans(NNGP_full_predict$p.w.0)
-plot(w_test, w_pred_mean_NNGP_full)
+# Perform MFA
+MFA <- spVB_MFA(y = y_train,X = x_train,coords=coords_train, covariates = TRUE, 
+                n.neighbors = 15, rho = 0.85, max_iter = 1000, LR = FALSE)
+MFA_predict <- predict(MFA, coords.0 = coords_test, 
+                        X.0 = x_test, covariates = TRUE, n.samples = 5000)
+plot(w_test, apply(MFA_predict$p.w.0, 1, mean))
 abline(0,1,col="red")
 
-NNGP_mb_predict <- predict(NNGP_mb,
-                            coords.0 = coords_test,
-                            X.0 = x_test,
-                            covariates = TRUE,
-                            n.samples = 5000)
-
-w_pred_mean_NNGP_mb <- rowMeans(NNGP_mb_predict$p.w.0)
-plot(w_test, w_pred_mean_NNGP_mb)
+# Perform MFA with linear response
+MFA_LR <- spVB_MFA(y = y_train,X = x_train,coords=coords_train, covariates = TRUE, 
+                   n.neighbors = 15, rho = 0.85, max_iter = 1000, LR = TRUE)
+MFA_LR_predict <- predict(MFA_LR, coords.0 = coords_test, 
+                          X.0 = x_test, covariates = TRUE, n.samples = 5000)
+plot(w_test, apply(MFA_LR_predict$p.w.0, 1, mean))
 abline(0,1,col="red")
 
-##Predict on the test data using spVB-MFA
-MFA_full_predict <- predict(MFA_full,
-                            coords.0 = coords_test,
-                            X.0 = x_test,
-                            covariates = TRUE,
-                            n.samples = 5000)
-
-w_pred_mean_MFA_full <- rowMeans(MFA_full_predict$p.w.0)
-plot(w_test, w_pred_mean_MFA_full)
+# Perform NNGP
+NNGP <- spVB_NNGP(y = y_train,X = x_train,coords=coords_train, n.neighbors = 15, 
+                       n.neighbors.vi = 3,
+                       rho = 0.85, max_iter = 1500, covariates = TRUE)
+NNGP_predict <- predict(NNGP, coords.0 = coords_test, 
+                        X.0 = x_test, covariates = TRUE, n.samples = 5000)
+plot(w_test, apply(NNGP_predict$p.w.0, 1, mean))
 abline(0,1,col="red")
 
-MFA_mb_predict <- predict(MFA_mb,
-                            coords.0 = coords_test,
-                            X.0 = x_test,
-                            covariates = TRUE,
-                            n.samples = 5000)
+# Perform NNGP joint model
+NNGP_joint <- spVB_NNGP(y = y_train,X = x_train,coords=coords_train, n.neighbors = 15, 
+                        n.neighbors.vi = 3,
+                        rho = 0.85, max_iter = 1500, covariates = TRUE, joint = TRUE)
 
-w_pred_mean_MFA_mb <- rowMeans(MFA_mb_predict$p.w.0)
-plot(w_test, w_pred_mean_MFA_mb)
+NNGP_joint_predict <- predict(NNGP_joint, coords.0 = coords_test, 
+                              X.0 = x_test, covariates = TRUE, n.samples = 5000)
+plot(w_test, apply(NNGP_joint_predict$p.w.0, 1, mean))
 abline(0,1,col="red")
 
 }

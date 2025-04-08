@@ -61,7 +61,7 @@ rmvn <- function(n, mu=0, V = matrix(1)){
   if(any(is.na(match(dim(V),p))))
     stop("Dimension problem!")
   D <- chol(V)
-  t(matrix(rnorm(n*p), ncol=p)\%*\%D + rep(mu,rep(n,p)))
+  t(matrix(rnorm(n*p), ncol=p) \%*\% D + rep(mu,rep(n,p)))
 }
 
 ##Make some data
@@ -81,7 +81,7 @@ phi_true <- 6
 D <- as.matrix(dist(coords))
 R <- exp(-phi_true*D)
 w <- rmvn(1, rep(0,n), sigma2_true*R)
-y <- rnorm(n, x\%*\%B + w, sqrt(tau2_true))
+y <- rnorm(n, x \%*\% B + w, sqrt(tau2_true))
 
 
 
@@ -93,8 +93,8 @@ NNGP_joint <- spVB_NNGP(y,X = x,coords=coords, n.neighbors = 15,
 
 ## Get posterior samples for spatial random effects
 p.samples <- spVB_joint_sampling(NNGP_joint,n.samples = 5000)
-p.w.samples = samples$p.w.samples
-p.beta.samples = samples$p.beta.samples
+p.w.samples = p.samples$p.w.samples
+p.beta.samples = p.samples$p.beta.samples
 
 
 }

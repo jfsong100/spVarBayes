@@ -61,7 +61,7 @@ rmvn <- function(n, mu=0, V = matrix(1)){
   if(any(is.na(match(dim(V),p))))
     stop("Dimension problem!")
   D <- chol(V)
-  t(matrix(rnorm(n*p), ncol=p)\%*\%D + rep(mu,rep(n,p)))
+  t(matrix(rnorm(n*p), ncol=p) \%*\% D + rep(mu,rep(n,p)))
 }
 
 ##Make some data
@@ -81,7 +81,7 @@ phi_true <- 6
 D <- as.matrix(dist(coords))
 R <- exp(-phi_true*D)
 w <- rmvn(1, rep(0,n), sigma2_true*R)
-y <- rnorm(n, x\%*\%B + w, sqrt(tau2_true))
+y <- rnorm(n, x \%*\% B + w, sqrt(tau2_true))
 
 
 
@@ -90,7 +90,7 @@ MFA_LR <- spVB_MFA(y,X = x,coords=coords, covariates = TRUE,
                 n.neighbors = 15, rho = 0.85, max_iter = 1000, LR = TRUE)
 
 ## Get posterior samples for spatial random effects
-p.w.samples <- spVB_LR_sampling(NNGP_full,n.samples = 5000)$p.w.samples
+p.w.samples <- spVB_LR_sampling(MFA_LR,n.samples = 5000)$p.w.samples
 
 
 }

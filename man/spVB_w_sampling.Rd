@@ -59,7 +59,7 @@ rmvn <- function(n, mu=0, V = matrix(1)){
   if(any(is.na(match(dim(V),p))))
     stop("Dimension problem!")
   D <- chol(V)
-  t(matrix(rnorm(n*p), ncol=p)\%*\%D + rep(mu,rep(n,p)))
+  t(matrix(rnorm(n*p), ncol=p) \%*\% D + rep(mu,rep(n,p)))
 }
 
 ##Make some data
@@ -79,7 +79,7 @@ phi_true <- 6
 D <- as.matrix(dist(coords))
 R <- exp(-phi_true*D)
 w <- rmvn(1, rep(0,n), sigma2_true*R)
-y <- rnorm(n, x\%*\%B + w, sqrt(tau2_true))
+y <- rnorm(n, x \%*\% B + w, sqrt(tau2_true))
 
 
 
