@@ -1,0 +1,242 @@
+---
+title: "Tutorial for spVarBayes"
+author: "Jiafang Song"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Tutorial for spVarBayes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(spVarBayes)
+library(RANN)
+```
+
+## Overview
+
+`spVarBayes` provides scalable Bayesian inference for spatial data using Variational Bayes (VB) and Nearest Neighbor Gaussian Processes (NNGP). All methods are designed to work efficiently even with 100,000 spatial locations, offering a practical alternative to traditional MCMC. It includes:
+
+- **Mean Field Approximation (MFA)** and its **Linear Response (LR)** correction
+- **NNGP** variational distributions for spatial random effects
+- **Joint variational distributions** for regression coefficients and spatial effects
+
+
+## `spVB_NNGP()`
+
+Fits a structured variational approximation using an NNGP variational distribution for the spatial random effects. This method captures dependencies in the spatial random effects by modeling it as
+
+\[
+w \sim \mathcal{N}(\mu, (I - A)^{-1} D (I - A)^{-T})
+\]  
+
+where $A$ and $D$ define the NNGP structure. It supports closed-form gradient updates and provides improved uncertainty quantification over mean field. Regression coefficients are modeled independently from the spatial effects in the variational family.
+
+### `spVB_NNGP(joint = TRUE)`
+
+Extends the NNGP variational approach to model **regression coefficients and spatial effects jointly**, using a **joint NNGP variational distribution**. This structure captures posterior correlation between fixed effects and spatial random effects, providing more accurate inference for regression coefficients. It remains computationally scalable using the sparse NNGP framework.
+
+
+
+## `spVB_MFA()`
+
+This function performs Mean Field Approximation for spatial data using a Nearest Neighbor Gaussian Process (NNGP) prior on the spatial random effects. The variational distribution assumes independence among parameters, which allows for fast inference but tends to underestimate posterior variance. The method outputs variational means and variances for spatial effects and parameters for the variational distribution for spatial parameters including spatial variance $\sigma^2$, random error $\tau^2$ and spatial decay parameter $\phi$.
+
+
+## `spVB_MFA(LR=TRUE)`
+
+An enhanced version of spVB_MFA() that applies Linear Response (LR) to improve posterior covariance estimates. This correction compensates for the variance underestimation in standard mean field approximations. The procedure starts with MFA, then uses BRISC estimates for spatial parameters and applies LR to update the covariance structure. It returns an improved covariance matrix for both spatial effects and regression coefficients. However, LR can be unstable if points are too close, and may produce non-positive diagonals in extreme cases.
+
+
+### `spVB_get_Vw()`
+
+Reconstructs the covariance matrix of the spatial random effects (`w`) based on the variational parameters. For `spVB_MFA`, this returns a diagonal matrix (unless LR = TRUE, in which case covariance is already available as `updated_mat`). For `spVB_NNGP`, it reconstructs the full NNGP covariance matrix using `A` and `D`. For the joint NNGP model, it returns the **joint covariance matrix** for regression coefficients and spatial effects.
+
+
+### `spVB_beta_sampling()`
+
+Generates **posterior samples of the regression coefficients** from the variational distribution. Available for `spVB_MFA` and `spVB_NNGP` models. For joint NNGP or MFA-LR, use the corresponding joint sampling functions instead.
+
+### `spVB_w_sampling()`
+
+Draws **posterior samples of the spatial random effects (`w`)** using the fitted variational approximation. Applicable to `spVB_MFA` and `spVB_NNGP`.
+
+### `spVB_theta_sampling()`
+
+Samples the spatial covariance parameters — spatial variance $\sigma^2$, random error $\tau^2$ and spatial decay parameter $\phi$ — from their fitted variational distributions. Can be used with any of the core methods.
+
+### `spVB_LR_sampling()`
+
+Provides posterior samples using the **linear response corrected covariance structure** from the `spVB_MFA(LR = TRUE)` model. Returns either:
+- Samples of spatial random effects only (if no covariates), or  
+- Joint samples of regression coefficients and spatial effects (if covariates are included).
+
+
+### `spVB_joint_sampling()`
+
+Draws posterior samples from the **joint variational distribution** of regression coefficients and spatial effects fitted by `spVB_NNGP(joint = TRUE)`. 
+
+
+## Installation
+
+The package is available on the github. To install this package in your R, you can use the code: `devtools::install_github("jfsong100/spVarBayes")`. Once installed, you can
+
+```{r}
+library(spVarBayes)
+```
+
+
+This tutorial walks through generating data, fitting each method, and making predictions.
+
+## Simulate Data
+```{r}
+rmvn <- function(n, mu=0, V = matrix(1)){
+  p <- length(mu)
+  if(any(is.na(match(dim(V),p))))
+    stop("Dimension problem!")
+  D <- chol(V)
+  t(matrix(rnorm(n*p), ncol=p)%*%D + rep(mu,rep(n,p)))
+}
+
+set.seed(12)
+n <- 1500
+
+coords <- cbind(runif(n,0,5), runif(n,0,5))
+
+# Remove close points
+remove_close_points <- function(x, y, threshold) {
+
+  points <- cbind(x, y)
+  
+  repeat {
+    neighbors <- nn2(data = points, k = 2, searchtype = "radius", radius = threshold)
+    distances <- neighbors$nn.dists[, 2]
+    if (all(is.na(distances) | distances >= threshold)) {
+      break 
+    }
+    closest_index <- which.min(distances)
+    points <- points[-closest_index, ]
+  }
+  
+  list(x = points[, 1], y = points[, 2])
+}
+
+remove_coords <- remove_close_points(coords[,1], coords[,2], 0.015)
+cleaned_x <- remove_coords$x
+cleaned_y <- remove_coords$y
+
+coords <- cbind(cleaned_x,cleaned_y)
+
+n = nrow(coords)
+
+x <- cbind(rnorm(n), rnorm(n))
+B <- as.matrix(c(1,5))
+
+sigma2_true <- 5
+tau2_true <- 1
+phi_true <- 6
+
+D <- as.matrix(dist(coords))
+R <- exp(-phi_true*D)
+w <- rmvn(1, rep(0,n), sigma2_true*R)
+y <- rnorm(n, x%*%B + w, sqrt(tau2_true))
+
+# Split into training set and test set
+n_train <- 1000
+train_index = sample(1:n, n_train)
+y_train = y[train_index]
+x_train = x[train_index,]
+w_train = w[train_index,]
+coords_train = coords[train_index,]
+
+y_test = y[-train_index]
+x_test = x[-train_index,]
+w_test = w[-train_index,]
+coords_test = coords[-train_index,]
+
+```
+
+## Fit NNGP
+
+```{r}
+NNGP <- spVB_NNGP(y = y_train,X = x_train,coords=coords_train, n.neighbors = 15, 
+                       n.neighbors.vi = 3,
+                       rho = 0.85, max_iter = 1500, covariates = TRUE)
+plot(w_train,NNGP$w_mu[order(NNGP$ord)])
+abline(0,1,col="red")
+w_var_NNGP <- spVB_get_Vw(NNGP)
+```
+
+### Sampling and prediction
+
+```{r}
+NNGP_w_samples <- spVB_w_sampling(NNGP, n.samples = 5000)$p.w.samples
+NNGP_predict <- predict(NNGP, coords.0 = coords_test, X.0 = x_test, covariates = TRUE, n.samples = 5000)
+plot(w_test, apply(NNGP_predict$p.w.0, 1, mean))
+abline(0,1,col="red")
+
+```
+
+## Fit NNGP joint model
+```{r}
+NNGP_joint <- spVB_NNGP(y = y_train,X = x_train,coords=coords_train, n.neighbors = 15, 
+                        n.neighbors.vi = 3,
+                        rho = 0.85, max_iter = 1500, covariates = TRUE, joint = TRUE)
+
+plot(w_train,NNGP_joint$w_mu[order(NNGP_joint$ord)])
+abline(0,1,col="red")
+w_var_NNGP_joint <- spVB_get_Vw(NNGP_joint)
+```
+
+### Sampling and prediction
+```{r}
+NNGP_joint_w_samples <- spVB_joint_sampling(NNGP_joint, n.samples = 5000)$p.w.samples
+NNGP_joint_predict <- predict(NNGP_joint, coords.0 = coords_test, X.0 = x_test, covariates = TRUE, n.samples = 5000)
+plot(w_test, apply(NNGP_joint_predict$p.w.0, 1, mean))
+abline(0,1,col="red")
+
+```
+
+
+
+## Fit MFA
+```{r}
+MFA <- spVB_MFA(y = y_train,X = x_train,coords=coords_train, covariates = TRUE, 
+                n.neighbors = 15, rho = 0.85, max_iter = 1000, LR = FALSE)
+plot(w_train,MFA$w_mu[order(MFA$ord)])
+abline(0,1,col="red")
+
+```
+
+### Sampling and prediction
+```{r}
+MFA_w_samples <- spVB_w_sampling(MFA, n.samples = 5000)$p.w.samples
+MFA_predict <- predict(MFA, coords.0 = coords_test, X.0 = x_test, covariates = TRUE, n.samples = 5000)
+plot(w_test, apply(MFA_predict$p.w.0, 1, mean))
+abline(0,1,col="red")
+
+```
+
+
+
+## Fit MFA with linear response
+```{r}
+MFA_LR <- spVB_MFA(y = y_train,X = x_train,coords=coords_train, covariates = TRUE, 
+                   n.neighbors = 15, rho = 0.85, max_iter = 1000, LR = TRUE)
+plot(w_train,MFA_LR$w_mu[order(MFA_LR$ord)])
+abline(0,1,col="red")
+
+```
+
+### Sampling and prediction
+```{r}
+MFA_LR_w_samples <- spVB_LR_sampling(MFA_LR, n.samples = 5000)$p.w.samples
+MFA_LR_predict <- predict(MFA_LR, coords.0 = coords_test, X.0 = x_test, covariates = TRUE, n.samples = 5000)
+plot(w_test, apply(MFA_LR_predict$p.w.0, 1, mean))
+abline(0,1,col="red")
+
+```
