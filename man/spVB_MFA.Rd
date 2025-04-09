@@ -13,7 +13,7 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
                      tau.sq.IG = c(0.1,0.1), phi.range = NULL, var_input = NULL,
                      n_omp = 1, cov.model = "exponential", nu = 1.5, search.type = "tree",tol = 12,
                      verbose = FALSE, max_iter = 2000, min_iter = 750, stop_K = FALSE, K = 20,
-                     N_phi = 5, Trace_N = 50, phi_max_iter = 50, rho = 0.95,
+                     N_phi = 5, Trace_N = 50, phi_max_iter = 10, rho = 0.95,
                      mini_batch = FALSE, mini_batch_size = 256, ord_type = "Sum_coords", 
                      tau_sq_input = NULL, sigma_sq_input = NULL, LR = FALSE)
 }
@@ -93,7 +93,7 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
 
     \item{Trace_N}{the number of Monte Carlo samples. Default value is 50. We recommend a larger value for a small sigma.sq. }
 
-    \item{phi_max_iter}{the number of maximum iterations for updating parameter phi. Default value is 0. }
+    \item{phi_max_iter}{the number of maximum iterations for updating parameter phi. Default value is 10. }
 
     \item{rho}{the input rate for AdaDelta optimizer. Default value is 0.95. }
 

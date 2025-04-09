@@ -4,6 +4,7 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 library(spVarBayes)
+library(ggplot2)
 library(RANN)
 
 ## -----------------------------------------------------------------------------
@@ -18,7 +19,7 @@ rmvn <- function(n, mu=0, V = matrix(1)){
   t(matrix(rnorm(n*p), ncol=p)%*%D + rep(mu,rep(n,p)))
 }
 
-set.seed(12)
+set.seed(1010)
 n <- 1500
 
 coords <- cbind(runif(n,0,5), runif(n,0,5))
@@ -63,136 +64,215 @@ y <- rnorm(n, x%*%B + w, sqrt(tau2_true))
 
 # Split into training set and test set
 n_train <- 1000
-train_index = sample(1:n, n_train)
-y_train = y[train_index]
-x_train = x[train_index,]
-w_train = w[train_index,]
-coords_train = coords[train_index,]
+train_index <- sample(1:n, n_train)
+y_train <- y[train_index]
+x_train <- x[train_index,]
+w_train <- w[train_index,]
+coords_train <- coords[train_index,]
 
-y_test = y[-train_index]
-x_test = x[-train_index,]
-w_test = w[-train_index,]
-coords_test = coords[-train_index,]
+y_test <- y[-train_index]
+x_test <- x[-train_index,]
+w_test <- w[-train_index,]
+coords_test <- coords[-train_index,]
 
 
-## ----fig.align = "center"-----------------------------------------------------
+## ----fig.align = "center", fig.width = 6, fig.height = 6----------------------
 NNGP <- spVB_NNGP(y = y_train,X = x_train,coords=coords_train, n.neighbors = 15, 
                        n.neighbors.vi = 3,
                        rho = 0.85, max_iter = 1500, covariates = TRUE)
-plot(
-  w_train, NNGP$w_mu[order(NNGP$ord)],
-  pch = 19, cex = 1.2, col = "darkblue",
-  xlab = "True spatial random effect (w)",
-  ylab = "Estimated posterior mean (w)",
-  main = "Posterior Mean using NNGP vs. True Spatial Random Effect",
-  xlim = range(w_train), ylim = range(w_train),
-  asp = 1
-)
-abline(0, 1, col = "red", lwd = 2, lty = 2)
 w_var_NNGP <- spVB_get_Vw(NNGP)
 
-## ----fig.align = "center"-----------------------------------------------------
+## ----fig.align = "center", fig.width = 6, fig.height = 6----------------------
 NNGP_w_samples <- spVB_w_sampling(NNGP, n.samples = 5000)$p.w.samples
 NNGP_predict <- predict(NNGP, coords.0 = coords_test, X.0 = x_test, covariates = TRUE, n.samples = 5000)
-plot(
-  w_test, apply(NNGP_predict$p.w.0, 1, mean),
-  pch = 19, cex = 1.2, col = "darkblue",
-  xlab = "True spatial random effect (w)",
-  ylab = "Predicted posterior mean (w)",
-  main = "Posterior Mean using NNGP vs. True Spatial Random Effect",
-  xlim = range(w_test), ylim = range(w_test),
-  asp = 1
-)
-abline(0, 1, col = "red", lwd = 2, lty = 2)
 
-## ----fig.align = "center"-----------------------------------------------------
+## ----fig.align = "center", fig.width = 6, fig.height = 6----------------------
 NNGP_joint <- spVB_NNGP(y = y_train,X = x_train,coords=coords_train, n.neighbors = 15, 
                         n.neighbors.vi = 3,
                         rho = 0.85, max_iter = 1500, covariates = TRUE, joint = TRUE)
 
-plot(
-  w_train, NNGP_joint$w_mu[order(NNGP_joint$ord)],
-  pch = 19, cex = 1.2, col = "darkblue",
-  xlab = "True spatial random effect (w)",
-  ylab = "Estimated posterior mean (w)",
-  main = "Posterior Mean using NNGP joint model vs. True Spatial Random Effect",
-  xlim = range(w_train), ylim = range(w_train),
-  asp = 1
-)
-abline(0, 1, col = "red", lwd = 2, lty = 2)
 w_var_NNGP_joint <- spVB_get_Vw(NNGP_joint)
 
-## ----fig.align = "center"-----------------------------------------------------
+## ----fig.align = "center", fig.width = 6, fig.height = 6----------------------
 NNGP_joint_w_samples <- spVB_joint_sampling(NNGP_joint, n.samples = 5000)$p.w.samples
 NNGP_joint_predict <- predict(NNGP_joint, coords.0 = coords_test, X.0 = x_test, covariates = TRUE, n.samples = 5000)
 
-plot(
-  w_test, apply(NNGP_joint_predict$p.w.0, 1, mean),
-  pch = 19, cex = 1.2, col = "darkblue",
-  xlab = "True spatial random effect (w)",
-  ylab = "Predicted posterior mean (w)",
-  main = "Posterior Mean using NNGP joint model vs. True Spatial Random Effect",
-  xlim = range(w_test), ylim = range(w_test),
-  asp = 1
-)
-abline(0, 1, col = "red", lwd = 2, lty = 2)
 
-## ----fig.align = "center"-----------------------------------------------------
+
+## ----fig.align = "center", fig.width = 6, fig.height = 6----------------------
 MFA <- spVB_MFA(y = y_train,X = x_train,coords=coords_train, covariates = TRUE, 
                 n.neighbors = 15, rho = 0.85, max_iter = 1000, LR = FALSE)
-plot(
-  w_train, MFA$w_mu[order(MFA$ord)],
-  pch = 19, cex = 1.2, col = "darkblue",
-  xlab = "True spatial random effect (w)",
-  ylab = "Estimated posterior mean (w)",
-  main = "Posterior Mean using MFA vs. True Spatial Random Effect",
-  xlim = range(w_train), ylim = range(w_train),
-  asp = 1
-)
-abline(0, 1, col = "red", lwd = 2, lty = 2)
 
-## ----fig.align = "center"-----------------------------------------------------
+## ----fig.align = "center", fig.width = 6, fig.height = 6----------------------
 MFA_w_samples <- spVB_w_sampling(MFA, n.samples = 5000)$p.w.samples
 MFA_predict <- predict(MFA, coords.0 = coords_test, X.0 = x_test, covariates = TRUE, n.samples = 5000)
-plot(
-  w_test, apply(MFA_predict$p.w.0, 1, mean),
-  pch = 19, cex = 1.2, col = "darkblue",
-  xlab = "True spatial random effect (w)",
-  ylab = "Predicted posterior mean (w)",
-  main = "Posterior Mean using MFA vs. True Spatial Random Effect",
-  xlim = range(w_test), ylim = range(w_test),
-  asp = 1
-)
-abline(0, 1, col = "red", lwd = 2, lty = 2)
 
 
-## ----fig.align = "center"-----------------------------------------------------
+## ----fig.align = "center", fig.width = 6, fig.height = 6----------------------
 MFA_LR <- spVB_MFA(y = y_train,X = x_train,coords=coords_train, covariates = TRUE, 
                    n.neighbors = 15, rho = 0.85, max_iter = 1000, LR = TRUE)
-plot(
-  w_train, MFA_LR$w_mu[order(MFA_LR$ord)],
-  pch = 19, cex = 1.2, col = "darkblue",
-  xlab = "True spatial random effect (w)",
-  ylab = "Estimated posterior mean (w)",
-  main = "Posterior Mean using MFA linear response vs. True Spatial Random Effect",
-  xlim = range(w_train), ylim = range(w_train),
-  asp = 1
-)
-abline(0, 1, col = "red", lwd = 2, lty = 2)
 
 
-## ----fig.align = "center"-----------------------------------------------------
+## ----fig.align = "center", fig.width = 6, fig.height = 6----------------------
 MFA_LR_w_samples <- spVB_LR_sampling(MFA_LR, n.samples = 5000)$p.w.samples
 MFA_LR_predict <- predict(MFA_LR, coords.0 = coords_test, X.0 = x_test, covariates = TRUE, n.samples = 5000)
-plot(
-  w_test, apply(MFA_LR_predict$p.w.0, 1, mean),
-  pch = 19, cex = 1.2, col = "darkblue",
-  xlab = "True spatial random effect (w)",
-  ylab = "Predicted posterior mean (w)",
-  main = "Posterior Mean using MFA linear response vs. True Spatial Random Effect",
-  xlim = range(w_test), ylim = range(w_test),
-  asp = 1
+
+
+
+## ----fig.align = "center", fig.width = 6, fig.height = 6, warning = FALSE, message = FALSE----
+n.samples = 5000
+starting <- list("phi"= 5, "sigma.sq"=1, "tau.sq"= 0.5)
+tuning <- list("phi"=0.15, "sigma.sq"=1.5, "tau.sq"=1.15)
+priors <- list("phi.Unif"=c(1/10, 10), "sigma.sq.IG"=c(0.1, 1), "tau.sq.IG"=c(1,1))
+cov.model <- "exponential"
+
+library(spNNGP)
+intercept = rep(1,n)
+m.s <- spNNGP(y_train~x_train-1, coords=coords_train, starting=starting, method="latent",
+              n.neighbors=15, priors=priors, tuning=tuning, cov.model=cov.model,
+              n.samples=n.samples, n.omp.threads=1, n.report=1000)
+
+burnin = 2000
+
+summary(m.s)
+what = apply(m.s$p.w.samples[,((burnin+1):n.samples)], 1, mean)
+wvarhat = apply(m.s$p.w.samples[,((burnin+1):n.samples)], 1, var)
+
+spNNGP_predict <- predict(m.s, coords.0 = coords_test, X.0 = x_test, n.samples = 5000)
+
+
+## ----fig.align = "center", fig.width = 6, fig.height = 6----------------------
+df_means <- data.frame(
+  true = rep(w_train, 5),
+  est = c(
+    NNGP$w_mu[order(NNGP$ord)],
+    NNGP_joint$w_mu[order(NNGP_joint$ord)],
+    MFA$w_mu[order(MFA$ord)],
+    MFA_LR$w_mu[order(MFA_LR$ord)],
+    what
+  ),
+  method = rep(c(
+    "spVB-NNGP",
+    "spVB-NNGP Joint",
+    "spVB-MFA",
+    "spVB-MFA Linear Response",
+    "spNNGP"
+  ), each = length(w_train))
 )
-abline(0, 1, col = "red", lwd = 2, lty = 2)
+
+ggplot(df_means, aes(x = true, y = est)) +
+  geom_point(alpha = 0.7, size = 1.6) +
+  geom_abline(slope = 1, intercept = 0, color = "red", linetype = "dashed", linewidth = 1) +
+  facet_wrap(~ method, ncol = 3) +
+  labs(
+    x = "True spatial random effect (w)",
+    y = "Estimated posterior mean (w)",
+    title = "Posterior Mean vs. True Spatial Random Effect Across Methods"
+  ) +
+  coord_fixed() +
+  theme_minimal(base_size = 12)+
+  theme(
+    plot.title = element_text(size = 11, hjust = 0.5)
+  )
+
+
+## ----fig.align = "center", fig.width = 6, fig.height = 6----------------------
+df_test <- data.frame(
+  true = rep(w_test, 5),
+  est = c(
+    apply(NNGP_predict$p.w.0, 1, mean),
+    apply(NNGP_joint_predict$p.w.0, 1, mean),
+    apply(MFA_predict$p.w.0, 1, mean),
+    apply(MFA_LR_predict$p.w.0, 1, mean),
+    apply(spNNGP_predict$p.w.0, 1, mean)
+  ),
+  method = rep(c(
+    "spVB-NNGP",
+    "spVB-NNGP Joint",
+    "spVB-MFA",
+    "spVB-MFA Linear Response",
+    "spNNGP"
+  ), each = length(w_test))
+)
+
+ggplot(df_test, aes(x = true, y = est)) +
+  geom_point(alpha = 0.7, size = 1.6) +
+  geom_abline(slope = 1, intercept = 0, color = "red", linetype = "dashed", linewidth = 1) +
+  facet_wrap(~ method, ncol = 3) +
+  labs(
+    x = "True spatial random effect (w)",
+    y = "Predicted posterior mean (w)",
+    title = "Predicted vs. True Spatial Random Effect (Test Set)"
+  ) +
+  coord_fixed() +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(size = 11, hjust = 0.5)
+  )
+
+
+## ----fig.align = "center", fig.width = 6, fig.height = 6----------------------
+df_all <- data.frame(
+  ref = rep(wvarhat, 4),
+  est = c(
+    diag(w_var_NNGP)[order(NNGP$ord)],
+    diag(w_var_NNGP_joint)[-(1:ncol(x_train))][order(NNGP_joint$ord)],
+    MFA$w_sigma_sq[order(MFA$ord)],
+    diag(MFA_LR$updated_mat)[-(1:ncol(x_train))][order(MFA_LR$ord)]
+  ),
+  method = rep(c("spVB-NNGP", "spVB-NNGP Joint", "spVB-MFA", "spVB-MFA Linear Response"),
+               each = length(wvarhat))
+)
+
+ggplot(df_all, aes(x = ref, y = est)) +
+  geom_point(alpha = 0.7, size = 1.6) +
+  geom_abline(slope = 1, intercept = 0, color = "red", linetype = "dashed", linewidth = 1) +
+  facet_wrap(~ method, ncol = 2) +
+  labs(
+    x = "Estimated variance using spNNGP",
+    y = "Estimated variance using method",
+    title = "Comparison of Estimated Variance Across Methods"
+  ) +
+  coord_fixed() +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(size = 11, hjust = 0.5)
+  )
+
+
+## -----------------------------------------------------------------------------
+theta_est <- matrix(c(
+  MFA$theta,
+  MFA_LR$theta,
+  NNGP$theta,
+  NNGP_joint$theta,
+  colMeans(m.s$p.theta.samples[-(1:burnin), ])
+), nrow = 3)
+
+rownames(theta_est) <- c("sigmasq", "tausq", "phi")
+colnames(theta_est) <- c("spVB-MFA", "spVB-MFA LR", "spVB-NNGP", "spVB-NNGP Joint", "spNNGP")
+
+theta_est
+
+
+## -----------------------------------------------------------------------------
+beta_est <- matrix(rbind(cbind(
+  MFA$beta,
+  MFA_LR$beta,
+  NNGP$beta,
+  NNGP_joint$beta,
+  colMeans(m.s$p.beta.samples[-(1:burnin), ])
+),cbind(
+  diag(MFA$beta_cov),
+  diag(MFA_LR$updated_mat)[1:ncol(x_train)],
+  diag(NNGP$beta_cov),
+  diag(w_var_NNGP_joint)[1:ncol(x_train)],
+  apply(m.s$p.beta.samples[-(1:burnin),], 2, var)
+)),nrow = 4)
+
+rownames(beta_est) <- c("beta1.mean", "beta2.mean", "beta1.var", "beta2.var")
+colnames(beta_est) <- c("spVB-MFA", "spVB-MFA LR", "spVB-NNGP", "spVB-NNGP Joint", "spNNGP")
+
+beta_est
 
 

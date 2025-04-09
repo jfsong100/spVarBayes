@@ -754,7 +754,14 @@ extern "C" {
 
           //phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
           phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
-          update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
+          for(int i = 0; i < n; i++){
+            epsilon_vec[i] = rnorm(0, 1);
+          }
+          for(int i = 0; i < p; i++){
+            z_vec[i] = rnorm(0, 1);
+          }
+          update_uvec_ubvec(u_vec, ub_vec, epsilon_vec,  z_vec, A_vi, A_beta, L_beta,
+                            S_vi, E_vi, n, p, nnIndxLU_vi, nnIndx_vi, IndxLU_beta);
           logDetInv = 0.0;
           diag_sigma_sq_sum = 0.0;
           for(j = 0; j < n; j++){

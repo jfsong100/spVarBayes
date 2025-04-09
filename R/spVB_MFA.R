@@ -3,7 +3,7 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
                      tau.sq.IG = c(0.1,0.1), phi.range = NULL, var_input = NULL,
                      n_omp = 1, cov.model = "exponential", nu = 1.5, search.type = "tree",tol = 12,
                      verbose = FALSE, max_iter = 2000, min_iter = 750, stop_K = FALSE, K = 20,
-                     N_phi = 5, Trace_N = 30, phi_max_iter = 0, rho = 0.95,
+                     N_phi = 5, Trace_N = 30, phi_max_iter = 10, rho = 0.95,
                      mini_batch = FALSE, mini_batch_size = 256, ord_type = "Sum_coords", 
                      LR = FALSE, tau_sq_input = NULL, sigma_sq_input = NULL){
 

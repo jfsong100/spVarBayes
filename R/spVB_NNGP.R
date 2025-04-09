@@ -3,7 +3,7 @@ spVB_NNGP <- function(y, X, coords, covariates = TRUE, n.neighbors = 15, n.neigh
                       tau.sq.IG = c(0.1,0.1), phi.range = NULL, var_input = NULL,
                       n_omp = 1, cov.model = "exponential", nu = 1.5, search.type = "tree",tol = 12,
                       verbose = FALSE, max_iter = 2000, min_iter = 1000, stop_K = FALSE, K = 20,
-                      N_phi = 5, Trace_N = 30, phi_max_iter = 0, rho = 0.85,
+                      N_phi = 5, Trace_N = 30, phi_max_iter = 10, rho = 0.85,
                       mini_batch = FALSE, mini_batch_size = 128, ord_type = "Sum_coords", joint = FALSE){
 
   n <- nrow(coords)
