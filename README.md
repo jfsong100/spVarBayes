@@ -16,9 +16,13 @@ It involves the following functions.
 
 Fits a structured variational approximation using an NNGP variational distribution for the spatial random effects. This method captures dependencies in the spatial random effects by modeling it as
 
-\[
+<div align="center">
+
+$$
 w \sim \mathcal{N}(\mu, (I - A)^{-1} D (I - A)^{-T})
-\]  
+$$
+
+</div>
 
 where $A$ and $D$ define the NNGP structure. It supports closed-form gradient updates and provides improved uncertainty quantification over mean field. Regression coefficients are modeled independently from the spatial effects in the variational family.
 
