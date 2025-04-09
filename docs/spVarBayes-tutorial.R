@@ -75,62 +75,124 @@ w_test = w[-train_index,]
 coords_test = coords[-train_index,]
 
 
-## -----------------------------------------------------------------------------
+## ----fig.align = "center"-----------------------------------------------------
 NNGP <- spVB_NNGP(y = y_train,X = x_train,coords=coords_train, n.neighbors = 15, 
                        n.neighbors.vi = 3,
                        rho = 0.85, max_iter = 1500, covariates = TRUE)
-plot(w_train,NNGP$w_mu[order(NNGP$ord)])
-abline(0,1,col="red")
+plot(
+  w_train, NNGP$w_mu[order(NNGP$ord)],
+  pch = 19, cex = 1.2, col = "darkblue",
+  xlab = "True spatial random effect (w)",
+  ylab = "Estimated posterior mean (w)",
+  main = "Posterior Mean using NNGP vs. True Spatial Random Effect",
+  xlim = range(w_train), ylim = range(w_train),
+  asp = 1
+)
+abline(0, 1, col = "red", lwd = 2, lty = 2)
 w_var_NNGP <- spVB_get_Vw(NNGP)
 
-## -----------------------------------------------------------------------------
+## ----fig.align = "center"-----------------------------------------------------
 NNGP_w_samples <- spVB_w_sampling(NNGP, n.samples = 5000)$p.w.samples
 NNGP_predict <- predict(NNGP, coords.0 = coords_test, X.0 = x_test, covariates = TRUE, n.samples = 5000)
-plot(w_test, apply(NNGP_predict$p.w.0, 1, mean))
-abline(0,1,col="red")
+plot(
+  w_test, apply(NNGP_predict$p.w.0, 1, mean),
+  pch = 19, cex = 1.2, col = "darkblue",
+  xlab = "True spatial random effect (w)",
+  ylab = "Predicted posterior mean (w)",
+  main = "Posterior Mean using NNGP vs. True Spatial Random Effect",
+  xlim = range(w_test), ylim = range(w_test),
+  asp = 1
+)
+abline(0, 1, col = "red", lwd = 2, lty = 2)
 
-
-## -----------------------------------------------------------------------------
+## ----fig.align = "center"-----------------------------------------------------
 NNGP_joint <- spVB_NNGP(y = y_train,X = x_train,coords=coords_train, n.neighbors = 15, 
                         n.neighbors.vi = 3,
                         rho = 0.85, max_iter = 1500, covariates = TRUE, joint = TRUE)
 
-plot(w_train,NNGP_joint$w_mu[order(NNGP_joint$ord)])
-abline(0,1,col="red")
+plot(
+  w_train, NNGP_joint$w_mu[order(NNGP_joint$ord)],
+  pch = 19, cex = 1.2, col = "darkblue",
+  xlab = "True spatial random effect (w)",
+  ylab = "Estimated posterior mean (w)",
+  main = "Posterior Mean using NNGP joint model vs. True Spatial Random Effect",
+  xlim = range(w_train), ylim = range(w_train),
+  asp = 1
+)
+abline(0, 1, col = "red", lwd = 2, lty = 2)
 w_var_NNGP_joint <- spVB_get_Vw(NNGP_joint)
 
-## -----------------------------------------------------------------------------
+## ----fig.align = "center"-----------------------------------------------------
 NNGP_joint_w_samples <- spVB_joint_sampling(NNGP_joint, n.samples = 5000)$p.w.samples
 NNGP_joint_predict <- predict(NNGP_joint, coords.0 = coords_test, X.0 = x_test, covariates = TRUE, n.samples = 5000)
-plot(w_test, apply(NNGP_joint_predict$p.w.0, 1, mean))
-abline(0,1,col="red")
 
+plot(
+  w_test, apply(NNGP_joint_predict$p.w.0, 1, mean),
+  pch = 19, cex = 1.2, col = "darkblue",
+  xlab = "True spatial random effect (w)",
+  ylab = "Predicted posterior mean (w)",
+  main = "Posterior Mean using NNGP joint model vs. True Spatial Random Effect",
+  xlim = range(w_test), ylim = range(w_test),
+  asp = 1
+)
+abline(0, 1, col = "red", lwd = 2, lty = 2)
 
-## -----------------------------------------------------------------------------
+## ----fig.align = "center"-----------------------------------------------------
 MFA <- spVB_MFA(y = y_train,X = x_train,coords=coords_train, covariates = TRUE, 
                 n.neighbors = 15, rho = 0.85, max_iter = 1000, LR = FALSE)
-plot(w_train,MFA$w_mu[order(MFA$ord)])
-abline(0,1,col="red")
+plot(
+  w_train, MFA$w_mu[order(MFA$ord)],
+  pch = 19, cex = 1.2, col = "darkblue",
+  xlab = "True spatial random effect (w)",
+  ylab = "Estimated posterior mean (w)",
+  main = "Posterior Mean using MFA vs. True Spatial Random Effect",
+  xlim = range(w_train), ylim = range(w_train),
+  asp = 1
+)
+abline(0, 1, col = "red", lwd = 2, lty = 2)
 
-
-## -----------------------------------------------------------------------------
+## ----fig.align = "center"-----------------------------------------------------
 MFA_w_samples <- spVB_w_sampling(MFA, n.samples = 5000)$p.w.samples
 MFA_predict <- predict(MFA, coords.0 = coords_test, X.0 = x_test, covariates = TRUE, n.samples = 5000)
-plot(w_test, apply(MFA_predict$p.w.0, 1, mean))
-abline(0,1,col="red")
+plot(
+  w_test, apply(MFA_predict$p.w.0, 1, mean),
+  pch = 19, cex = 1.2, col = "darkblue",
+  xlab = "True spatial random effect (w)",
+  ylab = "Predicted posterior mean (w)",
+  main = "Posterior Mean using MFA vs. True Spatial Random Effect",
+  xlim = range(w_test), ylim = range(w_test),
+  asp = 1
+)
+abline(0, 1, col = "red", lwd = 2, lty = 2)
 
 
-## -----------------------------------------------------------------------------
+## ----fig.align = "center"-----------------------------------------------------
 MFA_LR <- spVB_MFA(y = y_train,X = x_train,coords=coords_train, covariates = TRUE, 
                    n.neighbors = 15, rho = 0.85, max_iter = 1000, LR = TRUE)
-plot(w_train,MFA_LR$w_mu[order(MFA_LR$ord)])
-abline(0,1,col="red")
+plot(
+  w_train, MFA_LR$w_mu[order(MFA_LR$ord)],
+  pch = 19, cex = 1.2, col = "darkblue",
+  xlab = "True spatial random effect (w)",
+  ylab = "Estimated posterior mean (w)",
+  main = "Posterior Mean using MFA linear response vs. True Spatial Random Effect",
+  xlim = range(w_train), ylim = range(w_train),
+  asp = 1
+)
+abline(0, 1, col = "red", lwd = 2, lty = 2)
 
 
-## -----------------------------------------------------------------------------
+## ----fig.align = "center"-----------------------------------------------------
 MFA_LR_w_samples <- spVB_LR_sampling(MFA_LR, n.samples = 5000)$p.w.samples
 MFA_LR_predict <- predict(MFA_LR, coords.0 = coords_test, X.0 = x_test, covariates = TRUE, n.samples = 5000)
-plot(w_test, apply(MFA_LR_predict$p.w.0, 1, mean))
-abline(0,1,col="red")
+plot(
+  w_test, apply(MFA_LR_predict$p.w.0, 1, mean),
+  pch = 19, cex = 1.2, col = "darkblue",
+  xlab = "True spatial random effect (w)",
+  ylab = "Predicted posterior mean (w)",
+  main = "Posterior Mean using MFA linear response vs. True Spatial Random Effect",
+  xlim = range(w_test), ylim = range(w_test),
+  asp = 1
+)
+abline(0, 1, col = "red", lwd = 2, lty = 2)
 
 
