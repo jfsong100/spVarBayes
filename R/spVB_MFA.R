@@ -287,7 +287,8 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
                            "phi.alpha","phi.beta")
   }
 
-
+  warning('The output data (y, X, coords, ...) is reordered, use ord to get the original ordered data.')
+  
 
   result_list <- list ()
   result_list$n <- n
