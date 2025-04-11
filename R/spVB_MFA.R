@@ -371,7 +371,7 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
       cat(c("   Update spatial parameters \n"))
       cat("-------------------------------------------------------", "\n")
       ### Update tausq ###
-      b_tau_update = tau.sq.IG[2] + (sum(qr.resid(qr(X), y - w_mu)^2) + p*result_list$theta[2] + sum(diag(updated_mat)))/2
+      b_tau_update = tau.sq.IG[2] + (sum(qr.resid(qr(X), y - w_mu)^2) + p*result_list$theta[2] + sum(diag(updated_mat)[-(1:p)]))/2
       
       ### Update sigmasq ###
       LR_mat_decompose = spVB_LR_chol(result_list)
@@ -382,6 +382,7 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
       B_mat = prior_mat$B_mat
       F_mat = prior_mat$F_mat
       
+      set.seed(1)
       sim <- matrix(rnorm(Trace_N*(n+p)))
       u <- solve(B_q,matrix(sim, ncol = Trace_N)*sqrt(F_q))
       
@@ -423,7 +424,8 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
       B_mat <- prior_mat$B_mat
       F_mat <- prior_mat$F_mat
       
-      sim <- matrix(rnorm(Trace_N*(n+p)))
+      set.seed(1)
+      sim <- matrix(rnorm(Trace_N*(n)))
       u <- solve(B_q,matrix(sim, ncol = Trace_N)*sqrt(F_q))
       
       MNNGP <- t(B_mat) %*% solve(F_mat) %*% B_mat
