@@ -58,7 +58,7 @@ spVB_w_sampling <- function(object,
     cat(c("Sampling from NNGP variational distribution."), "\n")
 
     if(object$joint){
-      warning('We recommend using spVB_joint_sampling for NNGP joint model.')
+      stop('We recommend using spVB_joint_sampling for NNGP joint model.')
       # cat(c("Joint Sampling from NNGP variational distribution for beta and w."), "\n")
       # 
       # 
@@ -98,6 +98,10 @@ spVB_w_sampling <- function(object,
                     n, w_mu, w_sigma_sq, sim, n.samples, PACKAGE = "spVarBayes")
 
     #out <- c(out, .Call("MFA_samplingcpp", n, w_mu, w_sigma_sq, sim, n.samples))
+  }else if(object$VI_family == "MFA-LR"){
+    stop('We recommend using spVB_LR_sampling for linear response corrected MFA model.')
+  }else{
+    stop('Model is not supported.')
   }
 
 

@@ -326,131 +326,202 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
   result_list$ord <-  ord
   result_list$VI_family <-  "MFA"
   result_list$covariates <- covariates
-
-  if(LR){
-    cat("-------------------------------------------------------", "\n")
-    cat("   Linear response correction for spVB-MFA model", "\n")
-    
-    w_mu <- result_list$w_mu
-    theta_input <- result_list$theta
-    storage.mode(w_mu) <- "double"
-    storage.mode(theta_input) <- "double"
-    
-    if(covariates){
-      beta_mu <- result_list$beta
-      beta_sigmasq <- diag(result_list$beta_cov)
-      p <- length(beta_mu)
-      mat1 <- t(X) %*% X
-      diag(mat1) <- rep(0,p)
-      beta_premat_pp <- -(result_list$beta_cov %*% mat1)/result_list$theta[2]
-      beta_premat_pn <- result_list$beta_cov %*% t(X)
-      
-      
-      storage.mode(X) <- "double"
-      storage.mode(p) <- "integer"
-      
-      Inter_mat <- .Call("construct_I_VH_p", n, p, X, result_list$theta[2], result_list$nnIndxLU, result_list$nnIndx,
-                         result_list$numIndxCol, result_list$nnIndxnnCol, result_list$cumnumIndxCol,
-                         result_list$B, result_list$F, c(beta_sigmasq, result_list$w_sigma_sq), beta_premat_pp, beta_premat_pn)
-      
-      num_cores <- detectCores()
-      RcppParallel::setThreadOptions(numThreads = num_cores)
-      p1_LR <- proc.time()
-
-      # LR_result <- .Call("spVarBayes_MFA_LR_update_allcpp",
-      #                 y, X, n, p, n.neighbors, coords, cov.model.indx,
-      #                 sigma.sq.IG, tau.sq.IG,
-      #                 search.type.indx, n.omp.threads, fix_nugget, nu.Unif, nu.starting,
-      #                 w_mu, theta_input, Inter_mat, result_list$beta_cov ,result_list$w_sigma_sq, PACKAGE = "spVarBayes")
-      
-      cat(c("   Default Number of Threads is", unname(num_cores)), "\n")
-      cat("-------------------------------------------------------", "\n")
-      time1 <- proc.time()
-      updated_mat <- .Call("compute_Hinv_V_full_p_parallel", Inter_mat, result_list$beta_cov ,result_list$w_sigma_sq, p, 1000, 1e-6)
-      result_list$updated_mat = updated_mat
-      cat(c("   Update spatial parameters \n"))
-      cat("-------------------------------------------------------", "\n")
-      ### Update tausq ###
-      b_tau_update = tau.sq.IG[2] + (sum(qr.resid(qr(X), y - w_mu)^2) + p*result_list$theta[2] + sum(diag(updated_mat)[-(1:p)]))/2
-      
-      ### Update sigmasq ###
-      LR_mat_decompose = spVB_LR_chol(result_list)
-      prior_mat = spVB_prior(result_list)
-      
-      B_q = LR_mat_decompose$V
-      F_q = LR_mat_decompose$F
-      B_mat = prior_mat$B_mat
-      F_mat = prior_mat$F_mat
-      
-      set.seed(1)
-      sim <- matrix(rnorm(Trace_N*(n+p)))
-      u <- solve(B_q,matrix(sim, ncol = Trace_N)*sqrt(F_q))
-      
-      MNNGP <- t(B_mat) %*% solve(F_mat) %*% B_mat
-      U <- u[-(1:p), 1:Trace_N, drop = FALSE]
-      
-      b_sigma_update = sigma.sq.IG[2] + (sum(colSums((MNNGP %*% U) * U))/Trace_N + sum((B_mat %*% w_mu)^2 / diag(F_mat)))*result_list$theta[1]*0.5
-      
-      p2_LR <- proc.time()
-      result_list$VI_family <-  "MFA-LR"
-    }else{
-      Inter_mat <- .Call("construct_I_VH_nop", n, result_list$theta[2], result_list$nnIndxLU, result_list$nnIndx,
-                         result_list$numIndxCol, result_list$nnIndxnnCol, result_list$cumnumIndxCol,
-                         result_list$B, result_list$F, result_list$w_sigma_sq)
-      
-      num_cores <- detectCores()
-      RcppParallel::setThreadOptions(numThreads = num_cores)
-      cat(c("   Default Number of Threads is", unname(num_cores)), "\n")
-      cat("-------------------------------------------------------", "\n")
-      
-      p1_LR <- proc.time()
-      # LR_result <- .Call("spVarBayes_MFA_LR_update_nocovariates_allcpp",
-      #                 y, n, n.neighbors, coords, cov.model.indx,
-      #                 sigma.sq.IG, tau.sq.IG,
-      #                 search.type.indx, n.omp.threads, fix_nugget, nu.Unif, nu.starting,
-      #                 w_mu, theta_input, Inter_mat,result_list$w_sigma_sq, PACKAGE = "spVarBayes")
-      updated_mat <- .Call("compute_Hinv_V_full_nop_parallel", Inter_mat, result_list$w_sigma_sq)
-      result_list$updated_mat = updated_mat
-      cat(c("   Update spatial parameters \n"))
-      cat("-------------------------------------------------------", "\n")
-      b_tau_update <- tau.sq.IG[1] + (sum((y-w_mu)^2) + sum(diag(updated_mat)))/2
-      
-      ### Update sigmasq ###
-      LR_mat_decompose <- spVB_LR_chol(result_list)
-      prior_mat <- spVB_prior(result_list)
-      
-      B_q <- LR_mat_decompose$V
-      F_q <- LR_mat_decompose$F
-      B_mat <- prior_mat$B_mat
-      F_mat <- prior_mat$F_mat
-      
-      set.seed(1)
-      sim <- matrix(rnorm(Trace_N*(n)))
-      u <- solve(B_q,matrix(sim, ncol = Trace_N)*sqrt(F_q))
-      
-      MNNGP <- t(B_mat) %*% solve(F_mat) %*% B_mat
-      U <- u
-      
-      b_sigma_update <- sigma.sq.IG[2] + (sum(colSums((MNNGP %*% U) * U))/Trace_N + sum((B_mat %*% w_mu)^2 / diag(F_mat)))*result_list$theta[1]*0.5
-      
-      p2_LR <- proc.time()
-      result_list$VI_family <-  "MFA-LR"
-    }
-    
-    Theta[2] <- b_tau_update/Theta_para[3]
-    Theta_para[4] <- b_tau_update
-    
-    Theta[1] <- b_sigma_update/Theta_para[1]
-    Theta_para[2] <- b_sigma_update
-    
-    result_list$theta <- Theta
-    result_list$theta_para <- Theta_para
-    result_list$updated_mat <- updated_mat
-    result_list$B_q <- B_q
-    result_list$F_q <- F_q
-    result_list$LR_time <- p2_LR - p1_LR
-  }
+  result_list$Trace_N <- Trace_N
+  
+  # if(LR){
+  #   if(covariates){
+  #     beta_mu <- result$beta
+  #     beta_sigmasq <- diag(result$beta_cov)
+  #     p <- length(beta_mu)
+  #     
+  #     Inter_mat <- .Call("construct_I_VH", n, X, result$theta[2], result$nnIndxLU, result$nnIndx,
+  #                        result$numIndxCol, result$nnIndxnnCol, result$cumnumIndxCol,
+  #                        result$B, result$F, c(beta_sigmasq, result$w_sigma_sq))
+  #     
+  #     if(p==1){
+  #       if(!get_Vw_mat){
+  #         num <- Vw_n_omp
+  #         cat("-------------------------------------------------------", "\n")
+  #         cat(c("Default Number of Threads is", unname(num)), "\n")
+  #         cat(c("Compute the Linear response for variance", unname(num)), "\n")
+  #         
+  #         RcppParallel::setThreadOptions(numThreads = num)
+  #         time1 <- proc.time()
+  #         updated_mat <- .Call("compute_Hinv_V_diagonal_parallel", Inter_mat, c(beta_sigmasq, result$w_sigma_sq), 1000, 1e-6)
+  #         time2 <- proc.time()
+  #         
+  #       }else{
+  #         num <- Vw_n_omp
+  #         cat("-------------------------------------------------------", "\n")
+  #         cat(c("   Default Number of Threads is", unname(num)), "\n")
+  #         cat(c("   Compute the Linear response for covariance matrix", "\n"))
+  #         RcppParallel::setThreadOptions(numThreads = num)
+  #         # cat(c("Compute the nearest positive definite for covariance matrix", "\n"))
+  #         time1 <- proc.time()
+  #         updated_mat <- .Call("compute_Hinv_V_matrix_parallel", Inter_mat, c(beta_sigmasq, result$w_sigma_sq))
+  #         # results_pd <- .Call("nearest_positive_definite", mat_results[-(1:p),-(1:p)], 1e-6, 100)
+  #         result_list$updated_mat = updated_mat
+  #         cat("-------------------------------------------------------", "\n")
+  #         cat(c("   Update spatial parameters \n"))
+  #         cat("-------------------------------------------------------", "\n")
+  #         ### Update tausq ###
+  #         b_tau_update = tau.sq.IG[2] + (sum(qr.resid(qr(X), result$y - result$w_mu)^2) + p*result$theta[2] + sum(diag(updated_mat)[-(1:p)]))/2
+  #         
+  #         ### Update sigmasq ###
+  #         LR_mat_decompose <- spVB_LR_chol(result_list)
+  #         prior_mat <- spVB_prior(result_list)
+  #         
+  #         B_q <- LR_mat_decompose$V
+  #         F_q <- LR_mat_decompose$F
+  #         B_mat <- prior_mat$B_mat
+  #         F_mat <- prior_mat$F_mat
+  #         
+  #         set.seed(1)
+  #         sim <- matrix(rnorm(Trace_N*(n+p)))
+  #         u <- solve(B_q,matrix(sim, ncol = Trace_N)*sqrt(F_q))
+  #         
+  #         MNNGP <- t(B_mat) %*% solve(F_mat) %*% B_mat
+  #         U <- u[-(1:p), 1:Trace_N, drop = FALSE]
+  #         
+  #         b_sigma_update <- sigma.sq.IG[2] + (sum(colSums((MNNGP %*% U) * U))/Trace_N + sum((B_mat %*% result$w_mu)^2 / diag(F_mat)))*result$theta[1]*0.5
+  #         time2 <- proc.time()
+  #         
+  #         
+  #       }
+  #     }else{
+  #       # X = object$X
+  #       mat1 = t(X) %*% X
+  #       diag(mat1) = rep(0,p)
+  #       beta_premat_pp = -(result$beta_cov %*% mat1)/result$theta[2]
+  #       beta_premat_pn = result$beta_cov %*% t(X)
+  #       
+  #       Inter_mat <- .Call("construct_I_VH_p", result$n, p, result$X, result$theta[2], result$nnIndxLU, result$nnIndx,
+  #                          result$numIndxCol, result$nnIndxnnCol, result$cumnumIndxCol,
+  #                          result$B, result$F, c(beta_sigmasq, result$w_sigma_sq), beta_premat_pp, beta_premat_pn)
+  #       
+  #       if(get_Vw_mat){
+  #         num <- Vw_n_omp
+  #         cat("-------------------------------------------------------", "\n")
+  #         cat(c("   Default Number of Threads is", unname(num)), "\n")
+  #         cat(c("   Compute the Linear response for variance \n"))
+  #         RcppParallel::setThreadOptions(numThreads = num)
+  #         time1 <- proc.time()
+  #         updated_mat <- .Call("compute_Hinv_V_full_p_parallel", Inter_mat, result$beta_cov ,result$w_sigma_sq, p)
+  #         
+  #         result_list$updated_mat = updated_mat
+  #         
+  #         if(get_para){
+  #           cat("-------------------------------------------------------", "\n")
+  #           cat(c("   Update spatial parameters \n"))
+  #           cat("-------------------------------------------------------", "\n")
+  #           ## Update tausq ###
+  #           b_tau_update = tau.sq.IG[2] + (sum(qr.resid(qr(result$X), result$y - result$w_mu)^2) + p*result$theta[2] + sum(diag(updated_mat)[-(1:p)]))/2
+  #           
+  #           ### Update sigmasq ###
+  #           LR_mat_decompose = spVB_LR_chol(result_list)
+  #           prior_mat = spVB_prior(result_list)
+  #           
+  #           B_q = LR_mat_decompose$V
+  #           F_q = LR_mat_decompose$F
+  #           B_mat = prior_mat$B_mat
+  #           F_mat = prior_mat$F_mat
+  #           
+  #           set.seed(1)
+  #           sim <- matrix(rnorm(Trace_N*(n+p)))
+  #           u <- solve(B_q,matrix(sim, ncol = Trace_N)*sqrt(F_q))
+  #           
+  #           MNNGP <- t(B_mat) %*% solve(F_mat) %*% B_mat
+  #           U <- u[-(1:p), 1:Trace_N, drop = FALSE]
+  #           
+  #           b_sigma_update = sigma.sq.IG[2] + (sum(colSums((MNNGP %*% U) * U))/Trace_N + sum((B_mat %*% result$w_mu)^2 / diag(F_mat)))*result$theta[1]*0.5
+  #           
+  #         }
+  #         time2 <- proc.time()
+  #       }else{
+  #         num <- Vw_n_omp
+  #         cat("-------------------------------------------------------", "\n")
+  #         cat(c("   Default Number of Threads is", unname(num)), "\n")
+  #         cat(c("   Compute the Linear response for variance \n"))
+  #         RcppParallel::setThreadOptions(numThreads = num)
+  #         time1 <- proc.time()
+  #         updated_mat <- .Call("compute_Hinv_V_diagonal_parallel_p", Inter_mat, result$beta_cov ,result$w_sigma_sq, p)
+  #         time2 <- proc.time()
+  #       }
+  #       
+  #     }
+  #     
+  #   }else{
+  #     num <- Vw_n_omp
+  #     cat("-------------------------------------------------------", "\n")
+  #     cat(c("   Default Number of Threads is", unname(num)), "\n")
+  #     cat(c("   Compute the Linear response for variance \n"))
+  #     Inter_mat <- .Call("construct_I_VH_nop", result$n, result$theta[2], result$nnIndxLU, result$nnIndx,
+  #                        result$numIndxCol, result$nnIndxnnCol, result$cumnumIndxCol,
+  #                        result$B, result$F, result$w_sigma_sq)
+  #     RcppParallel::setThreadOptions(numThreads = num)
+  #     
+  #     if(get_Vw_mat){
+  #       time1 <- proc.time()
+  #       updated_mat <- .Call("compute_Hinv_V_full_nop_parallel", Inter_mat, result$w_sigma_sq)
+  #       result_list$updated_mat <- updated_mat
+  #       
+  #       if(get_para){
+  #         cat("-------------------------------------------------------", "\n")
+  #         cat(c("   Update spatial parameters \n"))
+  #         cat("-------------------------------------------------------", "\n")
+  #         b_tau_update <- tau.sq.IG[1] + (sum((result$y-result$w_mu)^2) + sum(diag(updated_mat)))/2
+  #         
+  #         ### Update sigmasq ###
+  #         LR_mat_decompose <- spVB_LR_chol(result_list)
+  #         prior_mat <- spVB_prior(result_list)
+  #         
+  #         B_q <- LR_mat_decompose$V
+  #         F_q <- LR_mat_decompose$F
+  #         B_mat <- prior_mat$B_mat
+  #         F_mat <- prior_mat$F_mat
+  #         
+  #         set.seed(1)
+  #         sim <- matrix(rnorm(Trace_N*(n)))
+  #         u <- solve(B_q,matrix(sim, ncol = Trace_N)*sqrt(F_q))
+  #         
+  #         MNNGP <- t(B_mat) %*% solve(F_mat) %*% B_mat
+  #         U <- u
+  #         
+  #         b_sigma_update <- sigma.sq.IG[2] + (sum(colSums((MNNGP %*% U) * U))/Trace_N + sum((B_mat %*% result$w_mu)^2 / diag(F_mat)))*result$theta[1]*0.5
+  #         
+  #       }
+  #       time2 <- proc.time()
+  #     }else{
+  #       time1 <- proc.time()
+  #       updated_mat <- .Call("compute_Hinv_V_diag_nop_parallel", Inter_mat, result$w_sigma_sq)
+  #       time2 <- proc.time()
+  #     }
+  #     
+  # 
+  #   }
+  # 
+  #   result_list$VI_family <-  "MFA-LR"
+  #   result_list$updated_mat <- updated_mat
+  #   result_list$LR_time <- time2 - time1
+  #   
+  #   if(get_para){
+  #     Theta[2] <- b_tau_update/Theta_para[3]
+  #     Theta_para[4] <- b_tau_update
+  #     
+  #     Theta[1] <- b_sigma_update/Theta_para[1]
+  #     Theta_para[2] <- b_sigma_update
+  #     
+  #     result_list$theta <- Theta
+  #     result_list$theta_para <- Theta_para
+  #     result_list$B_q <- B_q
+  #     result_list$F_q <- F_q
+  #     result_list$sim <- sim
+  #     result_list$B_mat <- B_mat
+  #     result_list$F_mat <- F_mat
+  #   }    
+  # }
   class(result_list) <- "spVarBayes"
+
 
   result_list
 }

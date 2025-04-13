@@ -24,9 +24,12 @@ spVB_beta_sampling <- function(object,
     stop("error: no covariates are included in the model\n")
   }
 
-  if(object$joint){
-    warning('We recommend using spVB_joint_sampling for NNGP joint model.')
+  if(object$VI_family == "NNGP"){
+    if(object$joint){
+      stop('We recommend using spVB_joint_sampling for NNGP joint model.')
+    }
   }
+
   
   p <- ncol(object$X)
 

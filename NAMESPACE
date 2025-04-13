@@ -5,6 +5,7 @@ importFrom(RcppParallel, RcppParallelLibs)
 exportPattern("^[[:alpha:]]+")
 
 export(spVB_MFA)
+export(spVB_LR)
 export(spVB_NNGP)
 export(spVB_w_sampling)
 export(spVB_theta_sampling)

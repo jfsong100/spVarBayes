@@ -122,3 +122,4 @@ extern "C" SEXP compute_Hinv_V_full_p_parallel(SEXP H_, SEXP V_top_, SEXP V_diag
 
   return wrap(results);
 }
+

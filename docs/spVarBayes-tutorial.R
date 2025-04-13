@@ -109,9 +109,10 @@ MFA_predict <- predict(MFA, coords.0 = coords_test, X.0 = x_test, covariates = T
 
 
 ## ----fig.align = "center", fig.width = 6, fig.height = 6----------------------
-MFA_LR <- spVB_MFA(y = y_train,X = x_train,coords=coords_train, covariates = TRUE, 
+MFA_pre_fit <- spVB_MFA(y = y_train,X = x_train,coords=coords_train, covariates = TRUE, 
                    n.neighbors = 15, rho = 0.85, max_iter = 1000, LR = TRUE)
 
+MFA_LR = spVB_LR(MFA_pre_fit, get_mat = TRUE, get_para = TRUE, n_omp = 5)
 
 ## ----fig.align = "center", fig.width = 6, fig.height = 6----------------------
 MFA_LR_w_samples <- spVB_LR_sampling(MFA_LR, n.samples = 5000)$p.w.samples

@@ -1,7 +1,7 @@
 [
     {
         "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/MFA_mb.cpp",
-        "file_last_write": 1743818192.0,
+        "file_last_write": 1744557907.0,
         "definitions": [
             {
                 "usr": "c:MFA_mb.cpp@8@macro@USE_FC_LEN_T",
@@ -499,6 +499,33 @@
         "hidden": false
     },
     {
+        "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/compute_BFq_big.cpp",
+        "file_last_write": 1744562485.0,
+        "definitions": [
+            {
+                "usr": "c:@S@UpdateWorker",
+                "kind": 3,
+                "parent_name": "",
+                "name": "UpdateWorker",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/compute_BFq_big.cpp",
+                "line": 14,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@S@UpdateWorker@F@operator()#l#l#",
+                "kind": 7,
+                "parent_name": "UpdateWorker",
+                "name": "operator(std::size_t, std::size_t)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/compute_BFq_big.cpp",
+                "line": 34,
+                "column": 8,
+                "hidden": false
+            }
+        ],
+        "hidden": false
+    },
+    {
         "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/lu_solver.cpp",
         "file_last_write": 1743819083.0,
         "definitions": [
@@ -581,7 +608,7 @@
     },
     {
         "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/lu_solver_mat_p.cpp",
-        "file_last_write": 1742527937.0,
+        "file_last_write": 1744398315.0,
         "definitions": [
             {
                 "usr": "c:@S@ParallelMatpSolver",
@@ -600,6 +627,33 @@
                 "name": "operator(std::size_t, std::size_t)",
                 "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/lu_solver_mat_p.cpp",
                 "line": 77,
+                "column": 8,
+                "hidden": false
+            }
+        ],
+        "hidden": false
+    },
+    {
+        "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/lu_solver_nop.cpp",
+        "file_last_write": 1744549219.0,
+        "definitions": [
+            {
+                "usr": "c:@S@ParallelMatDiagSolver",
+                "kind": 3,
+                "parent_name": "",
+                "name": "ParallelMatDiagSolver",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/lu_solver_nop.cpp",
+                "line": 34,
+                "column": 8,
+                "hidden": false
+            },
+            {
+                "usr": "c:@S@ParallelMatDiagSolver@F@operator()#l#l#",
+                "kind": 7,
+                "parent_name": "ParallelMatDiagSolver",
+                "name": "operator(std::size_t, std::size_t)",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/lu_solver_nop.cpp",
+                "line": 47,
                 "column": 8,
                 "hidden": false
             }
@@ -641,7 +695,7 @@
     },
     {
         "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
-        "file_last_write": 1743963876.0,
+        "file_last_write": 1744506118.0,
         "definitions": [
             {
                 "usr": "c:@F@zeros_minibatch#*d#I#I#*I#I#",
@@ -1746,6 +1800,23 @@
                 "parent_name": "",
                 "name": "USE_FC_LEN_T",
                 "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/spVB_LR_update_all.cpp",
+                "line": 1,
+                "column": 9,
+                "hidden": false
+            }
+        ],
+        "hidden": false
+    },
+    {
+        "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/spVB_LR_update_big.cpp",
+        "file_last_write": 1744569598.0,
+        "definitions": [
+            {
+                "usr": "c:spVB_LR_update_big.cpp@8@macro@USE_FC_LEN_T",
+                "kind": 9,
+                "parent_name": "",
+                "name": "USE_FC_LEN_T",
+                "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/spVB_LR_update_big.cpp",
                 "line": 1,
                 "column": 9,
                 "hidden": false

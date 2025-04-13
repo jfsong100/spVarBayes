@@ -134,11 +134,6 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
 
   \item{time}{execution time for parameter estimation reported using
     \code{proc.time()}. }
-
-  \item{updated_mat}{if LR is \code{TRUE}, the linear response corrected variance covariance matrix for regression coefficients and spatial random effects. The dimension will be \code{(p+n) * (p+n)} }
-    
-  \item{LR_time}{if LR is \code{TRUE}, execution time for computing linear response reported using
-    \code{proc.time()}. }
     
   The return object will include additional objects used for subsequent
   prediction and/or input for other functions.
@@ -202,11 +197,6 @@ y <- rnorm(n, x \%*\% B + w, sqrt(tau2_true))
 ##Fit a MFA VB model
 MFA <- spVB_MFA(y,X = x,coords=coords, covariates = TRUE, 
                 n.neighbors = 15, rho = 0.85, max_iter = 1000, LR = FALSE)
-
-
-##Fit a MFA VB model with linear response
-MFA_LR <- spVB_MFA(y,X = x,coords=coords, covariates = TRUE, 
-                n.neighbors = 15, rho = 0.85, max_iter = 1000, LR = TRUE)
 
 
 
