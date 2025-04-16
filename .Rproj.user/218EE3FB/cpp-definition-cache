@@ -695,7 +695,7 @@
     },
     {
         "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
-        "file_last_write": 1744506118.0,
+        "file_last_write": 1744825572.0,
         "definitions": [
             {
                 "usr": "c:@F@zeros_minibatch#*d#I#I#*I#I#",
@@ -1703,7 +1703,7 @@
                 "parent_name": "",
                 "name": "update_ubvec(double *, double *, double *, double *, double *, double *, int, int, int, int *, int *, int *)",
                 "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
-                "line": 4015,
+                "line": 4029,
                 "column": 6,
                 "hidden": false
             },
@@ -1713,7 +1713,7 @@
                 "parent_name": "",
                 "name": "gamma_l_gradient_fun2(double *, double *, double *, double *, double *, int, int *, int *, double *, double *, int *, int *, double *, int, int *, int *, int *, int *, int *, int *, int *, int *, double *, double *, double *, double *, double *, int, double *, double *, double *, double *, double *, double *, double *, double *, int *, int *, int *, int *, int)",
                 "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
-                "line": 4054,
+                "line": 4068,
                 "column": 6,
                 "hidden": false
             },
@@ -1723,7 +1723,7 @@
                 "parent_name": "",
                 "name": "a_Abeta_Lbeta_gradient_fun2(double *, double *, double *, double *, double *, int, int *, int *, double *, double *, int *, int *, double *, int, int *, int *, int *, int *, double *, double *, double *, double *, int, double *, double *, double *, double *, int *, double *, double *, double *, double *, double *, double *, int *, int *, int *, int *, int)",
                 "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
-                "line": 4174,
+                "line": 4188,
                 "column": 6,
                 "hidden": false
             },
@@ -1733,7 +1733,7 @@
                 "parent_name": "",
                 "name": "updateBFq(double *, double *, double *, double *, double *, int *, int *, int, int, int)",
                 "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
-                "line": 4303,
+                "line": 4317,
                 "column": 6,
                 "hidden": false
             },
@@ -1743,7 +1743,7 @@
                 "parent_name": "",
                 "name": "update_uvec_lr(double *, double *, double *, double *, int, int *, int *)",
                 "file": "/Users/jiafangsong/Desktop/Spatial/packagev1/v14/spVarBayes/src/nngp_fun.cpp",
-                "line": 4339,
+                "line": 4353,
                 "column": 6,
                 "hidden": false
             }

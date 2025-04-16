@@ -3989,23 +3989,37 @@ void a_Abeta_Lbeta_gradient_fun(double *u_vec, double *epsilon_vec, double *a_gr
 
   if(p>1){
     int L_beta_ind = p * (p-1)/2;
-    // for(int j = 1; j < p; j++){
-    //   for(int k = 0; k < IndxLU_beta[p+j]; k ++){
-    //     L_beta_gradient[IndxLU_beta[j] + k] = gradient_beta[j] * ub_vec[k];
-    //   }
-    // }
-    sum = gradient_beta[1];
-    for(int i = 0; i < n; i++){
-      sum = sum + gradient[i] * A_beta[i+n];
-
-      if(numIndxCol_vi[i] > 0){
-        for (int l = 0; l < numIndxCol_vi[i]; l++) {
-          sum = sum + A_vi[ nnIndxCol_vi[ 1 + cumnumIndxCol_vi[i] + l] ] * gradient[nnIndxnnCol_vi[cumnumIndxCol_vi[i] - i + l]]* A_beta[i+n];
+    for(int j = 1; j < p; j++){
+      
+      sum = gradient_beta[j];
+      
+      for(int i = 0; i < n; i++){
+        sum = sum + gradient[i] * A_beta[i+j*n];
+        
+        if(numIndxCol_vi[i] > 0){
+          for (int l = 0; l < numIndxCol_vi[i]; l++) {
+            sum = sum + A_vi[ nnIndxCol_vi[ 1 + cumnumIndxCol_vi[i] + l] ] * gradient[nnIndxnnCol_vi[cumnumIndxCol_vi[i] - i + l]]* A_beta[i+j*n];
+          }
         }
+        
       }
-
+      
+      for(int k = 0; k < IndxLU_beta[p+j]; k ++){
+        L_beta_gradient[IndxLU_beta[j] + k] = sum * ub_vec[k];
+      }
     }
-    L_beta_gradient[0] = sum * ub_vec[0];
+    // sum = gradient_beta[1];
+    // for(int i = 0; i < n; i++){
+    //   sum = sum + gradient[i] * A_beta[i+n];
+    // 
+    //   if(numIndxCol_vi[i] > 0){
+    //     for (int l = 0; l < numIndxCol_vi[i]; l++) {
+    //       sum = sum + A_vi[ nnIndxCol_vi[ 1 + cumnumIndxCol_vi[i] + l] ] * gradient[nnIndxnnCol_vi[cumnumIndxCol_vi[i] - i + l]]* A_beta[i+n];
+    //     }
+    //   }
+    // 
+    // }
+    // L_beta_gradient[0] = sum * ub_vec[0];
 
   }
 
