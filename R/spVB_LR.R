@@ -1,4 +1,5 @@
 spVB_LR <- function(object, get_mat = TRUE, get_para = TRUE, n_omp = 1, n_large = FALSE,
+                    psd_beta = FALSE, original_beta = FALSE,
                         sigma.sq.IG = c(0.1,1),
                         tau.sq.IG = c(0.1,0.1)) {
 
@@ -174,11 +175,23 @@ spVB_LR <- function(object, get_mat = TRUE, get_para = TRUE, n_omp = 1, n_large 
           time1 <- proc.time()
           updated_mat <- .Call("compute_Hinv_V_full_p_parallel", Inter_mat, object$beta_cov ,object$w_sigma_sq, p)
           
+          if(psd_beta){
+            warning("beta covariance block projected to nearest PSD matrix.")
+            updated_beta_mat <- .Call("compute_Hinv_V_topblock", Inter_mat, object$beta_cov ,p)
+            updated_mat[1:p,1:p] = updated_beta_mat
+          }
+          
+          if(original_beta){
+            warning("original covariance block with no linear reponse correction for beta.")
+            updated_mat[1:p,1:p] = object$beta_cov
+          }
+          
           object$updated_mat = updated_mat
           
           if(get_para){
             cat(c("   Update spatial parameters \n"))
             cat("-------------------------------------------------------", "\n")
+            
             ## Update tausq ###
             b_tau_update = tau.sq.IG[2] + (sum(qr.resid(qr(object$X), object$y - object$w_mu)^2) + p*object$theta[2] + sum(diag(updated_mat)[-(1:p)]))/2
             

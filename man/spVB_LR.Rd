@@ -8,6 +8,7 @@
 
 \usage{
 spVB_LR <- function(object, get_mat = TRUE, get_para = TRUE, n_omp = 1, n_large = FALSE,
+                        psd_beta = FALSE, original_beta = FALSE,
                         sigma.sq.IG = c(0.1,1),
                         tau.sq.IG = c(0.1,0.1),...)
 }
@@ -22,6 +23,10 @@ spVB_LR <- function(object, get_mat = TRUE, get_para = TRUE, n_omp = 1, n_large 
 
   \item{n_large}{if \code{TRUE}, the user is indicating a large sample size case, NNGP for the linear response corrected variance covariance matrix is computed.}
 
+  \item{psd_beta}{if \code{TRUE}, beta covariance block is projected to nearest PSD matrix.}
+  
+  \item{original_beta}{if \code{TRUE}, beta covariance block is replaced by the original covariance block with no linear reponse correction.}
+  
   \item{sigma.sq.IG}{Inverse-Gamma prior parameters for sigma.sq. The
     hyperparameters of the inverse-Gamma are
     passed as a vector of length two, with the first and second elements corresponding
