@@ -9,13 +9,13 @@
 
 \usage{
 spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
-                     sigma.sq = 1, tau.sq = 0.5, phi = NULL, sigma.sq.IG = c(0.1,1),
+                     sigma.sq = NULL, tau.sq = NULL, phi = NULL, sigma.sq.IG = c(0.1,1),
                      tau.sq.IG = c(0.1,0.1), phi.range = NULL, var_input = NULL,
                      n_omp = 1, cov.model = "exponential", nu = 1.5, search.type = "tree",tol = 12,
                      verbose = FALSE, max_iter = 2000, min_iter = 750, stop_K = FALSE, K = 20,
-                     N_phi = 5, Trace_N = 50, phi_max_iter = 10, rho = 0.95,
+                     N_phi = 5, Trace_N = 30, phi_max_iter = 10, rho = 0.95,
                      mini_batch = FALSE, mini_batch_size = 256, ord_type = "Sum_coords", 
-                     tau_sq_input = NULL, sigma_sq_input = NULL, LR = FALSE)
+                     LR = FALSE, tau_sq_input = NULL, sigma_sq_input = NULL)
 }
 
 \arguments{
@@ -30,9 +30,9 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
 
   \item{n.neighbors}{number of neighbors used in the NNGP prior. This must be an integer.}
 
-  \item{sigma.sq}{starting value of sigma square. Default value is 1. }
+  \item{sigma.sq}{starting value of sigma square. If there is no input, BRSIC estimation will be used. }
 
-  \item{tau.sq}{starting value of tau square. Default value is 0.5. }
+  \item{tau.sq}{starting value of tau square. If there is no input, BRSIC estimation will be used. }
 
   \item{phi}{starting value of phi. If there is no input, BRSIC estimation will be used. }
 
@@ -46,9 +46,7 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
     passed as a vector of length two, with the first and second elements corresponding
     to the \emph{shape} and \emph{scale}, respectively. Default value is c(0.1,0.1)}
 
-  \item{phi.range}{the range of phi can take is passed as a vector of length two with the first
-    and second elements corresponding to the lower and upper support,
-    respectively. Default value is \code{NULL}}
+  \item{phi.range}{The range of phi values.}
 
   \item{var_input}{the diagonal values in the covariance matrix of the variational distribution. The input can either be a scalar or a vector of length n. If there is no input, BRISC estimation will be used.}
 
@@ -124,7 +122,7 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
 
   \item{theta}{a vector of estimated posterior mean for the spatial covariance parameters with each tag corresponding to a parameter name. }
 
-  \item{theta_para}{a vector with each tag corresponding to a parameter name. Variance parameters, simga.sq and tau.sq, are assumed to follow an inverse-Gamma distribution, whereas the spatial decay phi is assumed to follow Shifted Beta distributions. The hyperparameters of the inverse-Gamma are returned as a vector of length two, with the first and second elements corresponding to the shape and scale, respectively. The hyperparameters of the Shifted Beta are also passed as a vector of length two with the first and second elements corresponding to the alpha and beta shape parameters, respectively.}
+  \item{theta_para}{a vector with each tag corresponding to a parameter name. Variance parameters, simga.sq and tau.sq, are assumed to follow an inverse-Gamma distribution. The hyperparameters of the inverse-Gamma are returned as a vector of length two, with the first and second elements corresponding to the shape and scale, respectively. }
 
   \item{w_mu}{a vector of estimated posterior mean for the spatial random effects.}
 

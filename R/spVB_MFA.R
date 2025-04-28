@@ -1,5 +1,5 @@
 spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
-                     sigma.sq = 1, tau.sq = 0.5, phi = NULL, sigma.sq.IG = c(0.1,1),
+                     sigma.sq = NULL, tau.sq = NULL, phi = NULL, sigma.sq.IG = c(0.1,1),
                      tau.sq.IG = c(0.1,0.1), phi.range = NULL, var_input = NULL,
                      n_omp = 1, cov.model = "exponential", nu = 1.5, search.type = "tree",tol = 12,
                      verbose = FALSE, max_iter = 2000, min_iter = 750, stop_K = FALSE, K = 20,
@@ -24,10 +24,6 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
   }
   coords <- round(coords, tol)
 
-  if(tau.sq < 0 ){stop("error: tau.sq must be non-negative")}
-  if(sigma.sq < 0 ){stop("error: sigma.sq must be non-negative")}
-  #if(phi < 0 ){stop("error: phi must be non-negative")}
-  if(nu < 0 ){stop("error: nu must be non-negative")}
 
   n.neighbors.opt <- min(100, n-1)
 
@@ -136,14 +132,27 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
       var_input = BRISC_var_input
     }
     if(is.null(phi)){
-      cat(c("Using BRISC estimation for phi."), "\n")
+      cat(c("Using BRISC estimation for phi as initial value."), "\n")
       cat("\n")
       cat(c("BRISC estimation for phi is",unname(round(BRISC_phi_input,6))), ".","\n")
       cat("\n")
       phi = BRISC_phi_input
     }
   }
-
+  if(is.null(tau.sq)){
+    cat(c("Using BRISC estimation for tau.sq as initial value."), "\n")
+    cat("\n")
+    cat(c("BRISC estimation for tau.sq is",unname(round(BRISC_input[2],6))), ".","\n")
+    cat("\n")
+    tau.sq = BRISC_input[2]
+  }
+  if(is.null(sigma.sq)){
+    cat(c("Using BRISC estimation for sigma.sq as initial value."), "\n")
+    cat("\n")
+    cat(c("BRISC estimation for sigma.sq is",unname(round(BRISC_input[1],6))), ".","\n")
+    cat("\n")
+    sigma.sq = BRISC_input[1]
+  }
 
 
   if(is.null(phi.range)){
@@ -166,7 +175,11 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
     stop("error: phi input must be in the phi range")
   }
 
-
+  if(tau.sq < 0 ){stop("error: tau.sq must be non-negative")}
+  if(sigma.sq < 0 ){stop("error: sigma.sq must be non-negative")}
+  #if(phi < 0 ){stop("error: phi must be non-negative")}
+  if(nu < 0 ){stop("error: nu must be non-negative")}
+  
   #sigma.sq.IG <- 0
   #tau.sq.IG <- 0
   nu.Unif <- 0
@@ -283,8 +296,7 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
   Theta_para <- result$theta_para
   if(cov.model!="matern"){
     names(Theta_para) <- c("sigma.sq.alpha", "sigma.sq.beta",
-                           "tau.sq.alpha", "tau.sq.beta",
-                           "phi.alpha","phi.beta")
+                           "tau.sq.alpha", "tau.sq.beta")
   }
 
   warning('The output data (y, X, coords, ...) is reordered, use ord to get the original ordered data.')
@@ -318,7 +330,7 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
   }
   
   result_list$theta <- Theta
-  result_list$phi.range <- phi.range
+  # result_list$phi.range <- phi.range
   result_list$theta_para <-  Theta_para
   result_list$w_mu <- result$w_mu
   result_list$w_sigma_sq <-  result$w_sigma_sq

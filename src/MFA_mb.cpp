@@ -51,7 +51,7 @@ extern "C" {
 
 
   SEXP spVarBayes_MFA_nocovariates_mb_beta_rephicpp(SEXP y_r, SEXP n_r, SEXP p_r, SEXP m_r, SEXP coords_r, SEXP covModel_r, SEXP rho_r,
-                                              SEXP zetaSqIG_r, SEXP tauSqIG_r, SEXP phibeta_r, SEXP nuUnif_r,
+                                              SEXP zetaSqIG_r, SEXP tauSqIG_r, SEXP phirange_r, SEXP nuUnif_r,
                                               SEXP zetaSqStarting_r, SEXP tauSqStarting_r, SEXP phiStarting_r, SEXP nuStarting_r,
                                               SEXP sType_r, SEXP nThreads_r, SEXP verbose_r, SEXP fix_nugget_r, SEXP N_phi_r, SEXP Trace_N_r,
                                               SEXP max_iter_r,
@@ -107,10 +107,10 @@ extern "C" {
     double tauSqIGa = REAL(tauSqIG_r)[0]; double tauSqIGb = REAL(tauSqIG_r)[1];
     //double phiUnifa = REAL(phiUnif_r)[0]; double phiUnifb = REAL(phiUnif_r)[1];
 
-    double phimin = REAL(phibeta_r)[0]; double phimax = REAL(phibeta_r)[1];
-
-    double a_phi = (phi_input - phimin)/(phimax-phimin)*10;
-    double b_phi = 10 - a_phi;
+    double phimin = REAL(phirange_r)[0]; double phimax = REAL(phirange_r)[1];
+    // 
+    // double a_phi = (phi_input - phimin)/(phimax-phimin)*10;
+    // double b_phi = 10 - a_phi;
 
     double nuUnifa = 0, nuUnifb = 0;
     if(corName == "matern"){
@@ -272,6 +272,8 @@ extern "C" {
 
     theta[zetaSqIndx] = REAL(zetaSqStarting_r)[0];
     theta[tauSqIndx] = REAL(tauSqStarting_r)[0];
+    // theta[zetaSqIndx] = zetasq_input;
+    // theta[tauSqIndx] = tausq_input;
     //theta[phiIndx] = REAL(phiStarting_r)[0];
     theta[phiIndx] = phi_input;
     if(corName == "matern"){
@@ -405,7 +407,8 @@ extern "C" {
     double *MFA_sigmasq_grad_vec = (double *) R_alloc(n, sizeof(double));
     double *MFA_sigmasq_grad_vec_cum = (double *) R_alloc(n, sizeof(double));
     double *gradient_mu_vec = (double *) R_alloc(n, sizeof(double));
-
+    double eps = 0.001;
+    double gradient_phi = 0.0; 
     double E_phi_sq = 0.0;
     double delta_phi = 0.0;
     double delta_phi_sq = 0.0;
@@ -595,95 +598,95 @@ extern "C" {
         ///////////////
         //update phi
         ///////////////
-        if(iter < phi_iter_max){
-
-          double *a_phi_vec = (double *) R_alloc(N_phi, sizeof(double));
-          double *b_phi_vec = (double *) R_alloc(N_phi, sizeof(double));
-          a_phi_vec[0] = a_phi;
-          b_phi_vec[0] = b_phi;
-
-          for(int i = 1; i < N_phi; i++){
-            if (i % 2 == 0) {
-              a_phi_vec[i] = a_phi_vec[0] + 0.01*i;
-              b_phi_vec[i] = b_phi_vec[0] + 0.01*i;
-              // a_phi_vec[i] = a_phi_vec[0]*(1+0.1*i);
-              // b_phi_vec[i] = b_phi_vec[0]*(1+0.1*i);
-            } else {
-              a_phi_vec[i] = a_phi_vec[0] + 0.01*i*(-1);
-              b_phi_vec[i] = b_phi_vec[0] + 0.01*i*(-1);
-              // a_phi_vec[i] = a_phi_vec[0]*(1-0.1*i);
-              // b_phi_vec[i] = b_phi_vec[0]*(1-0.1*i);
-            }
-          }
-
-          double phi_Q = 0.0;
-          double diag_sigma_sq_sum = 0.0;
-          int max_index;
-
-          zeros(phi_can_vec,N_phi*N_phi);
-          zeros(log_g_phi,N_phi*N_phi);
-          for(int i = 0; i < N_phi; i++){
-            for(int j = 0; j < N_phi; j++){
-              double phi_can = rbeta(a_phi, b_phi)*(phimax - phimin) + phimin;
-              updateBF_minibatch_plus(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
-                                      theta[zetaSqIndx], phi_can, nu, covModel, bk, nuUnifb,
-                                      batch_index, final_result_vec, nBatchLU_temp, tempsize);
-              
-              // updateBF_quadratic_mb(B_temp, F_temp, Bmat_over_F_temp,
-              //                       F_inv, B_over_F, Bmat_over_F,
-              //                       nIndx, nIndSqx,
-              //                       nnIndxLUSq,
-              //                       Trace_phi,
-              //                       c, C, coords, nnIndx, nnIndxLU,
-              //                       BatchSize, nBatchLU, batch_index, final_result_vec, nBatchLU_temp, tempsize,
-              //                       n,  m,
-              //                       nu,  covModel, bk,  nuUnifb,
-              //                       a_phi_vec[i],  b_phi_vec[j], phimax,  phimin);
-              
-              logDetInv = 0.0;
-              for(i_mb = 0; i_mb < BatchSize; i_mb++){
-                j = nBatchLU[batch_index] + i_mb;
-                logDetInv += log(1/F[j]);
-              }
-              
-              
-              sum1 = 0;
-              sum2 = 0;
-              for(int i_mb = 0; i_mb < BatchSize; i_mb++){
-                j = nBatchLU[batch_index] + i_mb;
-                sum1 = sigma_sq[j];
-                if(j > 0){
-                  for (int l = 0; l < nnIndxLU[n + j]; l++) {
-                    sum1 = sum1 + B[nnIndxLU[j] + l] * B[nnIndxLU[j] + l] * sigma_sq[nnIndx[nnIndxLU[j] + l]];
-                  }
-                }
-                sum2 += sum1/F[j];
-              }
-              
-              log_g_phi[i*N_phi+j] = logDetInv*0.5 - (sum2 + Q_mini_batch(B, F, w_mu, w_mu, BatchSize, nBatchLU, batch_index, n, nnIndx, nnIndxLU))*0.5;
-              
-            }
-          }
-
-
-          max_index = max_ind(log_g_phi,N_phi*N_phi);
-          a_phi = a_phi_vec[max_index/N_phi];
-          b_phi = b_phi_vec[max_index % N_phi];
-
-          theta[phiIndx] = a_phi/(a_phi+b_phi)*(phimax - phimin) + phimin;;
-
-          MFA_updateBF_quadratic(B_temp,  F_temp,  Bmat_over_F_temp,
-                                 F_inv, B_over_F, Bmat_over_F, Bsq_over_F,
-                                 nIndx, nIndSqx,
-                                 nnIndxLUSq,
-                                 Trace_N,
-                                 c, C, coords, nnIndx, nnIndxLU,
-                                 n, m,
-                                 nu, covModel, bk, nuUnifb,
-                                 a_phi, b_phi,
-                                 phimax, phimin);
-
-        }
+        // if(iter < phi_iter_max){
+        // 
+        //   double *a_phi_vec = (double *) R_alloc(N_phi, sizeof(double));
+        //   double *b_phi_vec = (double *) R_alloc(N_phi, sizeof(double));
+        //   a_phi_vec[0] = a_phi;
+        //   b_phi_vec[0] = b_phi;
+        // 
+        //   for(int i = 1; i < N_phi; i++){
+        //     if (i % 2 == 0) {
+        //       a_phi_vec[i] = a_phi_vec[0] + 0.01*i;
+        //       b_phi_vec[i] = b_phi_vec[0] + 0.01*i;
+        //       // a_phi_vec[i] = a_phi_vec[0]*(1+0.1*i);
+        //       // b_phi_vec[i] = b_phi_vec[0]*(1+0.1*i);
+        //     } else {
+        //       a_phi_vec[i] = a_phi_vec[0] + 0.01*i*(-1);
+        //       b_phi_vec[i] = b_phi_vec[0] + 0.01*i*(-1);
+        //       // a_phi_vec[i] = a_phi_vec[0]*(1-0.1*i);
+        //       // b_phi_vec[i] = b_phi_vec[0]*(1-0.1*i);
+        //     }
+        //   }
+        // 
+        //   double phi_Q = 0.0;
+        //   double diag_sigma_sq_sum = 0.0;
+        //   int max_index;
+        // 
+        //   zeros(phi_can_vec,N_phi*N_phi);
+        //   zeros(log_g_phi,N_phi*N_phi);
+        //   for(int i = 0; i < N_phi; i++){
+        //     for(int j = 0; j < N_phi; j++){
+        //       double phi_can = rbeta(a_phi, b_phi)*(phimax - phimin) + phimin;
+        //       updateBF_minibatch_plus(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
+        //                               theta[zetaSqIndx], phi_can, nu, covModel, bk, nuUnifb,
+        //                               batch_index, final_result_vec, nBatchLU_temp, tempsize);
+        //       
+        //       // updateBF_quadratic_mb(B_temp, F_temp, Bmat_over_F_temp,
+        //       //                       F_inv, B_over_F, Bmat_over_F,
+        //       //                       nIndx, nIndSqx,
+        //       //                       nnIndxLUSq,
+        //       //                       Trace_phi,
+        //       //                       c, C, coords, nnIndx, nnIndxLU,
+        //       //                       BatchSize, nBatchLU, batch_index, final_result_vec, nBatchLU_temp, tempsize,
+        //       //                       n,  m,
+        //       //                       nu,  covModel, bk,  nuUnifb,
+        //       //                       a_phi_vec[i],  b_phi_vec[j], phimax,  phimin);
+        //       
+        //       logDetInv = 0.0;
+        //       for(i_mb = 0; i_mb < BatchSize; i_mb++){
+        //         j = nBatchLU[batch_index] + i_mb;
+        //         logDetInv += log(1/F[j]);
+        //       }
+        //       
+        //       
+        //       sum1 = 0;
+        //       sum2 = 0;
+        //       for(int i_mb = 0; i_mb < BatchSize; i_mb++){
+        //         j = nBatchLU[batch_index] + i_mb;
+        //         sum1 = sigma_sq[j];
+        //         if(j > 0){
+        //           for (int l = 0; l < nnIndxLU[n + j]; l++) {
+        //             sum1 = sum1 + B[nnIndxLU[j] + l] * B[nnIndxLU[j] + l] * sigma_sq[nnIndx[nnIndxLU[j] + l]];
+        //           }
+        //         }
+        //         sum2 += sum1/F[j];
+        //       }
+        //       
+        //       log_g_phi[i*N_phi+j] = logDetInv*0.5 - (sum2 + Q_mini_batch(B, F, w_mu, w_mu, BatchSize, nBatchLU, batch_index, n, nnIndx, nnIndxLU))*0.5;
+        //       
+        //     }
+        //   }
+        // 
+        // 
+        //   max_index = max_ind(log_g_phi,N_phi*N_phi);
+        //   a_phi = a_phi_vec[max_index/N_phi];
+        //   b_phi = b_phi_vec[max_index % N_phi];
+        // 
+        //   theta[phiIndx] = a_phi/(a_phi+b_phi)*(phimax - phimin) + phimin;;
+        // 
+        //   MFA_updateBF_quadratic(B_temp,  F_temp,  Bmat_over_F_temp,
+        //                          F_inv, B_over_F, Bmat_over_F, Bsq_over_F,
+        //                          nIndx, nIndSqx,
+        //                          nnIndxLUSq,
+        //                          Trace_N,
+        //                          c, C, coords, nnIndx, nnIndxLU,
+        //                          n, m,
+        //                          nu, covModel, bk, nuUnifb,
+        //                          a_phi, b_phi,
+        //                          phimax, phimin);
+        // 
+        // }
 
         if(verbose){
           Rprintf("the value of theta[%i phiIndx] : %f \n", phiIndx, theta[phiIndx]);
@@ -892,101 +895,104 @@ extern "C" {
           ///////////////
           //update phi
           ///////////////
+
           if(LR){
             theta[phiIndx] = phi_input;
           }else{
             if(iter < phi_iter_max){
-              
-              double *a_phi_vec = (double *) R_alloc(N_phi, sizeof(double));
-              double *b_phi_vec = (double *) R_alloc(N_phi, sizeof(double));
-              a_phi_vec[0] = a_phi;
-              b_phi_vec[0] = b_phi;
-              
-              for(int i = 1; i < N_phi; i++){
-                if (i % 2 == 0) {
-                  a_phi_vec[i] = a_phi_vec[0] + 0.01*i;
-                  b_phi_vec[i] = b_phi_vec[0] + 0.01*i;
-                  // a_phi_vec[i] = a_phi_vec[0]*(1+0.1*i);
-                  // b_phi_vec[i] = b_phi_vec[0]*(1+0.1*i);
-                } else {
-                  a_phi_vec[i] = a_phi_vec[0] + 0.01*i*(-1);
-                  b_phi_vec[i] = b_phi_vec[0] + 0.01*i*(-1);
-                  // a_phi_vec[i] = a_phi_vec[0]*(1-0.1*i);
-                  // b_phi_vec[i] = b_phi_vec[0]*(1-0.1*i);
-                }
+
+              for(int i = 0; i < n ; i++){
+                u_vec[i] = rnorm(0, sqrt(sigma_sq[i]));
               }
               
               double phi_Q = 0.0;
               double diag_sigma_sq_sum = 0.0;
-              int max_index;
+
+              double current_phi =  theta[phiIndx];
+
+              double down_phi = current_phi - eps;
+              double down_log_g_phi = 0.0;
+              updateBF_quadratic_mb(B_temp, F_temp, Bmat_over_F_temp,
+                                    F_inv, B_over_F, Bmat_over_F,
+                                    nIndx, nIndSqx,
+                                    nnIndxLUSq,
+                                    one_int,
+                                    c, C, coords, nnIndx, nnIndxLU,
+                                    BatchSize, nBatchLU, batch_index, final_result_vec, nBatchLU_temp, tempsize,
+                                    n,  m,
+                                    nu,  covModel, bk,  nuUnifb,
+                                    down_phi);
+
+              phi_Q = E_quadratic_mb(w_mu, F_inv, B_over_F, Bmat_over_F, BatchSize, nBatchLU, batch_index,
+                                     n, nnIndx, nnIndxLU, nnIndxLUSq);
+
+              sum2 = E_quadratic_mb(u_vec, F_inv, B_over_F, Bmat_over_F, BatchSize, nBatchLU, batch_index,
+                                    n, nnIndx, nnIndxLU, nnIndxLUSq);
               
-              zeros(phi_can_vec,N_phi*N_phi);
-              zeros(log_g_phi,N_phi*N_phi);
-              // start = clock();
-              for(int i = 0; i < N_phi; i++){
-                for(int j = 0; j < N_phi; j++){
-                  updateBF_quadratic_mb(B_temp, F_temp, Bmat_over_F_temp,
-                                        F_inv, B_over_F, Bmat_over_F,
-                                        nIndx, nIndSqx,
-                                        nnIndxLUSq,
-                                        one_int,
-                                        c, C, coords, nnIndx, nnIndxLU,
-                                        BatchSize, nBatchLU, batch_index, final_result_vec, nBatchLU_temp, tempsize,
-                                        n,  m,
-                                        nu,  covModel, bk,  nuUnifb,
-                                        a_phi_vec[i],  b_phi_vec[j], phimax,  phimin);
-                  
-                  phi_Q = E_quadratic_mb(w_mu, F_inv, B_over_F, Bmat_over_F, BatchSize, nBatchLU, batch_index,
-                                         n, nnIndx, nnIndxLU, nnIndxLUSq);
-                  
-                  sum1 = 0;
-                  sum2 = 0;
-                  for(int i_mb = 0; i_mb < BatchSize; i_mb++){
-                    s = nBatchLU[batch_index] + i_mb;
-                    sum1 = sigma_sq[s] * F_inv[s];
-                    // Rprintf("i's sons \n");
-                    if(s > 0){
-                      for (int l = 0; l < nnIndxLU[n + s]; l++) {
-                        sum1 = sum1 + Bsq_over_F[nnIndxLU[s] + l] * sigma_sq[nnIndx[nnIndxLU[s] + l]];
-                        // Rprintf("%j ",nnIndx[nnIndxLU[j] + l]);
-                      }
-                    }
-                    sum2 += sum1;
-                  }
-                  
-                  logDetInv = 0.0;
-                  //diag_sigma_sq_sum = 0.0;
-                  for(i_mb = 0; i_mb < BatchSize; i_mb++){
-                    s = nBatchLU[batch_index] + i_mb;
-                    logDetInv += log(F_inv[s]);
-                  }
-                  
-                  log_g_phi[i*N_phi+j] = logDetInv*0.5 + 0.5*log(1/theta[zetaSqIndx]) - (phi_Q + sum2)*0.5/theta[zetaSqIndx];
-                  
-                  
-                  
-                }
+
+              logDetInv = 0.0;
+              //diag_sigma_sq_sum = 0.0;
+              for(i_mb = 0; i_mb < BatchSize; i_mb++){
+                s = nBatchLU[batch_index] + i_mb;
+                logDetInv += log(F_inv[s]);
               }
-              // end = clock();
-              // cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-              // printf("phi %f seconds to execute \n", cpu_time_used);
+
+              down_log_g_phi = logDetInv*0.5 + 0.5*n*log(1/theta[zetaSqIndx]) - (phi_Q + sum2)*0.5/theta[zetaSqIndx];
+
+
+              double up_phi = theta[phiIndx] + eps;
+              double up_log_g_phi = 0.0;
+
+              updateBF_quadratic_mb(B_temp, F_temp, Bmat_over_F_temp,
+                                    F_inv, B_over_F, Bmat_over_F,
+                                    nIndx, nIndSqx,
+                                    nnIndxLUSq,
+                                    one_int,
+                                    c, C, coords, nnIndx, nnIndxLU,
+                                    BatchSize, nBatchLU, batch_index, final_result_vec, nBatchLU_temp, tempsize,
+                                    n,  m,
+                                    nu,  covModel, bk,  nuUnifb,
+                                    up_phi);
+
+              phi_Q = E_quadratic_mb(w_mu, F_inv, B_over_F, Bmat_over_F, BatchSize, nBatchLU, batch_index,
+                                     n, nnIndx, nnIndxLU, nnIndxLUSq);
+
+              sum2 = E_quadratic_mb(u_vec, F_inv, B_over_F, Bmat_over_F, BatchSize, nBatchLU, batch_index,
+                                    n, nnIndx, nnIndxLU, nnIndxLUSq);
+
+              logDetInv = 0.0;
+              //diag_sigma_sq_sum = 0.0;
+              for(i_mb = 0; i_mb < BatchSize; i_mb++){
+                s = nBatchLU[batch_index] + i_mb;
+                logDetInv += log(F_inv[s]);
+              }
+
+              up_log_g_phi = logDetInv*0.5 + 0.5*n*log(1/theta[zetaSqIndx]) - (phi_Q + sum2)*0.5/theta[zetaSqIndx];
+
+
+              gradient_phi = (up_log_g_phi - down_log_g_phi)/(up_phi - down_phi);
+
+              E_phi_sq = rho * E_phi_sq + (1 - rho) * pow(gradient_phi,2);
+              delta_phi = sqrt(delta_phi_sq+adadelta_noise)/sqrt(E_phi_sq+adadelta_noise)*gradient_phi;
+              delta_phi_sq = rho*delta_phi_sq + (1 - rho) * pow(delta_phi,2);
+
+              theta[phiIndx] = current_phi + delta_phi;
+
+              if (theta[phiIndx] < phimin) {
+                theta[phiIndx] = phimin;
+              } else if (theta[phiIndx] > phimax) {
+                theta[phiIndx] = phimax;
+              }
               
-              max_index = max_ind(log_g_phi,N_phi*N_phi);
-              a_phi = a_phi_vec[max_index/N_phi];
-              b_phi = b_phi_vec[max_index % N_phi];
-              
-              theta[phiIndx] = a_phi/(a_phi+b_phi)*(phimax - phimin) + phimin;
-              // start = clock();
               MFA_updateBF_quadratic(B_temp,  F_temp,  Bmat_over_F_temp,
-                                     F_inv, B_over_F, Bmat_over_F, Bsq_over_F,
-                                     nIndx, nIndSqx,
-                                     nnIndxLUSq,
-                                     one_int,
-                                     c, C, coords, nnIndx, nnIndxLU,
-                                     n, m,
-                                     nu, covModel, bk, nuUnifb,
-                                     a_phi, b_phi,
-                                     phimax, phimin);
+                                   F_inv, B_over_F, Bmat_over_F, Bsq_over_F,
+                                   nIndx, nIndSqx,
+                                   nnIndxLUSq,
+                                   one_int,
+                                   c, C, coords, nnIndx, nnIndxLU,
+                                   n, m,
+                                   nu, covModel, bk, nuUnifb,
+                                   theta[phiIndx]);
               
               // end = clock();
               // cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
@@ -995,7 +1001,56 @@ extern "C" {
             }
           }
           
-          
+          // theta[zetaSqIndx] = zetasq_input;
+          // for(double phi = 0.1; phi <= 2.0; phi += 0.001){
+          // 
+          //   double phi_Q = 0.0;
+          //   double diag_sigma_sq_sum = 0.0;
+          // 
+          //   double down_phi = phi;
+          //   double down_log_g_phi = 0.0;
+          //   updateBF_quadratic_mb(B_temp, F_temp, Bmat_over_F_temp,
+          //                         F_inv, B_over_F, Bmat_over_F,
+          //                         nIndx, nIndSqx,
+          //                         nnIndxLUSq,
+          //                         one_int,
+          //                         c, C, coords, nnIndx, nnIndxLU,
+          //                         BatchSize, nBatchLU, batch_index, final_result_vec, nBatchLU_temp, tempsize,
+          //                         n,  m,
+          //                         nu,  covModel, bk,  nuUnifb,
+          //                         down_phi);
+          // 
+          //   phi_Q = E_quadratic_mb(w_mu, F_inv, B_over_F, Bmat_over_F, BatchSize, nBatchLU, batch_index,
+          //                          n, nnIndx, nnIndxLU, nnIndxLUSq);
+          // 
+          //   sum1 = 0;
+          //   sum2 = 0;
+          //   for(int i_mb = 0; i_mb < BatchSize; i_mb++){
+          //     s = nBatchLU[batch_index] + i_mb;
+          //     sum1 = sigma_sq[s] * F_inv[s];
+          //     // Rprintf("i's sons \n");
+          //     if(s > 0){
+          //       for (int l = 0; l < nnIndxLU[n + s]; l++) {
+          //         sum1 = sum1 + Bsq_over_F[nnIndxLU[s] + l] * sigma_sq[nnIndx[nnIndxLU[s] + l]];
+          //         // Rprintf("%j ",nnIndx[nnIndxLU[j] + l]);
+          //       }
+          //     }
+          //     sum2 += sum1;
+          //   }
+          // 
+          //   logDetInv = 0.0;
+          //   //diag_sigma_sq_sum = 0.0;
+          //   for(i_mb = 0; i_mb < BatchSize; i_mb++){
+          //     s = nBatchLU[batch_index] + i_mb;
+          //     logDetInv += log(F_inv[s]);
+          //   }
+          // 
+          //   down_log_g_phi = logDetInv*0.5 + 0.5*log(1/theta[zetaSqIndx]) - (phi_Q + sum2)*0.5/theta[zetaSqIndx];
+          // 
+          // 
+          //   Rprintf("the value of down_log_g_phi : %f \n", down_log_g_phi);
+          // 
+          // }
 
 
           if(verbose){
@@ -1244,7 +1299,7 @@ extern "C" {
     }
 
     updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m, theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
-    SEXP theta_para_r; PROTECT(theta_para_r = allocVector(REALSXP, nTheta*2)); nProtect++; double *theta_para = REAL(theta_para_r);
+    SEXP theta_para_r; PROTECT(theta_para_r = allocVector(REALSXP, nTheta+one_int)); nProtect++; double *theta_para = REAL(theta_para_r);
 
     theta_para[zetaSqIndx*2+0] = a_zeta_update;
     theta_para[zetaSqIndx*2+1] = b_zeta_update;
@@ -1252,8 +1307,8 @@ extern "C" {
     theta_para[tauSqIndx*2+0] = a_tau_update;
     theta_para[tauSqIndx*2+1] = b_tau_update;
 
-    theta_para[phiIndx*2+0] = a_phi;
-    theta_para[phiIndx*2+1] = b_phi;
+    // theta_para[phiIndx*2+0] = a_phi;
+    // theta_para[phiIndx*2+1] = b_phi;
 
     //SEXP x_out; PROTECT(x_out = allocVector(REALSXP, n)); nProtect++;
     //REAL(x_out)[0] = phi_can;
@@ -1321,7 +1376,7 @@ extern "C" {
   }
 
   SEXP spVarBayes_MFA_mb_beta_rephicpp(SEXP y_r, SEXP X_r, SEXP n_r, SEXP p_r, SEXP m_r, SEXP coords_r, SEXP covModel_r, SEXP rho_r,
-                                       SEXP zetaSqIG_r, SEXP tauSqIG_r, SEXP phibeta_r, SEXP nuUnif_r,
+                                       SEXP zetaSqIG_r, SEXP tauSqIG_r, SEXP phirange_r, SEXP nuUnif_r,
                                        SEXP zetaSqStarting_r, SEXP tauSqStarting_r, SEXP phiStarting_r, SEXP nuStarting_r,
                                        SEXP sType_r, SEXP nThreads_r, SEXP verbose_r, SEXP fix_nugget_r, SEXP N_phi_r, SEXP Trace_N_r,
                                        SEXP max_iter_r,
@@ -1379,10 +1434,10 @@ extern "C" {
     double tauSqIGa = REAL(tauSqIG_r)[0]; double tauSqIGb = REAL(tauSqIG_r)[1];
     //double phiUnifa = REAL(phiUnif_r)[0]; double phiUnifb = REAL(phiUnif_r)[1];
 
-    double phimin = REAL(phibeta_r)[0]; double phimax = REAL(phibeta_r)[1];
-
-    double a_phi = (phi_input - phimin)/(phimax-phimin)*10;
-    double b_phi = 10 - a_phi;
+    double phimin = REAL(phirange_r)[0]; double phimax = REAL(phirange_r)[1];
+    // 
+    // double a_phi = (phi_input - phimin)/(phimax-phimin)*10;
+    // double b_phi = 10 - a_phi;
 
     double nuUnifa = 0, nuUnifb = 0;
     if(corName == "matern"){
@@ -1700,6 +1755,8 @@ extern "C" {
     double *MFA_sigmasq_grad_vec_cum = (double *) R_alloc(n, sizeof(double));
     double *gradient_mu_vec = (double *) R_alloc(n, sizeof(double));
 
+    double gradient_phi = 0.0;
+    double eps = 0.000001;
     double E_phi_sq = 0.0;
     double delta_phi = 0.0;
     double delta_phi_sq = 0.0;
@@ -1960,92 +2017,92 @@ extern "C" {
         ///////////////
         //update phi
         ///////////////
-        if(iter < phi_iter_max){
-
-          double *a_phi_vec = (double *) R_alloc(N_phi, sizeof(double));
-          double *b_phi_vec = (double *) R_alloc(N_phi, sizeof(double));
-          a_phi_vec[0] = a_phi;
-          b_phi_vec[0] = b_phi;
-
-          for(int i = 1; i < N_phi; i++){
-            if (i % 2 == 0) {
-              a_phi_vec[i] = a_phi_vec[0] + 0.01*i;
-              b_phi_vec[i] = b_phi_vec[0] + 0.01*i;
-              // a_phi_vec[i] = a_phi_vec[0]*(1+0.1*i);
-              // b_phi_vec[i] = b_phi_vec[0]*(1+0.1*i);
-            } else {
-              a_phi_vec[i] = a_phi_vec[0] + 0.01*i*(-1);
-              b_phi_vec[i] = b_phi_vec[0] + 0.01*i*(-1);
-              // a_phi_vec[i] = a_phi_vec[0]*(1-0.1*i);
-              // b_phi_vec[i] = b_phi_vec[0]*(1-0.1*i);
-            }
-          }
-
-          double phi_Q = 0.0;
-          double diag_sigma_sq_sum = 0.0;
-          int max_index;
-
-          zeros(phi_can_vec,N_phi*N_phi);
-          zeros(log_g_phi,N_phi*N_phi);
-          for(int i = 0; i < N_phi; i++){
-            for(int j = 0; j < N_phi; j++){
-
-              updateBF_quadratic(B_temp, F_temp, Bmat_over_F_temp,
-                                 F_inv, B_over_F, Bmat_over_F,
-                                 nIndx, nIndSqx,
-                                 nnIndxLUSq,
-                                 Trace_phi,
-                                 c, C, coords, nnIndx, nnIndxLU,
-                                 n,  m,
-                                 nu,  covModel, bk,  nuUnifb,
-                                 a_phi_vec[i],  b_phi_vec[j],  phimax,  phimin);
-
-              phi_Q = E_quadratic(w_mu, F_inv, B_over_F, Bmat_over_F, n, nnIndx, nnIndxLU, nnIndxLUSq);
-
-              sum1 = 0;
-              sum2 = 0;
-              for(int s = 0; s < n; s++){
-                sum1 = sigma_sq[s] * F_inv[s];
-                // Rprintf("i's sons \n");
-                if(s > 0){
-                  for (int l = 0; l < nnIndxLU[n + s]; l++) {
-                    sum1 = sum1 + Bsq_over_F[nnIndxLU[s] + l] * sigma_sq[nnIndx[nnIndxLU[s] + l]];
-                    // Rprintf("%j ",nnIndx[nnIndxLU[j] + l]);
-                  }
-                }
-                sum2 += sum1;
-              }
-
-              logDetInv = 0.0;
-              //diag_sigma_sq_sum = 0.0;
-              for(int s = 0; s < n; s++){
-                logDetInv += log(F_inv[s]);
-              }
-
-              log_g_phi[i*N_phi+j] = logDetInv*0.5 + 0.5*log(1/theta[zetaSqIndx]) - (phi_Q + sum2)*0.5/theta[zetaSqIndx];
-
-            }
-          }
-
-
-          max_index = max_ind(log_g_phi,N_phi*N_phi);
-          a_phi = a_phi_vec[max_index/N_phi];
-          b_phi = b_phi_vec[max_index % N_phi];
-
-          theta[phiIndx] = a_phi/(a_phi+b_phi)*(phimax - phimin) + phimin;;
-
-          MFA_updateBF_quadratic(B_temp,  F_temp,  Bmat_over_F_temp,
-                                 F_inv, B_over_F, Bmat_over_F, Bsq_over_F,
-                                 nIndx, nIndSqx,
-                                 nnIndxLUSq,
-                                 Trace_N,
-                                 c, C, coords, nnIndx, nnIndxLU,
-                                 n, m,
-                                 nu, covModel, bk, nuUnifb,
-                                 a_phi, b_phi,
-                                 phimax, phimin);
-
-        }
+        // if(iter < phi_iter_max){
+        // 
+        //   double *a_phi_vec = (double *) R_alloc(N_phi, sizeof(double));
+        //   double *b_phi_vec = (double *) R_alloc(N_phi, sizeof(double));
+        //   a_phi_vec[0] = a_phi;
+        //   b_phi_vec[0] = b_phi;
+        // 
+        //   for(int i = 1; i < N_phi; i++){
+        //     if (i % 2 == 0) {
+        //       a_phi_vec[i] = a_phi_vec[0] + 0.01*i;
+        //       b_phi_vec[i] = b_phi_vec[0] + 0.01*i;
+        //       // a_phi_vec[i] = a_phi_vec[0]*(1+0.1*i);
+        //       // b_phi_vec[i] = b_phi_vec[0]*(1+0.1*i);
+        //     } else {
+        //       a_phi_vec[i] = a_phi_vec[0] + 0.01*i*(-1);
+        //       b_phi_vec[i] = b_phi_vec[0] + 0.01*i*(-1);
+        //       // a_phi_vec[i] = a_phi_vec[0]*(1-0.1*i);
+        //       // b_phi_vec[i] = b_phi_vec[0]*(1-0.1*i);
+        //     }
+        //   }
+        // 
+        //   double phi_Q = 0.0;
+        //   double diag_sigma_sq_sum = 0.0;
+        //   int max_index;
+        // 
+        //   zeros(phi_can_vec,N_phi*N_phi);
+        //   zeros(log_g_phi,N_phi*N_phi);
+        //   for(int i = 0; i < N_phi; i++){
+        //     for(int j = 0; j < N_phi; j++){
+        // 
+        //       updateBF_quadratic(B_temp, F_temp, Bmat_over_F_temp,
+        //                          F_inv, B_over_F, Bmat_over_F,
+        //                          nIndx, nIndSqx,
+        //                          nnIndxLUSq,
+        //                          Trace_phi,
+        //                          c, C, coords, nnIndx, nnIndxLU,
+        //                          n,  m,
+        //                          nu,  covModel, bk,  nuUnifb,
+        //                          a_phi_vec[i],  b_phi_vec[j],  phimax,  phimin);
+        // 
+        //       phi_Q = E_quadratic(w_mu, F_inv, B_over_F, Bmat_over_F, n, nnIndx, nnIndxLU, nnIndxLUSq);
+        // 
+        //       sum1 = 0;
+        //       sum2 = 0;
+        //       for(int s = 0; s < n; s++){
+        //         sum1 = sigma_sq[s] * F_inv[s];
+        //         // Rprintf("i's sons \n");
+        //         if(s > 0){
+        //           for (int l = 0; l < nnIndxLU[n + s]; l++) {
+        //             sum1 = sum1 + Bsq_over_F[nnIndxLU[s] + l] * sigma_sq[nnIndx[nnIndxLU[s] + l]];
+        //             // Rprintf("%j ",nnIndx[nnIndxLU[j] + l]);
+        //           }
+        //         }
+        //         sum2 += sum1;
+        //       }
+        // 
+        //       logDetInv = 0.0;
+        //       //diag_sigma_sq_sum = 0.0;
+        //       for(int s = 0; s < n; s++){
+        //         logDetInv += log(F_inv[s]);
+        //       }
+        // 
+        //       log_g_phi[i*N_phi+j] = logDetInv*0.5 + 0.5*log(1/theta[zetaSqIndx]) - (phi_Q + sum2)*0.5/theta[zetaSqIndx];
+        // 
+        //     }
+        //   }
+        // 
+        // 
+        //   max_index = max_ind(log_g_phi,N_phi*N_phi);
+        //   a_phi = a_phi_vec[max_index/N_phi];
+        //   b_phi = b_phi_vec[max_index % N_phi];
+        // 
+        //   theta[phiIndx] = a_phi/(a_phi+b_phi)*(phimax - phimin) + phimin;;
+        // 
+        //   MFA_updateBF_quadratic(B_temp,  F_temp,  Bmat_over_F_temp,
+        //                          F_inv, B_over_F, Bmat_over_F, Bsq_over_F,
+        //                          nIndx, nIndSqx,
+        //                          nnIndxLUSq,
+        //                          Trace_N,
+        //                          c, C, coords, nnIndx, nnIndxLU,
+        //                          n, m,
+        //                          nu, covModel, bk, nuUnifb,
+        //                          a_phi, b_phi,
+        //                          phimax, phimin);
+        // 
+        // }
 
         if(verbose){
           Rprintf("the value of theta[%i phiIndx] : %f \n", phiIndx, theta[phiIndx]);
@@ -2303,87 +2360,89 @@ extern "C" {
             theta[phiIndx] = phi_input;
           }else{
             if(iter < phi_iter_max){
-              
-              double *a_phi_vec = (double *) R_alloc(N_phi, sizeof(double));
-              double *b_phi_vec = (double *) R_alloc(N_phi, sizeof(double));
-              a_phi_vec[0] = a_phi;
-              b_phi_vec[0] = b_phi;
-              
-              for(int i = 1; i < N_phi; i++){
-                if (i % 2 == 0) {
-                  a_phi_vec[i] = a_phi_vec[0] + 0.01*i;
-                  b_phi_vec[i] = b_phi_vec[0] + 0.01*i;
-                  // a_phi_vec[i] = a_phi_vec[0]*(1+0.1*i);
-                  // b_phi_vec[i] = b_phi_vec[0]*(1+0.1*i);
-                } else {
-                  a_phi_vec[i] = a_phi_vec[0] + 0.01*i*(-1);
-                  b_phi_vec[i] = b_phi_vec[0] + 0.01*i*(-1);
-                  // a_phi_vec[i] = a_phi_vec[0]*(1-0.1*i);
-                  // b_phi_vec[i] = b_phi_vec[0]*(1-0.1*i);
-                }
+
+              for(int i = 0; i < n ; i++){
+                u_vec[i] = rnorm(0, sqrt(sigma_sq[i]));
               }
               
               double phi_Q = 0.0;
               double diag_sigma_sq_sum = 0.0;
-              int max_index;
               
-              zeros(phi_can_vec,N_phi*N_phi);
-              zeros(log_g_phi,N_phi*N_phi);
-              // start = clock();
-              for(int i = 0; i < N_phi; i++){
-                for(int j = 0; j < N_phi; j++){
-                  updateBF_quadratic_mb(B_temp, F_temp, Bmat_over_F_temp,
-                                        F_inv, B_over_F, Bmat_over_F,
-                                        nIndx, nIndSqx,
-                                        nnIndxLUSq,
-                                        one_int,
-                                        c, C, coords, nnIndx, nnIndxLU,
-                                        BatchSize, nBatchLU, batch_index, final_result_vec, nBatchLU_temp, tempsize,
-                                        n,  m,
-                                        nu,  covModel, bk,  nuUnifb,
-                                        a_phi_vec[i],  b_phi_vec[j], phimax,  phimin);
-                  
-                  phi_Q = E_quadratic_mb(w_mu, F_inv, B_over_F, Bmat_over_F, BatchSize, nBatchLU, batch_index,
-                                         n, nnIndx, nnIndxLU, nnIndxLUSq);
-                  
-                  sum1 = 0;
-                  sum2 = 0;
-                  for(int i_mb = 0; i_mb < BatchSize; i_mb++){
-                    s = nBatchLU[batch_index] + i_mb;
-                    sum1 = sigma_sq[s] * F_inv[s];
-                    // Rprintf("i's sons \n");
-                    if(s > 0){
-                      for (int l = 0; l < nnIndxLU[n + s]; l++) {
-                        sum1 = sum1 + Bsq_over_F[nnIndxLU[s] + l] * sigma_sq[nnIndx[nnIndxLU[s] + l]];
-                        // Rprintf("%j ",nnIndx[nnIndxLU[j] + l]);
-                      }
-                    }
-                    sum2 += sum1;
-                  }
-                  
-                  logDetInv = 0.0;
-                  //diag_sigma_sq_sum = 0.0;
-                  for(i_mb = 0; i_mb < BatchSize; i_mb++){
-                    s = nBatchLU[batch_index] + i_mb;
-                    logDetInv += log(F_inv[s]);
-                  }
-                  
-                  log_g_phi[i*N_phi+j] = logDetInv*0.5 + 0.5*log(1/theta[zetaSqIndx]) - (phi_Q + sum2)*0.5/theta[zetaSqIndx];
-                  
-                  
-                  
-                }
+              double current_phi =  theta[phiIndx];
+              
+              double down_phi = current_phi - eps;
+              double down_log_g_phi = 0.0;
+              updateBF_quadratic_mb(B_temp, F_temp, Bmat_over_F_temp,
+                                    F_inv, B_over_F, Bmat_over_F,
+                                    nIndx, nIndSqx,
+                                    nnIndxLUSq,
+                                    one_int,
+                                    c, C, coords, nnIndx, nnIndxLU,
+                                    BatchSize, nBatchLU, batch_index, final_result_vec, nBatchLU_temp, tempsize,
+                                    n,  m,
+                                    nu,  covModel, bk,  nuUnifb,
+                                    down_phi);
+              
+              phi_Q = E_quadratic_mb(w_mu, F_inv, B_over_F, Bmat_over_F, BatchSize, nBatchLU, batch_index,
+                                     n, nnIndx, nnIndxLU, nnIndxLUSq);
+              
+              sum2 = E_quadratic_mb(u_vec, F_inv, B_over_F, Bmat_over_F, BatchSize, nBatchLU, batch_index,
+                                    n, nnIndx, nnIndxLU, nnIndxLUSq);
+              
+              logDetInv = 0.0;
+
+              for(i_mb = 0; i_mb < BatchSize; i_mb++){
+                s = nBatchLU[batch_index] + i_mb;
+                logDetInv += log(F_inv[s]);
               }
-              // end = clock();
-              // cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-              // printf("phi %f seconds to execute \n", cpu_time_used);
               
-              max_index = max_ind(log_g_phi,N_phi*N_phi);
-              a_phi = a_phi_vec[max_index/N_phi];
-              b_phi = b_phi_vec[max_index % N_phi];
+              down_log_g_phi = logDetInv*0.5 + 0.5*n*log(1/theta[zetaSqIndx]) - (phi_Q + sum2)*0.5/theta[zetaSqIndx];
               
-              theta[phiIndx] = a_phi/(a_phi+b_phi)*(phimax - phimin) + phimin;
-              // start = clock();
+              
+              double up_phi = theta[phiIndx] + eps;
+              double up_log_g_phi = 0.0;
+              
+              updateBF_quadratic_mb(B_temp, F_temp, Bmat_over_F_temp,
+                                    F_inv, B_over_F, Bmat_over_F,
+                                    nIndx, nIndSqx,
+                                    nnIndxLUSq,
+                                    one_int,
+                                    c, C, coords, nnIndx, nnIndxLU,
+                                    BatchSize, nBatchLU, batch_index, final_result_vec, nBatchLU_temp, tempsize,
+                                    n,  m,
+                                    nu,  covModel, bk,  nuUnifb,
+                                    up_phi);
+              
+              phi_Q = E_quadratic_mb(w_mu, F_inv, B_over_F, Bmat_over_F, BatchSize, nBatchLU, batch_index,
+                                     n, nnIndx, nnIndxLU, nnIndxLUSq);
+              
+              sum2 = E_quadratic_mb(u_vec, F_inv, B_over_F, Bmat_over_F, BatchSize, nBatchLU, batch_index,
+                                    n, nnIndx, nnIndxLU, nnIndxLUSq);
+              
+              logDetInv = 0.0;
+              for(i_mb = 0; i_mb < BatchSize; i_mb++){
+                s = nBatchLU[batch_index] + i_mb;
+                logDetInv += log(F_inv[s]);
+              }
+              
+              up_log_g_phi = logDetInv*0.5 + 0.5*n*log(1/theta[zetaSqIndx]) - (phi_Q + sum2)*0.5/theta[zetaSqIndx];
+              
+              
+              gradient_phi = (up_log_g_phi - down_log_g_phi)/(up_phi - down_phi);
+              
+              E_phi_sq = rho * E_phi_sq + (1 - rho) * pow(gradient_phi,2);
+              delta_phi = sqrt(delta_phi_sq+adadelta_noise)/sqrt(E_phi_sq+adadelta_noise)*gradient_phi;
+              delta_phi_sq = rho*delta_phi_sq + (1 - rho) * pow(delta_phi,2);
+              
+              theta[phiIndx] = current_phi + delta_phi;
+              
+              if (theta[phiIndx] < phimin) {
+                theta[phiIndx] = phimin;
+              } else if (theta[phiIndx] > phimax) {
+                theta[phiIndx] = phimax;
+              }
+              
+              
               MFA_updateBF_quadratic(B_temp,  F_temp,  Bmat_over_F_temp,
                                      F_inv, B_over_F, Bmat_over_F, Bsq_over_F,
                                      nIndx, nIndSqx,
@@ -2392,8 +2451,7 @@ extern "C" {
                                      c, C, coords, nnIndx, nnIndxLU,
                                      n, m,
                                      nu, covModel, bk, nuUnifb,
-                                     a_phi, b_phi,
-                                     phimax, phimin);
+                                     theta[phiIndx]);
               
               // end = clock();
               // cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
@@ -2654,7 +2712,7 @@ extern "C" {
 
 
     updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m, theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
-    SEXP theta_para_r; PROTECT(theta_para_r = allocVector(REALSXP, nTheta*2)); nProtect++; double *theta_para = REAL(theta_para_r);
+    SEXP theta_para_r; PROTECT(theta_para_r = allocVector(REALSXP, nTheta+one_int)); nProtect++; double *theta_para = REAL(theta_para_r);
 
     theta_para[zetaSqIndx*2+0] = a_zeta_update;
     theta_para[zetaSqIndx*2+1] = b_zeta_update;
@@ -2662,8 +2720,8 @@ extern "C" {
     theta_para[tauSqIndx*2+0] = a_tau_update;
     theta_para[tauSqIndx*2+1] = b_tau_update;
 
-    theta_para[phiIndx*2+0] = a_phi;
-    theta_para[phiIndx*2+1] = b_phi;
+    // theta_para[phiIndx*2+0] = a_phi;
+    // theta_para[phiIndx*2+1] = b_phi;
 
     //SEXP x_out; PROTECT(x_out = allocVector(REALSXP, n)); nProtect++;
     //REAL(x_out)[0] = phi_can;

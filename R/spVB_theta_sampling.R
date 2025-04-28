@@ -38,21 +38,21 @@ spVB_theta_sampling <- function(object,
   tausq.alpha <- theta.para[3] # IG distribution
   tausq.beta <- theta.para[4]
 
-  phi.alpha <- theta.para[5] # beta distribution
-  phi.beta <- theta.para[6]
-
-  phimin <- object$phi.range[1]
-  phimax <- object$phi.range[2]
+  # phi.alpha <- theta.para[5] # beta distribution
+  # phi.beta <- theta.para[6]
+  # 
+  # phimin <- object$phi.range[1]
+  # phimax <- object$phi.range[2]
 
   set.seed(seed)
 
-  p.phi.samples <- rbeta(n.samples,phi.alpha,phi.beta)*(phimax - phimin) + phimin
+  # p.phi.samples <- rbeta(n.samples,phi.alpha,phi.beta)*(phimax - phimin) + phimin
+  # p.phi.samples <- rep(object$theta[3],n.samples)
   p.sigmasq.samples <- rigamma(n.samples,zetasq.alpha,zetasq.beta)
   p.tausq.samples <- rigamma(n.samples,tausq.alpha,tausq.beta)
 
   p.theta.samples <- t(cbind(p.sigmasq.samples,
-                             p.tausq.samples,
-                             p.phi.samples))
+                             p.tausq.samples))
 
   out$p.theta.samples <- p.theta.samples
 

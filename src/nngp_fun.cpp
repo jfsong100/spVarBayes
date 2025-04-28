@@ -3034,21 +3034,20 @@ void updateBF_quadratic_mb(double *B_temp, double *F_temp, double *Bmat_over_F_t
                         int BatchSize, int *nBatchLU, int batch_index, int* final_result_vec, int *nBatchLU_temp, int tempsize,
                         int n, int m,
                         double nu, int covModel, double *bk, double nuUnifb,
-                        double a_phi, double b_phi,
-                        double phimax, double phimin) {
+                        double phi_can) {
 
   int i, j, k, i_mb;
 
   int inc = 1;
   double one = 1.0;
   double F_inv_temp;
-  double phi_can;
+
   zeros(F_inv,n);
   zeros(B_over_F,nIndx);
   zeros(Bmat_over_F,nIndSqx);
 
   for(k = 0; k < Trace_N; k++){
-    phi_can = rbeta(a_phi, b_phi)*(phimax - phimin) + phimin;
+    // phi_can = rbeta(a_phi, b_phi)*(phimax - phimin) + phimin;
     // phi_can = 1.175;
     //updateBF2(B_temp, F_temp, c, C, coords, nnIndx, nnIndxLU, n, m, phi_can, nu, covModel, bk, nuUnifb);
     updateBF_minibatch_plus2(B_temp, F_temp, c, C, coords,  nnIndx,  nnIndxLU,  n,  m,
@@ -3371,21 +3370,20 @@ void MFA_updateBF_quadratic(double *B_temp, double *F_temp, double *Bmat_over_F_
                            double *c, double *C, double *coords, int *nnIndx, int *nnIndxLU,
                            int n, int m,
                            double nu, int covModel, double *bk, double nuUnifb,
-                           double a_phi, double b_phi,
-                           double phimax, double phimin) {
+                           double phi_can) {
 
   int i, j, k, i_mb;
 
   int inc = 1;
   double one = 1.0;
   double F_inv_temp;
-  double phi_can;
+  // double phi_can;
   zeros(F_inv,n);
   zeros(B_over_F,nIndx);
   zeros(Bsq_over_F,nIndx);
   zeros(Bmat_over_F,nIndSqx);
   for(k = 0; k < Trace_N; k++){
-    phi_can = rbeta(a_phi, b_phi)*(phimax - phimin) + phimin;
+    // phi_can = rbeta(a_phi, b_phi)*(phimax - phimin) + phimin;
     //phi_can = 1.175;
     updateBF2(B_temp, F_temp, c, C, coords, nnIndx, nnIndxLU, n, m, phi_can, nu, covModel, bk, nuUnifb);
     // updateBF_minibatch_plus2(B_temp, F_temp, c, C, coords,  nnIndx,  nnIndxLU,  n,  m,

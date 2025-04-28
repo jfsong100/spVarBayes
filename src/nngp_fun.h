@@ -451,8 +451,7 @@ void updateBF_quadratic_mb(double *B_temp, double *F_temp, double *Bmat_over_F_t
                            int BatchSize, int *nBatchLU, int batch_index, int* final_result_vec, int *nBatchLU_temp, int tempsize,
                            int n, int m,
                            double nu, int covModel, double *bk, double nuUnifb,
-                           double a_phi, double b_phi,
-                           double phimax, double phimin);
+                           double phi_can) ;
 
 void updateBF_minibatch_plus2(double *B, double *F, double *c, double *C,
                               double *coords, int *nnIndx, int *nnIndxLU, int n, int m,
@@ -494,15 +493,14 @@ void a_gradient_mb_fun2(double *u_vec, double *epsilon_vec, double *a_gradient, 
                         int *complement_second_start_indices, int *complement_second_sizes, int* final_complement_2_vec);
 
 void MFA_updateBF_quadratic(double *B_temp, double *F_temp, double *Bmat_over_F_temp,
-                               double *F_inv, double *B_over_F, double *Bmat_over_F, double *Bsq_over_F,
-                               int nIndx, int nIndSqx,
-                               int *nnIndxLUSq,
-                               int Trace_N,
-                               double *c, double *C, double *coords, int *nnIndx, int *nnIndxLU,
-                               int n, int m,
-                               double nu, int covModel, double *bk, double nuUnifb,
-                               double a_phi, double b_phi,
-                               double phimax, double phimin);
+                            double *F_inv, double *B_over_F, double *Bmat_over_F, double *Bsq_over_F,
+                            int nIndx, int nIndSqx,
+                            int *nnIndxLUSq,
+                            int Trace_N,
+                            double *c, double *C, double *coords, int *nnIndx, int *nnIndxLU,
+                            int n, int m,
+                            double nu, int covModel, double *bk, double nuUnifb,
+                            double phi_can);
 
 
 void MFA_sigmasq_grad_term1_rephi(int n, int *nnIndx, int *nnIndxLU, int *nnIndxCol,

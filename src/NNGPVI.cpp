@@ -57,7 +57,7 @@ extern "C" {
 
   SEXP spVarBayes_NNGP_beta_w_jointcpp(SEXP y_r, SEXP X_r,
                                SEXP n_r, SEXP p_r, SEXP m_r, SEXP m_vi_r, SEXP coords_r, SEXP covModel_r, SEXP rho_r,
-                               SEXP zetaSqIG_r, SEXP tauSqIG_r, SEXP phibeta_r, SEXP nuUnif_r,
+                               SEXP zetaSqIG_r, SEXP tauSqIG_r, SEXP phirange_r, SEXP nuUnif_r,
                                SEXP zetaSqStarting_r, SEXP tauSqStarting_r, SEXP phiStarting_r, SEXP nuStarting_r,
                                SEXP sType_r, SEXP nThreads_r, SEXP verbose_r, SEXP fix_nugget_r, SEXP N_phi_r, SEXP Trace_N_r,
                                SEXP max_iter_r,
@@ -109,10 +109,10 @@ extern "C" {
     double zetaSqIGa = REAL(zetaSqIG_r)[0]; double zetaSqIGb = REAL(zetaSqIG_r)[1];
     double tauSqIGa = REAL(tauSqIG_r)[0]; double tauSqIGb = REAL(tauSqIG_r)[1];
     //double phiUnifa = REAL(phiUnif_r)[0]; double phiUnifb = REAL(phiUnif_r)[1];
-    double phimin = REAL(phibeta_r)[0]; double phimax = REAL(phibeta_r)[1];
+    double phimin = REAL(phirange_r)[0]; double phimax = REAL(phirange_r)[1];
 
-    double a_phi = (phi_input - phimin)/(phimax-phimin)*10;
-    double b_phi = 10 - a_phi;
+    // double a_phi = (phi_input - phimin)/(phimax-phimin)*10;
+    // double b_phi = 10 - a_phi;
 
     double nuUnifa = 0, nuUnifb = 0;
     if(corName == "matern"){
@@ -553,6 +553,8 @@ extern "C" {
     double max_ELBO = 0.0;
     int ELBO_convergence_count = 0;
 
+    double gradient_phi = 0.0;
+    double eps = 0.001;
     double E_phi_sq = 0.0;
     double delta_phi = 0.0;
     double delta_phi_sq = 0.0;
@@ -708,80 +710,61 @@ extern "C" {
       ///////////////
 
       if(iter < phi_iter_max){
-
-        double *a_phi_vec = (double *) R_alloc(N_phi, sizeof(double));
-        double *b_phi_vec = (double *) R_alloc(N_phi, sizeof(double));
-        a_phi_vec[0] = a_phi;
-        b_phi_vec[0] = b_phi;
-
-        for(int i = 1; i < N_phi; i++){
-          if (i % 2 == 0) {
-            a_phi_vec[i] = a_phi_vec[0] + 0.01*i;
-            b_phi_vec[i] = b_phi_vec[0] + 0.01*i;
-            // a_phi_vec[i] = a_phi_vec[0]*(1+0.1*i);
-            // b_phi_vec[i] = b_phi_vec[0]*(1+0.1*i);
-          } else {
-            a_phi_vec[i] = a_phi_vec[0] + 0.01*i*(-1);
-            b_phi_vec[i] = b_phi_vec[0] + 0.01*i*(-1);
-            // a_phi_vec[i] = a_phi_vec[0]*(1-0.1*i);
-            // b_phi_vec[i] = b_phi_vec[0]*(1-0.1*i);
-          }
-
-        }
-
+        
         double phi_Q = 0.0;
         double diag_sigma_sq_sum = 0.0;
-
-        int max_index;
-        zeros(phi_can_vec,N_phi*N_phi);
-        zeros(log_g_phi,N_phi*N_phi);
-        for(int i = 0; i < N_phi; i++){
-          for(int j = 0; j < N_phi; j++){
-
-            for(int k = 0; k < Trace_N; k++){
-              phi_can_vec[i*N_phi+j] += rbeta(a_phi_vec[i], b_phi_vec[j]);  // Notice the indexing here
-            }
-            phi_can_vec[i*N_phi+j] /= Trace_N;
-            phi_can_vec[i*N_phi+j] = phi_can_vec[i*N_phi+j]*(phimax - phimin) + phimin;
-          }
+        
+        double current_phi =  theta[phiIndx];
+        double up_phi = theta[phiIndx] + eps;
+        double up_log_g_phi = 0.0;
+        
+        updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
+                 theta[zetaSqIndx], up_phi, nu, covModel, bk, nuUnifb);
+        
+        //phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
+        phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
+        update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
+        logDetInv = 0.0;
+        diag_sigma_sq_sum = 0.0;
+        for(j = 0; j < n; j++){
+          logDetInv += log(1/F[j]);
         }
-
-
-        for(i = 0; i < N_phi*N_phi; i++){
-
-          updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
-                   theta[zetaSqIndx], phi_can_vec[i], nu, covModel, bk, nuUnifb);
-
-          //phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
-          phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
-          for(int i = 0; i < n; i++){
-            epsilon_vec[i] = rnorm(0, 1);
-          }
-          for(int i = 0; i < p; i++){
-            z_vec[i] = rnorm(0, 1);
-          }
-          update_uvec_ubvec(u_vec, ub_vec, epsilon_vec,  z_vec, A_vi, A_beta, L_beta,
-                            S_vi, E_vi, n, p, nnIndxLU_vi, nnIndx_vi, IndxLU_beta);
-          logDetInv = 0.0;
-          diag_sigma_sq_sum = 0.0;
-          for(j = 0; j < n; j++){
-            logDetInv += log(1/F[j]);
-          }
-
-          log_g_phi[i] = logDetInv*0.5 - (phi_Q + Q(B, F, u_vec, u_vec, n, nnIndx, nnIndxLU))*0.5;
+        up_log_g_phi = logDetInv*0.5 - (phi_Q + Q(B, F, u_vec, u_vec, n, nnIndx, nnIndxLU))*0.5;
+        
+        double down_phi = current_phi - eps;
+        double down_log_g_phi = 0.0;
+        updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
+                 theta[zetaSqIndx], down_phi, nu, covModel, bk, nuUnifb);
+        
+        //phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
+        phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
+        update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
+        logDetInv = 0.0;
+        diag_sigma_sq_sum = 0.0;
+        for(j = 0; j < n; j++){
+          logDetInv += log(1/F[j]);
         }
-
-        max_index = max_ind(log_g_phi,N_phi*N_phi);
-        a_phi = a_phi_vec[max_index/N_phi];
-        b_phi = b_phi_vec[max_index % N_phi];
-
-        theta[phiIndx] = a_phi/(a_phi+b_phi)*(phimax - phimin) + phimin;;
-
-
+        down_log_g_phi = logDetInv*0.5 - (phi_Q + Q(B, F, u_vec, u_vec, n, nnIndx, nnIndxLU))*0.5;
+        
+        gradient_phi = (up_log_g_phi - down_log_g_phi)/(up_phi - down_phi);
+        
+        E_phi_sq = rho * E_phi_sq + (1 - rho) * pow(gradient_phi,2);
+        delta_phi = sqrt(delta_phi_sq+adadelta_noise)/sqrt(E_phi_sq+adadelta_noise)*gradient_phi;
+        delta_phi_sq = rho*delta_phi_sq + (1 - rho) * pow(delta_phi,2);
+        
+        theta[phiIndx] = current_phi + delta_phi;
+        
+        if (theta[phiIndx] < phimin) {
+          theta[phiIndx] = phimin;
+        } else if (theta[phiIndx] > phimax) {
+          theta[phiIndx] = phimax;
+        }
+        
+        
         updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
                  theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
       }
-
+      
       if(verbose){
         Rprintf("the value of theta[%i phiIndx] : %f \n", phiIndx, theta[phiIndx]);
 #ifdef Win32
@@ -1056,10 +1039,10 @@ extern "C" {
     }
 
 
-
+    int four_int = 4; 
     updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m, theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
 
-    SEXP theta_para_r; PROTECT(theta_para_r = allocVector(REALSXP, nTheta*2)); nProtect++; double *theta_para = REAL(theta_para_r);
+    SEXP theta_para_r; PROTECT(theta_para_r = allocVector(REALSXP, four_int)); nProtect++; double *theta_para = REAL(theta_para_r);
 
     theta_para[zetaSqIndx*2+0] = a_zeta_update;
     theta_para[zetaSqIndx*2+1] = b_zeta_update;
@@ -1067,8 +1050,8 @@ extern "C" {
     theta_para[tauSqIndx*2+0] = a_tau_update;
     theta_para[tauSqIndx*2+1] = b_tau_update;
 
-    theta_para[phiIndx*2+0] = a_phi;
-    theta_para[phiIndx*2+1] = b_phi;
+    // theta_para[phiIndx*2+0] = a_phi;
+    // theta_para[phiIndx*2+1] = b_phi;
 
     //SEXP x_out; PROTECT(x_out = allocVector(REALSXP, n)); nProtect++;
     //REAL(x_out)[0] = phi_can;
@@ -1194,7 +1177,7 @@ extern "C" {
 
   SEXP spVarBayes_NNGP_betacpp(SEXP y_r, SEXP X_r,
                                SEXP n_r, SEXP p_r, SEXP m_r, SEXP m_vi_r, SEXP coords_r, SEXP covModel_r, SEXP rho_r,
-                                                SEXP zetaSqIG_r, SEXP tauSqIG_r, SEXP phibeta_r, SEXP nuUnif_r,
+                                                SEXP zetaSqIG_r, SEXP tauSqIG_r, SEXP phirange_r, SEXP nuUnif_r,
                                                 SEXP zetaSqStarting_r, SEXP tauSqStarting_r, SEXP phiStarting_r, SEXP nuStarting_r,
                                                 SEXP sType_r, SEXP nThreads_r, SEXP verbose_r, SEXP fix_nugget_r, SEXP N_phi_r, SEXP Trace_N_r,
                                                 SEXP max_iter_r,
@@ -1245,10 +1228,10 @@ extern "C" {
     double zetaSqIGa = REAL(zetaSqIG_r)[0]; double zetaSqIGb = REAL(zetaSqIG_r)[1];
     double tauSqIGa = REAL(tauSqIG_r)[0]; double tauSqIGb = REAL(tauSqIG_r)[1];
     //double phiUnifa = REAL(phiUnif_r)[0]; double phiUnifb = REAL(phiUnif_r)[1];
-    double phimin = REAL(phibeta_r)[0]; double phimax = REAL(phibeta_r)[1];
-
-    double a_phi = (phi_input - phimin)/(phimax-phimin)*10;
-    double b_phi = 10 - a_phi;
+    double phimin = REAL(phirange_r)[0]; double phimax = REAL(phirange_r)[1];
+    // 
+    // double a_phi = (phi_input - phimin)/(phimax-phimin)*10;
+    // double b_phi = 10 - a_phi;
 
     double nuUnifa = 0, nuUnifb = 0;
     if(corName == "matern"){
@@ -1596,7 +1579,10 @@ extern "C" {
     double *phi_can_vec = (double *) R_alloc(N_phi*N_phi, sizeof(double));zeros(phi_can_vec,N_phi*N_phi);
     double *log_g_phi = (double *) R_alloc(N_phi*N_phi, sizeof(double));zeros(log_g_phi,N_phi*N_phi);
     double *sum_v = (double *) R_alloc(n, sizeof(double));zeros(sum_v,n);
-
+    
+    double gradient_phi = 0.0;
+    double eps = 0.001;
+    
     while(iter <= max_iter & !indicator_converge){
 
       if(verbose){
@@ -1732,74 +1718,129 @@ extern "C" {
       //update phi
       ///////////////
 
+      // if(iter < phi_iter_max){
+      // 
+      //   double *a_phi_vec = (double *) R_alloc(N_phi, sizeof(double));
+      //   double *b_phi_vec = (double *) R_alloc(N_phi, sizeof(double));
+      //   a_phi_vec[0] = a_phi;
+      //   b_phi_vec[0] = b_phi;
+      // 
+      //   for(int i = 1; i < N_phi; i++){
+      //     if (i % 2 == 0) {
+      //       a_phi_vec[i] = a_phi_vec[0] + 0.01*i;
+      //       b_phi_vec[i] = b_phi_vec[0] + 0.01*i;
+      //       // a_phi_vec[i] = a_phi_vec[0]*(1+0.1*i);
+      //       // b_phi_vec[i] = b_phi_vec[0]*(1+0.1*i);
+      //     } else {
+      //       a_phi_vec[i] = a_phi_vec[0] + 0.01*i*(-1);
+      //       b_phi_vec[i] = b_phi_vec[0] + 0.01*i*(-1);
+      //       // a_phi_vec[i] = a_phi_vec[0]*(1-0.1*i);
+      //       // b_phi_vec[i] = b_phi_vec[0]*(1-0.1*i);
+      //     }
+      // 
+      //   }
+      // 
+      //   double phi_Q = 0.0;
+      //   double diag_sigma_sq_sum = 0.0;
+      // 
+      //   int max_index;
+      //   zeros(phi_can_vec,N_phi*N_phi);
+      //   zeros(log_g_phi,N_phi*N_phi);
+      //   for(int i = 0; i < N_phi; i++){
+      //     for(int j = 0; j < N_phi; j++){
+      // 
+      //       for(int k = 0; k < Trace_N; k++){
+      //         phi_can_vec[i*N_phi+j] += rbeta(a_phi_vec[i], b_phi_vec[j]);  // Notice the indexing here
+      //       }
+      //       phi_can_vec[i*N_phi+j] /= Trace_N;
+      //       phi_can_vec[i*N_phi+j] = phi_can_vec[i*N_phi+j]*(phimax - phimin) + phimin;
+      //     }
+      //   }
+      // 
+      // 
+      //   for(i = 0; i < N_phi*N_phi; i++){
+      // 
+      //     updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
+      //              theta[zetaSqIndx], phi_can_vec[i], nu, covModel, bk, nuUnifb);
+      // 
+      //     //phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
+      //     phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
+      //     update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
+      //     logDetInv = 0.0;
+      //     diag_sigma_sq_sum = 0.0;
+      //     for(j = 0; j < n; j++){
+      //       logDetInv += log(1/F[j]);
+      //     }
+      // 
+      //     log_g_phi[i] = logDetInv*0.5 - (phi_Q + Q(B, F, u_vec, u_vec, n, nnIndx, nnIndxLU))*0.5;
+      //   }
+      // 
+      //   max_index = max_ind(log_g_phi,N_phi*N_phi);
+      //   a_phi = a_phi_vec[max_index/N_phi];
+      //   b_phi = b_phi_vec[max_index % N_phi];
+      // 
+      //   theta[phiIndx] = a_phi/(a_phi+b_phi)*(phimax - phimin) + phimin;;
+      // 
+      // 
+      //   updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
+      //            theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
+      // }
+
       if(iter < phi_iter_max){
-
-        double *a_phi_vec = (double *) R_alloc(N_phi, sizeof(double));
-        double *b_phi_vec = (double *) R_alloc(N_phi, sizeof(double));
-        a_phi_vec[0] = a_phi;
-        b_phi_vec[0] = b_phi;
-
-        for(int i = 1; i < N_phi; i++){
-          if (i % 2 == 0) {
-            a_phi_vec[i] = a_phi_vec[0] + 0.01*i;
-            b_phi_vec[i] = b_phi_vec[0] + 0.01*i;
-            // a_phi_vec[i] = a_phi_vec[0]*(1+0.1*i);
-            // b_phi_vec[i] = b_phi_vec[0]*(1+0.1*i);
-          } else {
-            a_phi_vec[i] = a_phi_vec[0] + 0.01*i*(-1);
-            b_phi_vec[i] = b_phi_vec[0] + 0.01*i*(-1);
-            // a_phi_vec[i] = a_phi_vec[0]*(1-0.1*i);
-            // b_phi_vec[i] = b_phi_vec[0]*(1-0.1*i);
-          }
-
-        }
-
+        
         double phi_Q = 0.0;
         double diag_sigma_sq_sum = 0.0;
-
-        int max_index;
-        zeros(phi_can_vec,N_phi*N_phi);
-        zeros(log_g_phi,N_phi*N_phi);
-        for(int i = 0; i < N_phi; i++){
-          for(int j = 0; j < N_phi; j++){
-
-            for(int k = 0; k < Trace_N; k++){
-              phi_can_vec[i*N_phi+j] += rbeta(a_phi_vec[i], b_phi_vec[j]);  // Notice the indexing here
-            }
-            phi_can_vec[i*N_phi+j] /= Trace_N;
-            phi_can_vec[i*N_phi+j] = phi_can_vec[i*N_phi+j]*(phimax - phimin) + phimin;
-          }
+        
+        double current_phi =  theta[phiIndx];
+        double up_phi = theta[phiIndx] + eps;
+        double up_log_g_phi = 0.0;
+        
+        updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
+                 theta[zetaSqIndx], up_phi, nu, covModel, bk, nuUnifb);
+        
+        //phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
+        phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
+        update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
+        logDetInv = 0.0;
+        diag_sigma_sq_sum = 0.0;
+        for(j = 0; j < n; j++){
+          logDetInv += log(1/F[j]);
         }
-
-
-        for(i = 0; i < N_phi*N_phi; i++){
-
-          updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
-                   theta[zetaSqIndx], phi_can_vec[i], nu, covModel, bk, nuUnifb);
-
-          //phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
-          phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
-          update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
-          logDetInv = 0.0;
-          diag_sigma_sq_sum = 0.0;
-          for(j = 0; j < n; j++){
-            logDetInv += log(1/F[j]);
-          }
-
-          log_g_phi[i] = logDetInv*0.5 - (phi_Q + Q(B, F, u_vec, u_vec, n, nnIndx, nnIndxLU))*0.5;
+        up_log_g_phi = logDetInv*0.5 - (phi_Q + Q(B, F, u_vec, u_vec, n, nnIndx, nnIndxLU))*0.5;
+        
+        double down_phi = current_phi - eps;
+        double down_log_g_phi = 0.0;
+        updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
+                 theta[zetaSqIndx], down_phi, nu, covModel, bk, nuUnifb);
+        
+        //phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
+        phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
+        update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
+        logDetInv = 0.0;
+        diag_sigma_sq_sum = 0.0;
+        for(j = 0; j < n; j++){
+          logDetInv += log(1/F[j]);
         }
+        down_log_g_phi = logDetInv*0.5 - (phi_Q + Q(B, F, u_vec, u_vec, n, nnIndx, nnIndxLU))*0.5;
+        
+        gradient_phi = (up_log_g_phi - down_log_g_phi)/(up_phi - down_phi);
 
-        max_index = max_ind(log_g_phi,N_phi*N_phi);
-        a_phi = a_phi_vec[max_index/N_phi];
-        b_phi = b_phi_vec[max_index % N_phi];
-
-        theta[phiIndx] = a_phi/(a_phi+b_phi)*(phimax - phimin) + phimin;;
-
-
+        E_phi_sq = rho * E_phi_sq + (1 - rho) * pow(gradient_phi,2);
+        delta_phi = sqrt(delta_phi_sq+adadelta_noise)/sqrt(E_phi_sq+adadelta_noise)*gradient_phi;
+        delta_phi_sq = rho*delta_phi_sq + (1 - rho) * pow(delta_phi,2);
+        
+        theta[phiIndx] = current_phi + delta_phi;
+         
+        if (theta[phiIndx] < phimin) {
+         theta[phiIndx] = phimin;
+        } else if (theta[phiIndx] > phimax) {
+         theta[phiIndx] = phimax;
+        }
+         
         updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
                  theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
       }
-
+      
       if(verbose){
         Rprintf("the value of theta[%i phiIndx] : %f \n", phiIndx, theta[phiIndx]);
 #ifdef Win32
@@ -2023,116 +2064,116 @@ extern "C" {
 
     }
 
-    {
-
-        Rprintf("----------------------------------------\n");
-        Rprintf("\tWrapping Up the results \n",iter);
-#ifdef Win32
-        R_FlushConsole();
-#endif
-
-
-      ///////////////
-      //update beta
-      ///////////////
-
-
-      zeros(tau_sq_I, one_int);
-      for(i = 0; i < n; i++){
-        tmp_n[i] = y[i]-w_mu[i];
-        tau_sq_I[0] += pow(tmp_n[i],2);
-      }
-
-      F77_NAME(dgemv)(ytran, &n, &p, &one, X, &n, tmp_n, &inc, &zero, tmp_p, &inc FCONE);
-
-      for(i = 0; i < pp; i++){
-        tmp_pp[i] = XtX[i];
-      }
-
-      F77_NAME(dpotrf)(lower, &p, tmp_pp, &p, &info FCONE); if(info != 0){error("c++ error: 2 dpotrf failed\n");}
-      F77_NAME(dpotri)(lower, &p, tmp_pp, &p, &info FCONE); if(info != 0){error("c++ error: 2 dpotri failed\n");}
-
-      F77_NAME(dsymv)(lower, &p, &one, tmp_pp, &p, tmp_p, &inc, &zero, tmp_p2, &inc FCONE);
-
-      //F77_NAME(dpotrf)(lower, &p, tmp_pp, &p, &info FCONE); if(info != 0){error("c++ error: 3 dpotrf failed\n");}
-
-      F77_NAME(dcopy)(&p, tmp_p2, &inc, beta, &inc);
-
-      for (int i = 0; i < p; i++) {
-        for (int j = 0; j <= i; j++) {
-          // Calculate the index for column-major format
-          int idx = i + j * p;
-          beta_cov[idx] = tmp_pp[idx] * theta[tauSqIndx];
-        }
-      }
-
-
-      ///////////////
-      //update tausq
-      ///////////////
-
-      zeros(tau_sq_H, one_int);
-
-      for(i = 0; i < p; i++){
-        tau_sq_H[0] += tmp_p2[i]*tmp_p[i];
-      }
-
-      zeros(trace_vec,2);
-      zeros(u_vec,n);
-
-      int Trace_N_max = 2000;
-      for(int i = 0; i < n; i++){
-        epsilon_vec[i] = rnorm(0, 1);
-
-      }
-      update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
-
-      for(int k = 0; k < Trace_N_max; k++){
-        for(int i = 0; i < n; i++){
-          epsilon_vec[i] = rnorm(0, 1);
-        }
-        update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
-
-        double u_mean = 0.0;
-        for(i = 0; i < n; i++){
-          u_mean += u_vec[i];
-        }
-        u_mean = u_mean/n;
-
-        for(i = 0; i < n; i++){
-          trace_vec[0] += pow(u_vec[i]-u_mean,2);
-        }
-
-        trace_vec[1] += Q(B, F, u_vec, u_vec, n, nnIndx, nnIndxLU);
-      }
-
-
-      b_tau_update = tauSqIGb + (trace_vec[0]/Trace_N_max + p*theta[tauSqIndx] + *tau_sq_I - *tau_sq_H)*0.5;
-      //b_tau_update = tauSqIGb + (trace_vec[0]/Trace_N + *tau_sq_I)*0.5;
-      tau_sq = b_tau_update/a_tau_update;
-      theta[tauSqIndx] = tau_sq;
-
-
-      //Rprintf("the value of add_tau : %f \n", trace_vec[0]/Trace_N + *tau_sq_I);
-      ///////////////
-      //update zetasq
-      ///////////////
-
-      updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m, theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
-
-      double zeta_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
-      b_zeta_update = zetaSqIGb + (trace_vec[1]/Trace_N_max + zeta_Q)*theta[zetaSqIndx]*0.5;
-      //Rprintf("zeta_Q: %f \n", zeta_Q);
-      //b_zeta_update = zetaSqIGb + (trace_vec[1]/Trace_N + zeta_Q)*0.5;
-      zeta_sq = b_zeta_update/a_zeta_update;
-      //Rprintf("the value of add_zeta : %f \n", (trace_vec[1]/Trace_N + zeta_Q));
-      theta[zetaSqIndx] = zeta_sq;
-
-    }
+//     {
+// 
+//         Rprintf("----------------------------------------\n");
+//         Rprintf("\tWrapping Up the results \n",iter);
+// #ifdef Win32
+//         R_FlushConsole();
+// #endif
+// 
+// 
+//       ///////////////
+//       //update beta
+//       ///////////////
+// 
+// 
+//       zeros(tau_sq_I, one_int);
+//       for(i = 0; i < n; i++){
+//         tmp_n[i] = y[i]-w_mu[i];
+//         tau_sq_I[0] += pow(tmp_n[i],2);
+//       }
+// 
+//       F77_NAME(dgemv)(ytran, &n, &p, &one, X, &n, tmp_n, &inc, &zero, tmp_p, &inc FCONE);
+// 
+//       for(i = 0; i < pp; i++){
+//         tmp_pp[i] = XtX[i];
+//       }
+// 
+//       F77_NAME(dpotrf)(lower, &p, tmp_pp, &p, &info FCONE); if(info != 0){error("c++ error: 2 dpotrf failed\n");}
+//       F77_NAME(dpotri)(lower, &p, tmp_pp, &p, &info FCONE); if(info != 0){error("c++ error: 2 dpotri failed\n");}
+// 
+//       F77_NAME(dsymv)(lower, &p, &one, tmp_pp, &p, tmp_p, &inc, &zero, tmp_p2, &inc FCONE);
+// 
+//       //F77_NAME(dpotrf)(lower, &p, tmp_pp, &p, &info FCONE); if(info != 0){error("c++ error: 3 dpotrf failed\n");}
+// 
+//       F77_NAME(dcopy)(&p, tmp_p2, &inc, beta, &inc);
+// 
+//       for (int i = 0; i < p; i++) {
+//         for (int j = 0; j <= i; j++) {
+//           // Calculate the index for column-major format
+//           int idx = i + j * p;
+//           beta_cov[idx] = tmp_pp[idx] * theta[tauSqIndx];
+//         }
+//       }
+// 
+// 
+//       ///////////////
+//       //update tausq
+//       ///////////////
+// 
+//       zeros(tau_sq_H, one_int);
+// 
+//       for(i = 0; i < p; i++){
+//         tau_sq_H[0] += tmp_p2[i]*tmp_p[i];
+//       }
+// 
+//       zeros(trace_vec,2);
+//       zeros(u_vec,n);
+// 
+//       int Trace_N_max = 2000;
+//       for(int i = 0; i < n; i++){
+//         epsilon_vec[i] = rnorm(0, 1);
+// 
+//       }
+//       update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
+// 
+//       for(int k = 0; k < Trace_N_max; k++){
+//         for(int i = 0; i < n; i++){
+//           epsilon_vec[i] = rnorm(0, 1);
+//         }
+//         update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
+// 
+//         double u_mean = 0.0;
+//         for(i = 0; i < n; i++){
+//           u_mean += u_vec[i];
+//         }
+//         u_mean = u_mean/n;
+// 
+//         for(i = 0; i < n; i++){
+//           trace_vec[0] += pow(u_vec[i]-u_mean,2);
+//         }
+// 
+//         trace_vec[1] += Q(B, F, u_vec, u_vec, n, nnIndx, nnIndxLU);
+//       }
+// 
+// 
+//       b_tau_update = tauSqIGb + (trace_vec[0]/Trace_N_max + p*theta[tauSqIndx] + *tau_sq_I - *tau_sq_H)*0.5;
+//       //b_tau_update = tauSqIGb + (trace_vec[0]/Trace_N + *tau_sq_I)*0.5;
+//       tau_sq = b_tau_update/a_tau_update;
+//       theta[tauSqIndx] = tau_sq;
+// 
+// 
+//       //Rprintf("the value of add_tau : %f \n", trace_vec[0]/Trace_N + *tau_sq_I);
+//       ///////////////
+//       //update zetasq
+//       ///////////////
+// 
+//       updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m, theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
+// 
+//       double zeta_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
+//       b_zeta_update = zetaSqIGb + (trace_vec[1]/Trace_N_max + zeta_Q)*theta[zetaSqIndx]*0.5;
+//       //Rprintf("zeta_Q: %f \n", zeta_Q);
+//       //b_zeta_update = zetaSqIGb + (trace_vec[1]/Trace_N + zeta_Q)*0.5;
+//       zeta_sq = b_zeta_update/a_zeta_update;
+//       //Rprintf("the value of add_zeta : %f \n", (trace_vec[1]/Trace_N + zeta_Q));
+//       theta[zetaSqIndx] = zeta_sq;
+// 
+//     }
 
     updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m, theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
 
-    SEXP theta_para_r; PROTECT(theta_para_r = allocVector(REALSXP, nTheta*2)); nProtect++; double *theta_para = REAL(theta_para_r);
+    SEXP theta_para_r; PROTECT(theta_para_r = allocVector(REALSXP, nTheta+one_int)); nProtect++; double *theta_para = REAL(theta_para_r);
 
     theta_para[zetaSqIndx*2+0] = a_zeta_update;
     theta_para[zetaSqIndx*2+1] = b_zeta_update;
@@ -2140,8 +2181,8 @@ extern "C" {
     theta_para[tauSqIndx*2+0] = a_tau_update;
     theta_para[tauSqIndx*2+1] = b_tau_update;
 
-    theta_para[phiIndx*2+0] = a_phi;
-    theta_para[phiIndx*2+1] = b_phi;
+    // theta_para[phiIndx*2+0] = a_phi;
+    // theta_para[phiIndx*2+1] = b_phi;
 
     //SEXP x_out; PROTECT(x_out = allocVector(REALSXP, n)); nProtect++;
     //REAL(x_out)[0] = phi_can;
@@ -2254,7 +2295,7 @@ extern "C" {
 
   SEXP spVarBayes_NNGP_nocovariates_betacpp(SEXP y_r,
                                                 SEXP n_r, SEXP p_r, SEXP m_r, SEXP m_vi_r, SEXP coords_r, SEXP covModel_r, SEXP rho_r,
-                                                SEXP zetaSqIG_r, SEXP tauSqIG_r, SEXP phibeta_r, SEXP nuUnif_r,
+                                                SEXP zetaSqIG_r, SEXP tauSqIG_r, SEXP phirange_r, SEXP nuUnif_r,
                                                 SEXP zetaSqStarting_r, SEXP tauSqStarting_r, SEXP phiStarting_r, SEXP nuStarting_r,
                                                 SEXP sType_r, SEXP nThreads_r, SEXP verbose_r, SEXP fix_nugget_r, SEXP N_phi_r, SEXP Trace_N_r,
                                                 SEXP max_iter_r,
@@ -2304,10 +2345,10 @@ extern "C" {
     double zetaSqIGa = REAL(zetaSqIG_r)[0]; double zetaSqIGb = REAL(zetaSqIG_r)[1];
     double tauSqIGa = REAL(tauSqIG_r)[0]; double tauSqIGb = REAL(tauSqIG_r)[1];
     //double phiUnifa = REAL(phiUnif_r)[0]; double phiUnifb = REAL(phiUnif_r)[1];
-    double phimin = REAL(phibeta_r)[0]; double phimax = REAL(phibeta_r)[1];
-
-    double a_phi = (phi_input - phimin)/(phimax-phimin)*10;
-    double b_phi = 10 - a_phi;
+    double phimin = REAL(phirange_r)[0]; double phimax = REAL(phirange_r)[1];
+    // 
+    // double a_phi = (phi_input - phimin)/(phimax-phimin)*10;
+    // double b_phi = 10 - a_phi;
 
     double nuUnifa = 0, nuUnifb = 0;
     if(corName == "matern"){
@@ -2704,7 +2745,8 @@ extern "C" {
 
     // double *derivative_store = (double *) R_alloc(m_vi*n, sizeof(double)); zeros(derivative_store,m_vi*n);
     // double *derivative_store_gamma = (double *) R_alloc(n, sizeof(double)); zeros(derivative_store_gamma,n);
-
+    double eps = 0.001;
+    double gradient_phi = 0.0; 
     double E_phi_sq = 0.0;
     double delta_phi = 0.0;
     double delta_phi_sq = 0.0;
@@ -2814,72 +2856,129 @@ extern "C" {
       // double cpu_time_used;
       // start = clock();
 
+      // if(iter < phi_iter_max){
+      // 
+      //   double *a_phi_vec = (double *) R_alloc(N_phi, sizeof(double));
+      //   double *b_phi_vec = (double *) R_alloc(N_phi, sizeof(double));
+      //   a_phi_vec[0] = a_phi;
+      //   b_phi_vec[0] = b_phi;
+      // 
+      //   for(int i = 1; i < N_phi; i++){
+      //     if (i % 2 == 0) {
+      //       a_phi_vec[i] = a_phi_vec[0] + 0.01*i;
+      //       b_phi_vec[i] = b_phi_vec[0] + 0.01*i;
+      //       // a_phi_vec[i] = a_phi_vec[0]*(1+0.1*i);
+      //       // b_phi_vec[i] = b_phi_vec[0]*(1+0.1*i);
+      //     } else {
+      //       a_phi_vec[i] = a_phi_vec[0] + 0.01*i*(-1);
+      //       b_phi_vec[i] = b_phi_vec[0] + 0.01*i*(-1);
+      //       // a_phi_vec[i] = a_phi_vec[0]*(1-0.1*i);
+      //       // b_phi_vec[i] = b_phi_vec[0]*(1-0.1*i);
+      //     }
+      // 
+      //   }
+      // 
+      //   double phi_Q = 0.0;
+      //   double diag_sigma_sq_sum = 0.0;
+      // 
+      //   int max_index;
+      //   zeros(phi_can_vec,N_phi*N_phi);
+      //   zeros(log_g_phi,N_phi*N_phi);
+      //   for(int i = 0; i < N_phi; i++){
+      //     for(int j = 0; j < N_phi; j++){
+      // 
+      //       for(int k = 0; k < Trace_N; k++){
+      //         phi_can_vec[i*N_phi+j] += rbeta(a_phi_vec[i], b_phi_vec[j]);  // Notice the indexing here
+      //       }
+      //       phi_can_vec[i*N_phi+j] /= Trace_N;
+      //       phi_can_vec[i*N_phi+j] = phi_can_vec[i*N_phi+j]*(phimax - phimin) + phimin;
+      //     }
+      //   }
+      // 
+      // 
+      //   for(i = 0; i < N_phi*N_phi; i++){
+      // 
+      //     updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
+      //              theta[zetaSqIndx], phi_can_vec[i], nu, covModel, bk, nuUnifb);
+      // 
+      //     //phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
+      //     phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
+      //     update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
+      //     logDetInv = 0.0;
+      //     diag_sigma_sq_sum = 0.0;
+      //     for(j = 0; j < n; j++){
+      //       logDetInv += log(1/F[j]);
+      //     }
+      // 
+      //     log_g_phi[i] = logDetInv*0.5 - (phi_Q + Q(B, F, u_vec, u_vec, n, nnIndx, nnIndxLU))*0.5;
+      //   }
+      // 
+      //   max_index = max_ind(log_g_phi,N_phi*N_phi);
+      //   a_phi = a_phi_vec[max_index/N_phi];
+      //   b_phi = b_phi_vec[max_index % N_phi];
+      // 
+      //   theta[phiIndx] = a_phi/(a_phi+b_phi)*(phimax - phimin) + phimin;;
+      // 
+      //   updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
+      //            theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
+      // }
+      
       if(iter < phi_iter_max){
-
-        double *a_phi_vec = (double *) R_alloc(N_phi, sizeof(double));
-        double *b_phi_vec = (double *) R_alloc(N_phi, sizeof(double));
-        a_phi_vec[0] = a_phi;
-        b_phi_vec[0] = b_phi;
-
-        for(int i = 1; i < N_phi; i++){
-          if (i % 2 == 0) {
-            a_phi_vec[i] = a_phi_vec[0] + 0.01*i;
-            b_phi_vec[i] = b_phi_vec[0] + 0.01*i;
-            // a_phi_vec[i] = a_phi_vec[0]*(1+0.1*i);
-            // b_phi_vec[i] = b_phi_vec[0]*(1+0.1*i);
-          } else {
-            a_phi_vec[i] = a_phi_vec[0] + 0.01*i*(-1);
-            b_phi_vec[i] = b_phi_vec[0] + 0.01*i*(-1);
-            // a_phi_vec[i] = a_phi_vec[0]*(1-0.1*i);
-            // b_phi_vec[i] = b_phi_vec[0]*(1-0.1*i);
-          }
-
-        }
-
+        
         double phi_Q = 0.0;
         double diag_sigma_sq_sum = 0.0;
-
-        int max_index;
-        zeros(phi_can_vec,N_phi*N_phi);
-        zeros(log_g_phi,N_phi*N_phi);
-        for(int i = 0; i < N_phi; i++){
-          for(int j = 0; j < N_phi; j++){
-
-            for(int k = 0; k < Trace_N; k++){
-              phi_can_vec[i*N_phi+j] += rbeta(a_phi_vec[i], b_phi_vec[j]);  // Notice the indexing here
-            }
-            phi_can_vec[i*N_phi+j] /= Trace_N;
-            phi_can_vec[i*N_phi+j] = phi_can_vec[i*N_phi+j]*(phimax - phimin) + phimin;
-          }
+        
+        double current_phi =  theta[phiIndx];
+        double up_phi = theta[phiIndx] + eps;
+        double up_log_g_phi = 0.0;
+        
+        updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
+                 theta[zetaSqIndx], up_phi, nu, covModel, bk, nuUnifb);
+        
+        //phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
+        phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
+        update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
+        logDetInv = 0.0;
+        diag_sigma_sq_sum = 0.0;
+        for(j = 0; j < n; j++){
+          logDetInv += log(1/F[j]);
         }
-
-
-        for(i = 0; i < N_phi*N_phi; i++){
-
-          updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
-                   theta[zetaSqIndx], phi_can_vec[i], nu, covModel, bk, nuUnifb);
-
-          //phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
-          phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
-          update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
-          logDetInv = 0.0;
-          diag_sigma_sq_sum = 0.0;
-          for(j = 0; j < n; j++){
-            logDetInv += log(1/F[j]);
-          }
-
-          log_g_phi[i] = logDetInv*0.5 - (phi_Q + Q(B, F, u_vec, u_vec, n, nnIndx, nnIndxLU))*0.5;
+        up_log_g_phi = logDetInv*0.5 - (phi_Q + Q(B, F, u_vec, u_vec, n, nnIndx, nnIndxLU))*0.5;
+        
+        double down_phi = current_phi - eps;
+        double down_log_g_phi = 0.0;
+        updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
+                 theta[zetaSqIndx], down_phi, nu, covModel, bk, nuUnifb);
+        
+        //phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
+        phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
+        update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
+        logDetInv = 0.0;
+        diag_sigma_sq_sum = 0.0;
+        for(j = 0; j < n; j++){
+          logDetInv += log(1/F[j]);
         }
-
-        max_index = max_ind(log_g_phi,N_phi*N_phi);
-        a_phi = a_phi_vec[max_index/N_phi];
-        b_phi = b_phi_vec[max_index % N_phi];
-
-        theta[phiIndx] = a_phi/(a_phi+b_phi)*(phimax - phimin) + phimin;;
-
+        down_log_g_phi = logDetInv*0.5 - (phi_Q + Q(B, F, u_vec, u_vec, n, nnIndx, nnIndxLU))*0.5;
+        
+        gradient_phi = (up_log_g_phi - down_log_g_phi)/(up_phi - down_phi);
+        
+        E_phi_sq = rho * E_phi_sq + (1 - rho) * pow(gradient_phi,2);
+        delta_phi = sqrt(delta_phi_sq+adadelta_noise)/sqrt(E_phi_sq+adadelta_noise)*gradient_phi;
+        delta_phi_sq = rho*delta_phi_sq + (1 - rho) * pow(delta_phi,2);
+        
+        theta[phiIndx] = current_phi + delta_phi;
+        
+        if (theta[phiIndx] < phimin) {
+          theta[phiIndx] = phimin;
+        } else if (theta[phiIndx] > phimax) {
+          theta[phiIndx] = phimax;
+        }
+        
+        
         updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
                  theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
       }
+      
       // end = clock();
       // cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
       // printf("phi %f seconds to execute \n", cpu_time_used);
@@ -3104,16 +3203,16 @@ extern "C" {
     }
     updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m, theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
 
-    SEXP theta_para_r; PROTECT(theta_para_r = allocVector(REALSXP, nTheta*2)); nProtect++; double *theta_para = REAL(theta_para_r);
+    SEXP theta_para_r; PROTECT(theta_para_r = allocVector(REALSXP, nTheta+one_int)); nProtect++; double *theta_para = REAL(theta_para_r);
 
     theta_para[zetaSqIndx*2+0] = a_zeta_update;
     theta_para[zetaSqIndx*2+1] = b_zeta_update;
 
     theta_para[tauSqIndx*2+0] = a_tau_update;
     theta_para[tauSqIndx*2+1] = b_tau_update;
-
-    theta_para[phiIndx*2+0] = a_phi;
-    theta_para[phiIndx*2+1] = b_phi;
+// 
+//     theta_para[phiIndx*2+0] = a_phi;
+//     theta_para[phiIndx*2+1] = b_phi;
 
     //SEXP x_out; PROTECT(x_out = allocVector(REALSXP, n)); nProtect++;
     //REAL(x_out)[0] = phi_can;

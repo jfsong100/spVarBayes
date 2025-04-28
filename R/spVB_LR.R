@@ -1,5 +1,5 @@
 spVB_LR <- function(object, get_mat = TRUE, get_para = TRUE, n_omp = 1, n_large = FALSE,
-                    psd_beta = FALSE, original_beta = FALSE,
+                    psd_beta = FALSE, original_beta = FALSE, 
                         sigma.sq.IG = c(0.1,1),
                         tau.sq.IG = c(0.1,0.1)) {
 
@@ -128,28 +128,32 @@ spVB_LR <- function(object, get_mat = TRUE, get_para = TRUE, n_omp = 1, n_large 
           updated_mat <- .Call("compute_Hinv_V_matrix_parallel", Inter_mat, c(beta_sigmasq, object$w_sigma_sq))
           # results_pd <- .Call("nearest_positive_definite", mat_results[-(1:p),-(1:p)], 1e-6, 100)
           object$updated_mat = updated_mat
-          cat(c("   Update spatial parameters \n"))
-          cat("-------------------------------------------------------", "\n")
-          ### Update tausq ###
-          b_tau_update = tau.sq.IG[2] + (sum(qr.resid(qr(object$X), object$y - object$w_mu)^2) + p*object$theta[2] + sum(diag(updated_mat)[-(1:p)]))/2
           
-          ### Update sigmasq ###
-          LR_mat_decompose <- spVB_LR_chol(object)
-          prior_mat <- spVB_prior(object)
-          
-          B_q <- LR_mat_decompose$V
-          F_q <- LR_mat_decompose$F
-          B_mat <- prior_mat$B_mat
-          F_mat <- prior_mat$F_mat
-          
-          set.seed(1)
-          sim <- matrix(rnorm(Trace_N*(n+p)))
-          u <- solve(B_q,matrix(sim, ncol = Trace_N)*sqrt(F_q))
-          
-          MNNGP <- t(B_mat) %*% solve(F_mat) %*% B_mat
-          U <- u[-(1:p), 1:Trace_N, drop = FALSE]
-          
-          b_sigma_update <- sigma.sq.IG[2] + (sum(colSums((MNNGP %*% U) * U))/Trace_N + sum((B_mat %*% object$w_mu)^2 / diag(F_mat)))*object$theta[1]*0.5
+          if(get_para){
+            cat(c("   Update spatial parameters \n"))
+            cat("-------------------------------------------------------", "\n")
+            ### Update tausq ###
+            b_tau_update = tau.sq.IG[2] + (sum(qr.resid(qr(object$X), object$y - object$w_mu)^2) + p*object$theta[2] + sum(diag(updated_mat)[-(1:p)]))/2
+            
+            ### Update sigmasq ###
+            LR_mat_decompose <- spVB_LR_chol(object)
+            prior_mat <- spVB_prior(object)
+            
+            B_q <- LR_mat_decompose$V
+            F_q <- LR_mat_decompose$F
+            B_mat <- prior_mat$B_mat
+            F_mat <- prior_mat$F_mat
+            
+            set.seed(1)
+            sim <- matrix(rnorm(Trace_N*(n+p)))
+            u <- solve(B_q,matrix(sim, ncol = Trace_N)*sqrt(F_q))
+            
+            MNNGP <- t(B_mat) %*% solve(F_mat) %*% B_mat
+            U <- u[-(1:p), 1:Trace_N, drop = FALSE]
+            
+            b_sigma_update <- sigma.sq.IG[2] + (sum(colSums((MNNGP %*% U) * U))/Trace_N + sum((B_mat %*% object$w_mu)^2 / diag(F_mat)))*object$theta[1]*0.5
+            
+          }
           time2 <- proc.time()
           
           
@@ -178,13 +182,14 @@ spVB_LR <- function(object, get_mat = TRUE, get_para = TRUE, n_omp = 1, n_large 
           if(psd_beta){
             warning("beta covariance block projected to nearest PSD matrix.")
             updated_beta_mat <- .Call("compute_Hinv_V_topblock", Inter_mat, object$beta_cov ,p)
-            updated_mat[1:p,1:p] = updated_beta_mat
+            updated_mat[1:p,1:p] <- updated_beta_mat
           }
           
           if(original_beta){
             warning("original covariance block with no linear reponse correction for beta.")
-            updated_mat[1:p,1:p] = object$beta_cov
+            updated_mat[1:p,1:p] <- object$beta_cov
           }
+
           
           object$updated_mat = updated_mat
           
@@ -286,8 +291,7 @@ spVB_LR <- function(object, get_mat = TRUE, get_para = TRUE, n_omp = 1, n_large 
     Theta_para <- object$theta_para
     if(object$cov.model!="matern"){
       names(Theta_para) <- c("sigma.sq.alpha", "sigma.sq.beta",
-                             "tau.sq.alpha", "tau.sq.beta",
-                             "phi.alpha","phi.beta")
+                             "tau.sq.alpha", "tau.sq.beta")
     }
     
     result_list = object

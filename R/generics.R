@@ -3,7 +3,6 @@ predict.spVarBayes <- function(object, X.0, coords.0,covariates = TRUE,
                            n.omp.threads = 1,
                            seed = 1,
                            verbose = TRUE,
-                           phi.fix = FALSE,
                            n.report=100, ...){
 
   ####################################################
@@ -58,20 +57,15 @@ predict.spVarBayes <- function(object, X.0, coords.0,covariates = TRUE,
   tausq.alpha <- theta.para[3] # IG distribution
   tausq.beta <- theta.para[4]
 
-  phi.alpha <- theta.para[5] # beta distribution
-  phi.beta <- theta.para[6]
-
-  phimin <- object$phi.range[1]
-  phimax <- object$phi.range[2]
+  # phi.alpha <- theta.para[5] # beta distribution
+  # phi.beta <- theta.para[6]
+  # 
+  # phimin <- object$phi.range[1]
+  # phimax <- object$phi.range[2]
 
   set.seed(seed)
 
-  if(phi.fix){
-    p.phi.samples <- rep(object$theta[3],n.samples)
-  }else{
-    p.phi.samples <- rbeta(n.samples,phi.alpha,phi.beta)*(phimax - phimin) + phimin
-  }
-
+  p.phi.samples <- rep(object$theta[3],n.samples)
   p.sigmasq.samples <- rigamma(n.samples,zetasq.alpha,zetasq.beta)
   p.tausq.samples <- rigamma(n.samples,tausq.alpha,tausq.beta)
 

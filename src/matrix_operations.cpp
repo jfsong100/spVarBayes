@@ -89,10 +89,15 @@ extern "C" SEXP construct_I_VH(SEXP n_, SEXP X_, SEXP tau2_true_, SEXP nnIndxLU_
   Eigen::SparseMatrix<double> H(n + 1, n + 1);
   std::vector<Triplet<double>> tripletList;
 
-  for (int i = 0; i < n + 1; ++i) {
-    tripletList.push_back(Triplet<double>(i, i, 1.0));  // Identity diagonal entries
-  }
+  // for (int i = 0; i < n + 1; ++i) {
+  //   tripletList.push_back(Triplet<double>(i, i, 1.0));  // Identity diagonal entries
+  // }
 
+  double ridge_eps = 1e-6;
+  for (int i = 0; i < n + 1; ++i) {
+    tripletList.push_back(Triplet<double>(i, i, 1.0 + ridge_eps));  // Stabilized diagonal
+  }
+  
   for (int i = 0; i < n; ++i) {
     int index = i + 1;
     tripletList.push_back(Triplet<double>(index, 0, 1.0 / tau2_true * X[i] * V_diag[index]));
