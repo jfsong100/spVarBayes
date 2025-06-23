@@ -1785,7 +1785,9 @@ extern "C" {
       //   updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
       //            theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
       // }
-
+      // clock_t start, mid, end;
+      // double cpu_time_used;
+      // start = clock();
       if(iter < phi_iter_max){
         
         double phi_Q = 0.0;
@@ -1840,7 +1842,9 @@ extern "C" {
         updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
                  theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
       }
-      
+      // end = clock();
+      // cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+      // printf("phi %f seconds to execute \n", cpu_time_used);
       if(verbose){
         Rprintf("the value of theta[%i phiIndx] : %f \n", phiIndx, theta[phiIndx]);
 #ifdef Win32
@@ -2922,7 +2926,9 @@ extern "C" {
       //   updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
       //            theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
       // }
-      
+      // clock_t start, mid, end;
+      // double cpu_time_used;
+      // start = clock();
       if(iter < phi_iter_max){
         
         double phi_Q = 0.0;

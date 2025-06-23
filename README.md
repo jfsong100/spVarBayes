@@ -10,6 +10,13 @@ To install this package in R:
 devtools::install_github("jfsong100/spVarBayes")
 ```
 
+## Tutorial
+
+You can view the full tutorial here:
+
+[View HTML Tutorial](https://jfsong100.github.io/spVarBayes/spVarBayes-tutorial.html)
+
+
 ## `spVB_NNGP()`
 
 Fits a structured variational approximation using an NNGP variational distribution for the spatial random effects. This method captures dependencies in the spatial random effects by modeling it as NNGP structure. It supports closed-form gradient updates and provides improved uncertainty quantification over mean field. Regression coefficients are modeled independently from the spatial effects in the variational family.
@@ -59,8 +66,3 @@ Provides posterior samples using the **linear response corrected covariance stru
 Draws posterior samples from the **joint variational distribution** of regression coefficients and spatial effects fitted by `spVB_NNGP(joint = TRUE)`. 
 
 
-## Tutorial
-
-You can view the full tutorial here:
-
-[View HTML Tutorial](https://jfsong100.github.io/spVarBayes/spVarBayes-tutorial.html)

@@ -250,10 +250,15 @@ extern "C" SEXP construct_I_VH_p(SEXP n_, SEXP p_, SEXP X_, SEXP tau2_true_, SEX
   }
 
   
-  for (int i = p; i < n + p; ++i) {
-    tripletList.push_back(Triplet<double>(i, i, 1.0));
-  }
+  // for (int i = p; i < n + p; ++i) {
+  //   tripletList.push_back(Triplet<double>(i, i, 1.0));
+  // }
 
+  double ridge_eps = 1e-6;
+  for (int i = 0; i < n + p; ++i) {
+    tripletList.push_back(Triplet<double>(i, i, 1.0 + ridge_eps));  // Stabilized diagonal
+  }
+  
   for (int i = 0; i < n; ++i) {
     int index = i + p;
     
@@ -324,10 +329,14 @@ extern "C" SEXP construct_I_VH_nop(SEXP n_, SEXP tau2_true_, SEXP nnIndxLU_, SEX
   Eigen::SparseMatrix<double> H(n, n);
   std::vector<Triplet<double>> tripletList;
 
-  
+  double ridge_eps = 1e-6;
   for (int i = 0; i < n; ++i) {
-    tripletList.push_back(Triplet<double>(i, i, 1.0));
+    tripletList.push_back(Triplet<double>(i, i, 1.0 + ridge_eps));  // Stabilized diagonal
   }
+  
+  // for (int i = 0; i < n; ++i) {
+  //   tripletList.push_back(Triplet<double>(i, i, 1.0));
+  // }
 
   for (int i = 0; i < n; ++i) {
     int index = i;

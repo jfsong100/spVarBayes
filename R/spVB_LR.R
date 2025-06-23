@@ -298,7 +298,8 @@ spVB_LR <- function(object, get_mat = TRUE, get_para = TRUE, n_omp = 1, n_large 
     result_list$VI_family <-  "MFA-LR"
     result_list$updated_mat <- updated_mat
     result_list$LR_time <- time2 - time1
-    
+    result_list$Inter_mat = Inter_mat
+      
     if(get_para){
       Theta[2] <- b_tau_update/Theta_para[3]
       Theta_para[4] <- b_tau_update
