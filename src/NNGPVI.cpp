@@ -1580,6 +1580,9 @@ extern "C" {
     double *log_g_phi = (double *) R_alloc(N_phi*N_phi, sizeof(double));zeros(log_g_phi,N_phi*N_phi);
     double *sum_v = (double *) R_alloc(n, sizeof(double));zeros(sum_v,n);
     
+    double *sum_u = (double *) R_alloc(n, sizeof(double));zeros(sum_u,n);
+    double *sum_u_sq = (double *) R_alloc(n, sizeof(double));zeros(sum_u_sq,n);
+    
     double gradient_phi = 0.0;
     double eps = 0.001;
     
@@ -1652,7 +1655,9 @@ extern "C" {
 
       zeros(trace_vec,2);
       zeros(u_vec,n);
-
+      zeros(sum_u,n);
+      zeros(sum_u_sq,n);
+      
       int Trace_N_max = Trace_N;
       for(int i = 0; i < n; i++){
         epsilon_vec[i] = rnorm(0, 1);
@@ -1660,26 +1665,63 @@ extern "C" {
       }
       update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
 
+      // for(int k = 0; k < Trace_N_max; k++){
+      //   for(int i = 0; i < n; i++){
+      //     epsilon_vec[i] = rnorm(0, 1);
+      //   }
+      //   update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
+      // 
+      //   double u_mean = 0.0;
+      //   for(i = 0; i < n; i++){
+      //     u_mean += u_vec[i];
+      //   }
+      //   u_mean = u_mean/n;
+      // 
+      //   for(i = 0; i < n; i++){
+      //     trace_vec[0] += pow(u_vec[i]-u_mean,2);
+      //   }
+      // 
+      //   trace_vec[1] += Q(B, F, u_vec, u_vec, n, nnIndx, nnIndxLU);
+      // }
+     
+      double trace_test = 0.0;
+      
+      // for(int k = 0; k < Trace_N; k++){
+      //   for(int i = 0; i < n; i++){
+      //     epsilon_vec[i] = rnorm(0, 1);
+      //   }
+      //   update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
+      //   
+      //   for (int i = 0; i < n; i++) {
+      //     sum_u[i]    += u_vec[i];
+      //     sum_u_sq[i]  += u_vec[i] * u_vec[i];
+      //   }
+      //   
+      //   trace_vec[1] += Q(B, F, u_vec, u_vec, n, nnIndx, nnIndxLU);
+      // }
+      // 
+      // 
+      // for (int i = 0; i < n; i++) {
+      //   double mean_i = sum_u[i] / Trace_N;
+      //   double var_i  = (sum_u_sq[i] - Trace_N * mean_i * mean_i) / (Trace_N - 1);
+      //   trace_vec[0] += var_i;
+      // }
+      
+      // b_tau_update = tauSqIGb + (trace_vec[0] + p*theta[tauSqIndx] + *tau_sq_I - *tau_sq_H)*0.5;
+      
       for(int k = 0; k < Trace_N_max; k++){
         for(int i = 0; i < n; i++){
           epsilon_vec[i] = rnorm(0, 1);
         }
         update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
 
-        double u_mean = 0.0;
         for(i = 0; i < n; i++){
-          u_mean += u_vec[i];
-        }
-        u_mean = u_mean/n;
-
-        for(i = 0; i < n; i++){
-          trace_vec[0] += pow(u_vec[i]-u_mean,2);
+          trace_vec[0] += pow(u_vec[i],2);
         }
 
         trace_vec[1] += Q(B, F, u_vec, u_vec, n, nnIndx, nnIndxLU);
       }
-
-
+      
       b_tau_update = tauSqIGb + (trace_vec[0]/Trace_N_max + p*theta[tauSqIndx] + *tau_sq_I - *tau_sq_H)*0.5;
       //b_tau_update = tauSqIGb + (trace_vec[0]/Trace_N + *tau_sq_I)*0.5;
       tau_sq = b_tau_update/a_tau_update;
@@ -2763,7 +2805,9 @@ extern "C" {
     double *phi_can_vec = (double *) R_alloc(N_phi*N_phi, sizeof(double));zeros(phi_can_vec,N_phi*N_phi);
     double *log_g_phi = (double *) R_alloc(N_phi*N_phi, sizeof(double));zeros(log_g_phi,N_phi*N_phi);
     double *sum_v = (double *) R_alloc(n, sizeof(double));zeros(sum_v,n);
-
+    double *sum_u = (double *) R_alloc(n, sizeof(double));zeros(sum_u,n);
+    double *sum_u_sq = (double *) R_alloc(n, sizeof(double));zeros(sum_u_sq,n);
+    
     while(iter <= max_iter & !indicator_converge){
       if(verbose){
         Rprintf("----------------------------------------\n");
@@ -2784,6 +2828,8 @@ extern "C" {
 
       zeros(trace_vec,2);
       zeros(u_vec,n);
+      zeros(sum_u,n);
+      zeros(sum_u_sq,n);
 
       for(int i = 0; i < n; i++){
         epsilon_vec[i] = rnorm(0, 1);
@@ -2791,29 +2837,39 @@ extern "C" {
       }
       update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
 
+      // for(int k = 0; k < Trace_N; k++){
+      //   for(int i = 0; i < n; i++){
+      //     epsilon_vec[i] = rnorm(0, 1);
+      //   }
+      //   update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
+      // 
+      //   double u_mean = 0.0;
+      //   for(i = 0; i < n; i++){
+      //     u_mean += u_vec[i];
+      //   }
+      //   u_mean = u_mean/n;
+      // 
+      //   for(i = 0; i < n; i++){
+      //     trace_vec[0] += pow(u_vec[i]-u_mean,2);
+      //   }
+      // 
+      //   trace_vec[1] += Q(B, F, u_vec, u_vec, n, nnIndx, nnIndxLU);
+      // }
+
       for(int k = 0; k < Trace_N; k++){
         for(int i = 0; i < n; i++){
           epsilon_vec[i] = rnorm(0, 1);
         }
         update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
 
-        double u_mean = 0.0;
         for(i = 0; i < n; i++){
-          u_mean += u_vec[i];
-        }
-        u_mean = u_mean/n;
-
-        for(i = 0; i < n; i++){
-          trace_vec[0] += pow(u_vec[i]-u_mean,2);
+          trace_vec[0] += pow(u_vec[i],2);
         }
 
         trace_vec[1] += Q(B, F, u_vec, u_vec, n, nnIndx, nnIndxLU);
       }
-
-
-
-
-      //b_tau_update = tauSqIGb + (trace_vec[0]/Trace_N + p*theta[tauSqIndx] + *tau_sq_I - *tau_sq_H)*0.5;
+      
+      // b_tau_update = tauSqIGb + (trace_vec[0] + *tau_sq_I)*0.5;
       b_tau_update = tauSqIGb + (trace_vec[0]/Trace_N + *tau_sq_I)*0.5;
       // Rprintf("trace_vec[0]/Trace_N is : %f \n",trace_vec[0]/Trace_N);
       // Rprintf("b_tau_update is : %f \n",b_tau_update);
