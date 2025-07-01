@@ -255,7 +255,11 @@ extern "C" SEXP construct_I_VH_p(SEXP n_, SEXP p_, SEXP X_, SEXP tau2_true_, SEX
   // }
 
   double ridge_eps = 1e-6;
-  for (int i = 0; i < n + p; ++i) {
+  for (int i = 0; i < p; ++i) {
+    tripletList.push_back(Triplet<double>(i, i, ridge_eps));
+  }
+  
+  for (int i = p; i < n + p; ++i) {
     tripletList.push_back(Triplet<double>(i, i, 1.0 + ridge_eps));  // Stabilized diagonal
   }
   

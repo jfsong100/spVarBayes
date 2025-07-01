@@ -99,11 +99,11 @@ spVB_LR <- function(object, get_mat = TRUE, get_para = TRUE, n_omp = 1, n_large 
       beta_sigmasq <- diag(object$beta_cov)
       p <- length(beta_mu)
       
-      Inter_mat <- .Call("construct_I_VH", object$n, object$X, object$theta[2], object$nnIndxLU, object$nnIndx,
-                         object$numIndxCol, object$nnIndxnnCol, object$cumnumIndxCol,
-                         object$B, object$F, c(beta_sigmasq, object$w_sigma_sq))
-      
       if(p==1){
+        Inter_mat <- .Call("construct_I_VH", object$n, object$X, object$theta[2], object$nnIndxLU, object$nnIndx,
+                           object$numIndxCol, object$nnIndxnnCol, object$cumnumIndxCol,
+                           object$B, object$F, c(beta_sigmasq, object$w_sigma_sq))
+        
         if(!get_mat){
           num <- n_omp
           cat("-------------------------------------------------------", "\n")
