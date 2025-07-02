@@ -1935,14 +1935,22 @@ extern "C" {
 
       F77_NAME(dcopy)(&p, tmp_p2, &inc, beta, &inc);
 
-      for (int i = 0; i < p; i++) {
-        for (int j = 0; j <= i; j++) {
+      if(LR){
+        for (int i = 0; i < p; i++) {
           // Calculate the index for column-major format
-          int idx = i + j * p;
-          beta_cov[idx] = tmp_pp[idx] * theta[tauSqIndx];
+          int diag_idx = i * (p + 1);
+          beta_cov[diag_idx] =  theta[tauSqIndx] / XtX[diag_idx];
+        }
+      }else{
+        for (int i = 0; i < p; i++) {
+          for (int j = 0; j <= i; j++) {
+            // Calculate the index for column-major format
+            int idx = i + j * p;
+            beta_cov[idx] = tmp_pp[idx] * theta[tauSqIndx];
+          }
         }
       }
-
+      
       if(verbose){
         for(i = 0; i < p; i++){
           Rprintf("the value of beta[%i] : %f \n",i, beta[i]);
@@ -2239,13 +2247,22 @@ extern "C" {
 
           F77_NAME(dcopy)(&p, tmp_p2, &inc, beta, &inc);
 
-          for (int i = 0; i < p; i++) {
-            for (int j = 0; j <= i; j++) {
-              // Calculate the index for column-major format
-              int idx = i + j * p;
-              beta_cov[idx] = tmp_pp[idx] * theta[tauSqIndx] / BatchSize * n;
+          if(LR){
+            for (int i = 0; i < p; i++) {
+                // Calculate the index for column-major format
+                int diag_idx = i * (p + 1);
+                beta_cov[diag_idx] =  theta[tauSqIndx] / XtX[diag_idx];
+            }
+          }else{
+            for (int i = 0; i < p; i++) {
+              for (int j = 0; j <= i; j++) {
+                // Calculate the index for column-major format
+                int idx = i + j * p;
+                beta_cov[idx] = tmp_pp[idx] * theta[tauSqIndx] / BatchSize * n;
+              }
             }
           }
+          
 
           if(verbose){
             for(i = 0; i < p; i++){

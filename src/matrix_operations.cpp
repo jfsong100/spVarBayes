@@ -216,8 +216,7 @@ extern "C" SEXP construct_V_VHV(SEXP n_, SEXP X_, SEXP tau2_true_, SEXP nnIndxLU
 
 extern "C" SEXP construct_I_VH_p(SEXP n_, SEXP p_, SEXP X_, SEXP tau2_true_, SEXP nnIndxLU_, SEXP nnIndx_,
                               SEXP numIndxCol_, SEXP nnIndxnnCol_, SEXP cumnumIndxCol_,
-                              SEXP B_, SEXP F_, SEXP V_diag_, SEXP beta_premat_pp_, SEXP beta_premat_pn_,
-                              SEXP beta_premat_np_) {
+                              SEXP B_, SEXP F_, SEXP V_diag_, SEXP beta_premat_pp_, SEXP beta_premat_pn_) {
 
   int n = as<int>(n_);
   int p = as<int>(p_);
@@ -313,7 +312,6 @@ extern "C" SEXP construct_I_VH_p(SEXP n_, SEXP p_, SEXP X_, SEXP tau2_true_, SEX
   H.setFromTriplets(tripletList.begin(), tripletList.end());
   return wrap(H);
 }
-
 
 extern "C" SEXP construct_I_VH_nop(SEXP n_, SEXP tau2_true_, SEXP nnIndxLU_, SEXP nnIndx_,
                                 SEXP numIndxCol_, SEXP nnIndxnnCol_, SEXP cumnumIndxCol_,

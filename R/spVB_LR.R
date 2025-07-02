@@ -164,7 +164,7 @@ spVB_LR <- function(object, get_mat = TRUE, get_para = TRUE, n_omp = 1, n_large 
         diag(mat1) = rep(0,p)
         beta_premat_pp = -(object$beta_cov %*% mat1)/object$theta[2]
         beta_premat_pn = object$beta_cov %*% t(X)
-        
+
         Inter_mat <- .Call("construct_I_VH_p", object$n, p, object$X, object$theta[2], object$nnIndxLU, object$nnIndx,
                            object$numIndxCol, object$nnIndxnnCol, object$cumnumIndxCol,
                            object$B, object$F, c(beta_sigmasq, object$w_sigma_sq), beta_premat_pp, beta_premat_pn)
