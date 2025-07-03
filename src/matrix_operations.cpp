@@ -42,8 +42,8 @@ extern "C" SEXP construct_I_VH(SEXP n_, SEXP X_, SEXP tau2_true_, SEXP nnIndxLU_
       for (int l = 0; l < nnIndxLU[n + i]; l++) {
         int row = i + 1;
         int col = nnIndx[nnIndxLU[i] + l] + 1;
-        double value1 = B[nnIndxLU[i] + l] / F[i] * V_diag[row];
-        double value2 = B[nnIndxLU[i] + l] / F[i] * V_diag[col];
+        double value1 = -B[nnIndxLU[i] + l] / F[i] * V_diag[row];
+        double value2 = -B[nnIndxLU[i] + l] / F[i] * V_diag[col];
         tripletList.push_back(Triplet<double>(row, col, value1));
         tripletList.push_back(Triplet<double>(col, row, value2));
       }
@@ -65,8 +65,8 @@ extern "C" SEXP construct_I_VH(SEXP n_, SEXP X_, SEXP tau2_true_, SEXP nnIndxLU_
           if(neighbor_index != i){
             int row = i + 1;
             int col = nnIndx[nnIndxLU[k] + c] + 1;
-            double value1 = -B[nnIndxLU[k] + c]*B[nnIndxLU[k] + find_index]/F[k]/2 * V_diag[row];
-            double value2 = -B[nnIndxLU[k] + c]*B[nnIndxLU[k] + find_index]/F[k]/2 * V_diag[col];
+            double value1 = B[nnIndxLU[k] + c]*B[nnIndxLU[k] + find_index]/F[k] * V_diag[row];
+            double value2 = B[nnIndxLU[k] + c]*B[nnIndxLU[k] + find_index]/F[k] * V_diag[col];
 
             tripletList.push_back(Triplet<double>(row, col, value1));
             tripletList.push_back(Triplet<double>(col, row, value2));
@@ -141,8 +141,8 @@ extern "C" SEXP construct_I_VH_p(SEXP n_, SEXP p_, SEXP X_, SEXP tau2_true_, SEX
       for (int l = 0; l < nnIndxLU[n + i]; l++) {
         int row = i + p;
         int col = nnIndx[nnIndxLU[i] + l] + p;
-        double value1 = B[nnIndxLU[i] + l] / F[i] * V_diag[row];
-        double value2 = B[nnIndxLU[i] + l] / F[i] * V_diag[col];
+        double value1 = -B[nnIndxLU[i] + l] / F[i] * V_diag[row];
+        double value2 = -B[nnIndxLU[i] + l] / F[i] * V_diag[col];
         tripletList.push_back(Triplet<double>(row, col, value1));
         tripletList.push_back(Triplet<double>(col, row, value2));
       }
@@ -164,8 +164,8 @@ extern "C" SEXP construct_I_VH_p(SEXP n_, SEXP p_, SEXP X_, SEXP tau2_true_, SEX
           if(neighbor_index != i){
             int row = i + p;
             int col = nnIndx[nnIndxLU[k] + c] + p;
-            double value1 = -B[nnIndxLU[k] + c]*B[nnIndxLU[k] + find_index]/F[k]/2 * V_diag[row];
-            double value2 = -B[nnIndxLU[k] + c]*B[nnIndxLU[k] + find_index]/F[k]/2 * V_diag[col];
+            double value1 = B[nnIndxLU[k] + c]*B[nnIndxLU[k] + find_index]/F[k] * V_diag[row];
+            double value2 = B[nnIndxLU[k] + c]*B[nnIndxLU[k] + find_index]/F[k] * V_diag[col];
 
             tripletList.push_back(Triplet<double>(row, col, value1));
             tripletList.push_back(Triplet<double>(col, row, value2));
@@ -213,8 +213,8 @@ extern "C" SEXP construct_I_VH_nop(SEXP n_, SEXP tau2_true_, SEXP nnIndxLU_, SEX
       for (int l = 0; l < nnIndxLU[n + i]; l++) {
         int row = i;
         int col = nnIndx[nnIndxLU[i] + l];
-        double value1 = B[nnIndxLU[i] + l] / F[i] * V_diag[row];
-        double value2 = B[nnIndxLU[i] + l] / F[i] * V_diag[col];
+        double value1 = -B[nnIndxLU[i] + l] / F[i] * V_diag[row];
+        double value2 = -B[nnIndxLU[i] + l] / F[i] * V_diag[col];
         tripletList.push_back(Triplet<double>(row, col, value1));
         tripletList.push_back(Triplet<double>(col, row, value2));
       }
@@ -236,8 +236,8 @@ extern "C" SEXP construct_I_VH_nop(SEXP n_, SEXP tau2_true_, SEXP nnIndxLU_, SEX
           if(neighbor_index != i){
             int row = i;
             int col = nnIndx[nnIndxLU[k] + c];
-            double value1 = -B[nnIndxLU[k] + c]*B[nnIndxLU[k] + find_index]/F[k]/2 * V_diag[row];
-            double value2 = -B[nnIndxLU[k] + c]*B[nnIndxLU[k] + find_index]/F[k]/2 * V_diag[col];
+            double value1 = B[nnIndxLU[k] + c]*B[nnIndxLU[k] + find_index]/F[k] * V_diag[row];
+            double value2 = B[nnIndxLU[k] + c]*B[nnIndxLU[k] + find_index]/F[k] * V_diag[col];
 
             tripletList.push_back(Triplet<double>(row, col, value1));
             tripletList.push_back(Triplet<double>(col, row, value2));
