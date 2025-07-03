@@ -13,11 +13,6 @@
 #include <omp.h>
 #endif
 
-// #include <cppad/cppad.hpp>
-// #include <cppad/example/cppad_eigen.hpp>
-// #include <cassert>
-// #include <Eigen/Dense>
-// #include <Eigen/Core>
 #include <R.h>
 #include <Rmath.h>
 #include <Rinternals.h>
@@ -29,18 +24,6 @@
 
 
 using namespace std;
-
-
-// using CppAD::AD;
-// using CppAD::ADFun;
-// using Eigen::Matrix;
-// using Eigen::Dynamic;
-//
-// typedef Matrix< AD<double> , Dynamic, Dynamic > a_matrix;
-// typedef Matrix< AD<double> , Dynamic , 1>       a_vector;
-// typedef Matrix< double     , Dynamic, Dynamic > matrix;
-// typedef Matrix< double ,     Dynamic , 1>       vector;
-// typedef CppAD::AD<double> ADdouble;
 
 
 #ifndef FCONE
@@ -246,10 +229,6 @@ extern "C" {
 
     SEXP sigma_sq_r; PROTECT(sigma_sq_r = allocVector(REALSXP, n)); nProtect++; double *sigma_sq = REAL(sigma_sq_r);
 
-    // SEXP L_beta_track_r; PROTECT(L_beta_track_r = allocVector(REALSXP, max_iter)); nProtect++; double *L_beta_track = REAL(L_beta_track_r);
-    // SEXP A_beta_track_r; PROTECT(A_beta_track_r = allocVector(REALSXP, max_iter)); nProtect++; double *A_beta_track = REAL(A_beta_track_r);
-    // SEXP E_vi_track_r; PROTECT(E_vi_track_r = allocVector(REALSXP, max_iter)); nProtect++; double *E_vi_track = REAL(E_vi_track_r);
-
     //double *beta = (double *) R_alloc(p, sizeof(double)); zeros(beta, p);
     //double *theta = (double *) R_alloc(nTheta, sizeof(double));
 
@@ -370,10 +349,6 @@ extern "C" {
 
     ////////////
 
-
-
-    //double *w_mu = (double *) R_alloc(n, sizeof(double));
-    //zeros(w_mu, n);
     F77_NAME(dgemm)(ytran, ntran, &p, &p, &n, &one, X, &n, X, &n, &zero, XtX, &p FCONE FCONE);
 
     if(initial_mu){
@@ -526,11 +501,6 @@ extern "C" {
     updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m, theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
 
 
-
-    // int n_per = nIndx_vi * converge_per;
-    // int *sign_vec_old = (int *) R_alloc(n_per, sizeof(int));
-    // int *sign_vec_new = (int *) R_alloc(n_per, sizeof(int));
-    // int *check_vec = (int *) R_alloc(n_per, sizeof(int));
     int indicator_converge = 0;
 
     double *trace_vec = (double *) R_alloc(2, sizeof(double));
@@ -603,13 +573,10 @@ extern "C" {
 
       F77_NAME(dsymv)(lower, &p, &one, tmp_pp, &p, tmp_p, &inc, &zero, tmp_p2, &inc FCONE);
 
-      //F77_NAME(dpotrf)(lower, &p, tmp_pp, &p, &info FCONE); if(info != 0){error("c++ error: 3 dpotrf failed\n");}
-
       F77_NAME(dcopy)(&p, tmp_p2, &inc, beta, &inc);
 
       for (int i = 0; i < p; i++) {
         for (int j = 0; j <= i; j++) {
-          // Calculate the index for column-major format
           int idx = i + j * p;
           beta_cov[idx] = tmp_pp[idx] * theta[tauSqIndx];
         }
@@ -641,7 +608,6 @@ extern "C" {
       zeros(trace_vec,2);
       zeros(u_vec,n);
 
-      int Trace_N_max = Trace_N;
       double tmp_sum;
       for(int i = 0; i < n; i++){
         epsilon_vec[i] = rnorm(0, 1);
@@ -649,7 +615,7 @@ extern "C" {
       }
       update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
 
-      for(int k = 0; k < Trace_N_max; k++){
+      for(int k = 0; k < Trace_N; k++){
         for(int i = 0; i < n; i++){
           epsilon_vec[i] = rnorm(0, 1);
         }
@@ -666,12 +632,8 @@ extern "C" {
 
         trace_vec[1] += Q(B, F, u_vec, u_vec, n, nnIndx, nnIndxLU);
       }
+      b_tau_update = tauSqIGb + (trace_vec[0]/Trace_N + *tau_sq_term)*0.5;
 
-
-      // b_tau_update = tauSqIGb + (trace_vec[0]/Trace_N_max + p*theta[tauSqIndx] + *tau_sq_I - *tau_sq_H)*0.5;
-      b_tau_update = tauSqIGb + (trace_vec[0]/Trace_N_max + *tau_sq_term)*0.5;
-
-      //b_tau_update = tauSqIGb + (trace_vec[0]/Trace_N + *tau_sq_I)*0.5;
       tau_sq = b_tau_update/a_tau_update;
       theta[tauSqIndx] = tau_sq;
 
@@ -683,7 +645,6 @@ extern "C" {
 #endif
       }
 
-      //Rprintf("the value of add_tau : %f \n", trace_vec[0]/Trace_N + *tau_sq_I);
       ///////////////
       //update zetasq
       ///////////////
@@ -691,11 +652,8 @@ extern "C" {
       updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m, theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
 
       double zeta_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
-      b_zeta_update = zetaSqIGb + (trace_vec[1]/Trace_N_max + zeta_Q)*theta[zetaSqIndx]*0.5;
-      //Rprintf("zeta_Q: %f \n", zeta_Q);
-      //b_zeta_update = zetaSqIGb + (trace_vec[1]/Trace_N + zeta_Q)*0.5;
+      b_zeta_update = zetaSqIGb + (trace_vec[1]/Trace_N + zeta_Q)*theta[zetaSqIndx]*0.5;
       zeta_sq = b_zeta_update/a_zeta_update;
-      //Rprintf("the value of add_zeta : %f \n", (trace_vec[1]/Trace_N + zeta_Q));
       theta[zetaSqIndx] = zeta_sq;
 
       if(verbose){
@@ -705,6 +663,7 @@ extern "C" {
 #endif
       }
       updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m, theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
+      
       ///////////////
       //update phi
       ///////////////
@@ -780,26 +739,18 @@ extern "C" {
       zeros(w_mu_temp2,n);
 
       product_B_F(B, F, w_mu, n, nnIndxLU, nnIndx, w_mu_temp);
-      //product_B_F(B, F, w_mu_temp, n, nnIndxLU, nnIndx, w_mu_temp2);
       product_B_F_vec(B, F, w_mu_temp, n, nnIndxLU, nnIndx, w_mu_temp2, cumnumIndxCol, numIndxCol, nnIndxCol, nnIndxnnCol);
 
       double gradient_mu = 0.0;
-      //Rprintf("w_mu_update: ");
       for(i = 0; i < n; i++){
-        //gradient_mu = ( - w_mu[i]/theta[tauSqIndx] - w_mu_temp2[i] + (y[i])/theta[tauSqIndx]);
         gradient_mu = ( - w_mu[i]/theta[tauSqIndx] - w_mu_temp2[i] + (y[i] - F77_NAME(ddot)(&p, &X[i], &n, beta, &inc))/theta[tauSqIndx]);
-
-        //Rprintf("%i ",gradient_mu);
-        //gradient_mu = ( - w_mu[i]/theta[tauSqIndx] - w_mu_temp2[i]/theta[zetaSqIndx] + (y[i])/theta[tauSqIndx]);
         E_mu_sq[i] = rho * E_mu_sq[i] + (1 - rho) * pow(gradient_mu,2);
         delta_mu[i] = sqrt(delta_mu_sq[i]+adadelta_noise)/sqrt(E_mu_sq[i]+adadelta_noise)*gradient_mu;
         delta_mu_sq[i] = rho*delta_mu_sq[i] + (1 - rho) * pow(delta_mu[i],2);
         w_mu_update[i] = w_mu[i] + delta_mu[i];
-        //Rprintf("%f ",w_mu_update[i]);
       }
 
       product_B_F(B, F, w_mu_update, n, nnIndxLU, nnIndx, w_mu_temp);
-      //product_B_F(B, F, w_mu_temp, n, nnIndxLU, nnIndx, w_mu_temp2);
       product_B_F_vec(B, F, w_mu_temp, n, nnIndxLU, nnIndx, w_mu_temp2, cumnumIndxCol, numIndxCol, nnIndxCol, nnIndxnnCol);
 
 
@@ -831,17 +782,12 @@ extern "C" {
         vecsum(l_gradient_sum, l_gradient, Trace_N, p);
       }
 
-      //free(gamma_gradient);
-      //Rprintf("S_vi: ");
+
       for(i = 0; i < n; i++){
         E_gamma_sq[i] = rho * E_gamma_sq[i] + (1 - rho) * pow(gamma_gradient_sum[i],2);
         delta_gamma[i] = sqrt(delta_gamma_sq[i]+adadelta_noise)/sqrt(E_gamma_sq[i]+adadelta_noise)*gamma_gradient_sum[i];
         delta_gamma_sq[i] = rho*delta_gamma_sq[i] + (1 - rho) * pow(delta_gamma[i],2);
-        //gamma_vec[i] = gamma_vec[i] + delta_gamma[i];
-        //S_vi[i] = exp(pow((log(sqrt(S_vi[i])) + delta_gamma[i]),2));
         S_vi[i] = pow(exp(log(sqrt(S_vi[i])) + delta_gamma[i]),2);
-        //Rprintf("%f ",S_vi[i]);
-        //S_vi[i] = pow(exp(gamma_vec[i]),2);
       }
 
       for(i = 0; i < p; i++){
@@ -851,7 +797,6 @@ extern "C" {
         E_vi[i] = pow(exp(log(sqrt(E_vi[i])) + delta_E_vi[i]),2);
       }
 
-      //Rprintf("\n");
       zeros(a_gradient,nIndx_vi);
       zeros(a_gradient_sum, nIndx_vi);
       zeros(A_beta_gradient, np);
@@ -870,10 +815,6 @@ extern "C" {
           z_vec[i] = rnorm(0, 1);
         }
 
-        // a_gradient_fun(u_vec, epsilon_vec, a_gradient, gradient_const, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi,
-        //                B, F, nnIndx, nnIndxLU, theta, tauSqIndx, cumnumIndxCol, numIndxCol, nnIndxCol, nnIndxnnCol,
-        //                w_mu_temp,w_mu_temp2);
-
         a_Abeta_Lbeta_gradient_fun(u_vec, epsilon_vec, a_gradient, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi,
                        B, F, nnIndx, nnIndxLU, theta, tauSqIndx, cumnumIndxCol, numIndxCol, nnIndxCol, nnIndxnnCol,
                        w_mu_temp,w_mu_temp2,
@@ -886,18 +827,12 @@ extern "C" {
         vecsum(L_beta_gradient_sum, L_beta_gradient, Trace_N, L_beta_ind);
 
       }
-      //free(a_gradient);
-      //update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
 
-
-      //Rprintf("A_vi: ");
       for(i = 0; i < nIndx_vi; i++){
         E_a_sq[i] = rho * E_a_sq[i] + (1 - rho) * pow(a_gradient_sum[i],2);
         delta_a[i] = sqrt(delta_a_sq[i]+adadelta_noise)/sqrt(E_a_sq[i]+adadelta_noise)*a_gradient_sum[i];
         delta_a_sq[i] = rho*delta_a_sq[i] + (1 - rho) * pow(delta_a[i],2);
-        //gamma_vec[i] = gamma_vec[i] + delta_gamma[i];
         A_vi[i] = A_vi[i] + delta_a[i];
-        //Rprintf("%f ",A_vi[i]);
       }
 
       for(i = 0; i < np; i++){
@@ -964,17 +899,7 @@ extern "C" {
       ELBO += -0.5*n;
 
       ELBO_vec[iter-1] = -ELBO;
-      // L_beta_track[iter - 1] = L_beta[0];
-      // A_beta_track[iter - 1] = A_beta[0];
-      // E_vi_track[iter - 1] = E_vi[0];
-      // if(iter == 1){max_ELBO = - ELBO;}
-      // if(iter > min_iter & iter % 10){
-      //   if(- ELBO<max_ELBO){ELBO_convergence_count+=1;}else{ELBO_convergence_count=0;}
-      //   max_ELBO = max(max_ELBO, - ELBO);
-      //   if(stop_K){
-      //     indicator_converge = ELBO_convergence_count>=K;
-      //   }
-      // }
+
 
       if(iter == min_iter){max_ELBO = - ELBO;}
       if (iter > min_iter && iter % 10 == 0){
@@ -1050,12 +975,6 @@ extern "C" {
     theta_para[tauSqIndx*2+0] = a_tau_update;
     theta_para[tauSqIndx*2+1] = b_tau_update;
 
-    // theta_para[phiIndx*2+0] = a_phi;
-    // theta_para[phiIndx*2+1] = b_phi;
-
-    //SEXP x_out; PROTECT(x_out = allocVector(REALSXP, n)); nProtect++;
-    //REAL(x_out)[0] = phi_can;
-    //F77_NAME(dcopy)(&n, w_mu, &inc, REAL(x_out), &inc);
     SEXP iter_r; PROTECT(iter_r = allocVector(INTSXP, 1)); nProtect++;
     INTEGER(iter_r)[0] = iter;
 
@@ -1146,25 +1065,8 @@ extern "C" {
     SET_VECTOR_ELT(result_r, 26, E_vi_r);
     SET_VECTOR_ELT(resultName_r, 26, mkChar("E_vi"));
 
-    // SET_VECTOR_ELT(result_r, 27, L_beta_track_r);
-    // SET_VECTOR_ELT(resultName_r, 27, mkChar("L_beta_track"));
-    // 
-    // SET_VECTOR_ELT(result_r, 28, A_beta_track_r);
-    // SET_VECTOR_ELT(resultName_r, 28, mkChar("A_beta_track"));
-    // 
-    // SET_VECTOR_ELT(result_r, 29, E_vi_track_r);
-    // SET_VECTOR_ELT(resultName_r, 29, mkChar("E_vi_track"));
-
     SET_VECTOR_ELT(result_r, 27, IndxLU_beta_r);
     SET_VECTOR_ELT(resultName_r, 27, mkChar("IndxLU_beta"));
-    // SET_VECTOR_ELT(result_r, 20, uiIndx_r);
-    // SET_VECTOR_ELT(resultName_r, 20, mkChar("uiIndx"));
-    //
-    // SET_VECTOR_ELT(result_r, 21, uIndx_r);
-    // SET_VECTOR_ELT(resultName_r, 21, mkChar("uIndx"));
-    //
-    // SET_VECTOR_ELT(result_r, 22, uIndxLU_r);
-    // SET_VECTOR_ELT(resultName_r, 22, mkChar("uIndxLU"));
 
     namesgets(result_r, resultName_r);
     //unprotect
@@ -1221,9 +1123,7 @@ extern "C" {
     int stop_K = INTEGER(stop_K_r)[0];
     int min_iter = INTEGER(min_iter_r)[0];
 
-    //double  vi_threshold  =  REAL(vi_threshold_r)[0];
     double  rho  =  REAL(rho_r)[0];
-    //double  rho_phi  =  REAL(rho_phi_r)[0];
     //priors
     double zetaSqIGa = REAL(zetaSqIG_r)[0]; double zetaSqIGb = REAL(zetaSqIG_r)[1];
     double tauSqIGa = REAL(tauSqIG_r)[0]; double tauSqIGb = REAL(tauSqIG_r)[1];
@@ -1400,8 +1300,6 @@ extern "C" {
     double *tau_sq_H = (double *) R_alloc(one, sizeof(double));
     double *tau_sq_I = (double *) R_alloc(one, sizeof(double));
 
-    //double *w_mu = (double *) R_alloc(n, sizeof(double));
-    //zeros(w_mu, n);
     F77_NAME(dgemm)(ytran, ntran, &p, &p, &n, &one, X, &n, X, &n, &zero, XtX, &p FCONE FCONE);
 
     if(initial_mu){
@@ -1419,7 +1317,6 @@ extern "C" {
       for(i = 0; i < n; i++){
         w_mu[i] = y[i] - F77_NAME(ddot)(&p, &X[i], &n, tmp_p2, &inc);
       }
-      // F77_NAME(dcopy)(&n, y, &inc, w_mu, &inc);
     }else{
       zeros(w_mu, n);
     }
@@ -1461,10 +1358,6 @@ extern "C" {
     double rho1 = 0.9;
     double rho2 = 0.999;
     double adaptive_adam = 0.001;
-    //double vi_threshold = 0.0001;
-
-    // SEXP a_track_r; PROTECT(a_track_r = allocVector(REALSXP, max_iter)); nProtect++; double *a_track = REAL(a_track_r);
-    // SEXP gamma_track_r; PROTECT(gamma_track_r = allocVector(REALSXP, max_iter)); nProtect++; double *gamma_track = REAL(gamma_track_r);
 
     // NNGP parameters
 
@@ -1540,11 +1433,6 @@ extern "C" {
     updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m, theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
 
 
-
-    // int n_per = nIndx_vi * converge_per;
-    // int *sign_vec_old = (int *) R_alloc(n_per, sizeof(int));
-    // int *sign_vec_new = (int *) R_alloc(n_per, sizeof(int));
-    // int *check_vec = (int *) R_alloc(n_per, sizeof(int));
     int indicator_converge = 0;
 
     double *trace_vec = (double *) R_alloc(2, sizeof(double));
@@ -1552,7 +1440,6 @@ extern "C" {
     double *u_vec_mean = (double *) R_alloc(n, sizeof(double));
     double ELBO_MC = 0.0;
     double ELBO = 0.0;
-    //double *epsilon_vec = (double *) R_alloc(n, sizeof(double));
     double *w_mu_temp = (double *) R_alloc(n, sizeof(double));
     double *w_mu_temp2 = (double *) R_alloc(n, sizeof(double));
     double *gradient_const = (double *) R_alloc(n, sizeof(double));
@@ -1617,14 +1504,10 @@ extern "C" {
       F77_NAME(dpotri)(lower, &p, tmp_pp, &p, &info FCONE); if(info != 0){error("c++ error: 2 dpotri failed\n");}
 
       F77_NAME(dsymv)(lower, &p, &one, tmp_pp, &p, tmp_p, &inc, &zero, tmp_p2, &inc FCONE);
-
-      //F77_NAME(dpotrf)(lower, &p, tmp_pp, &p, &info FCONE); if(info != 0){error("c++ error: 3 dpotrf failed\n");}
-
       F77_NAME(dcopy)(&p, tmp_p2, &inc, beta, &inc);
 
       for (int i = 0; i < p; i++) {
         for (int j = 0; j <= i; j++) {
-          // Calculate the index for column-major format
           int idx = i + j * p;
           beta_cov[idx] = tmp_pp[idx] * theta[tauSqIndx];
         }
@@ -1658,58 +1541,15 @@ extern "C" {
       zeros(sum_u,n);
       zeros(sum_u_sq,n);
       
-      int Trace_N_max = Trace_N;
       for(int i = 0; i < n; i++){
         epsilon_vec[i] = rnorm(0, 1);
 
       }
       update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
 
-      // for(int k = 0; k < Trace_N_max; k++){
-      //   for(int i = 0; i < n; i++){
-      //     epsilon_vec[i] = rnorm(0, 1);
-      //   }
-      //   update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
-      // 
-      //   double u_mean = 0.0;
-      //   for(i = 0; i < n; i++){
-      //     u_mean += u_vec[i];
-      //   }
-      //   u_mean = u_mean/n;
-      // 
-      //   for(i = 0; i < n; i++){
-      //     trace_vec[0] += pow(u_vec[i]-u_mean,2);
-      //   }
-      // 
-      //   trace_vec[1] += Q(B, F, u_vec, u_vec, n, nnIndx, nnIndxLU);
-      // }
-     
       double trace_test = 0.0;
-      
-      // for(int k = 0; k < Trace_N; k++){
-      //   for(int i = 0; i < n; i++){
-      //     epsilon_vec[i] = rnorm(0, 1);
-      //   }
-      //   update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
-      //   
-      //   for (int i = 0; i < n; i++) {
-      //     sum_u[i]    += u_vec[i];
-      //     sum_u_sq[i]  += u_vec[i] * u_vec[i];
-      //   }
-      //   
-      //   trace_vec[1] += Q(B, F, u_vec, u_vec, n, nnIndx, nnIndxLU);
-      // }
-      // 
-      // 
-      // for (int i = 0; i < n; i++) {
-      //   double mean_i = sum_u[i] / Trace_N;
-      //   double var_i  = (sum_u_sq[i] - Trace_N * mean_i * mean_i) / (Trace_N - 1);
-      //   trace_vec[0] += var_i;
-      // }
-      
-      // b_tau_update = tauSqIGb + (trace_vec[0] + p*theta[tauSqIndx] + *tau_sq_I - *tau_sq_H)*0.5;
-      
-      for(int k = 0; k < Trace_N_max; k++){
+ 
+      for(int k = 0; k < Trace_N; k++){
         for(int i = 0; i < n; i++){
           epsilon_vec[i] = rnorm(0, 1);
         }
@@ -1722,8 +1562,7 @@ extern "C" {
         trace_vec[1] += Q(B, F, u_vec, u_vec, n, nnIndx, nnIndxLU);
       }
       
-      b_tau_update = tauSqIGb + (trace_vec[0]/Trace_N_max + p*theta[tauSqIndx] + *tau_sq_I - *tau_sq_H)*0.5;
-      //b_tau_update = tauSqIGb + (trace_vec[0]/Trace_N + *tau_sq_I)*0.5;
+      b_tau_update = tauSqIGb + (trace_vec[0]/Trace_N + p*theta[tauSqIndx] + *tau_sq_I - *tau_sq_H)*0.5;
       tau_sq = b_tau_update/a_tau_update;
       theta[tauSqIndx] = tau_sq;
 
@@ -1734,7 +1573,6 @@ extern "C" {
 #endif
       }
 
-      //Rprintf("the value of add_tau : %f \n", trace_vec[0]/Trace_N + *tau_sq_I);
       ///////////////
       //update zetasq
       ///////////////
@@ -1742,11 +1580,8 @@ extern "C" {
       updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m, theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
 
       double zeta_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
-      b_zeta_update = zetaSqIGb + (trace_vec[1]/Trace_N_max + zeta_Q)*theta[zetaSqIndx]*0.5;
-      //Rprintf("zeta_Q: %f \n", zeta_Q);
-      //b_zeta_update = zetaSqIGb + (trace_vec[1]/Trace_N + zeta_Q)*0.5;
+      b_zeta_update = zetaSqIGb + (trace_vec[1]/Trace_N + zeta_Q)*theta[zetaSqIndx]*0.5;
       zeta_sq = b_zeta_update/a_zeta_update;
-      //Rprintf("the value of add_zeta : %f \n", (trace_vec[1]/Trace_N + zeta_Q));
       theta[zetaSqIndx] = zeta_sq;
 
       if(verbose){
@@ -1756,80 +1591,11 @@ extern "C" {
 #endif
       }
       updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m, theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
+      
       ///////////////
       //update phi
       ///////////////
 
-      // if(iter < phi_iter_max){
-      // 
-      //   double *a_phi_vec = (double *) R_alloc(N_phi, sizeof(double));
-      //   double *b_phi_vec = (double *) R_alloc(N_phi, sizeof(double));
-      //   a_phi_vec[0] = a_phi;
-      //   b_phi_vec[0] = b_phi;
-      // 
-      //   for(int i = 1; i < N_phi; i++){
-      //     if (i % 2 == 0) {
-      //       a_phi_vec[i] = a_phi_vec[0] + 0.01*i;
-      //       b_phi_vec[i] = b_phi_vec[0] + 0.01*i;
-      //       // a_phi_vec[i] = a_phi_vec[0]*(1+0.1*i);
-      //       // b_phi_vec[i] = b_phi_vec[0]*(1+0.1*i);
-      //     } else {
-      //       a_phi_vec[i] = a_phi_vec[0] + 0.01*i*(-1);
-      //       b_phi_vec[i] = b_phi_vec[0] + 0.01*i*(-1);
-      //       // a_phi_vec[i] = a_phi_vec[0]*(1-0.1*i);
-      //       // b_phi_vec[i] = b_phi_vec[0]*(1-0.1*i);
-      //     }
-      // 
-      //   }
-      // 
-      //   double phi_Q = 0.0;
-      //   double diag_sigma_sq_sum = 0.0;
-      // 
-      //   int max_index;
-      //   zeros(phi_can_vec,N_phi*N_phi);
-      //   zeros(log_g_phi,N_phi*N_phi);
-      //   for(int i = 0; i < N_phi; i++){
-      //     for(int j = 0; j < N_phi; j++){
-      // 
-      //       for(int k = 0; k < Trace_N; k++){
-      //         phi_can_vec[i*N_phi+j] += rbeta(a_phi_vec[i], b_phi_vec[j]);  // Notice the indexing here
-      //       }
-      //       phi_can_vec[i*N_phi+j] /= Trace_N;
-      //       phi_can_vec[i*N_phi+j] = phi_can_vec[i*N_phi+j]*(phimax - phimin) + phimin;
-      //     }
-      //   }
-      // 
-      // 
-      //   for(i = 0; i < N_phi*N_phi; i++){
-      // 
-      //     updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
-      //              theta[zetaSqIndx], phi_can_vec[i], nu, covModel, bk, nuUnifb);
-      // 
-      //     //phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
-      //     phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
-      //     update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
-      //     logDetInv = 0.0;
-      //     diag_sigma_sq_sum = 0.0;
-      //     for(j = 0; j < n; j++){
-      //       logDetInv += log(1/F[j]);
-      //     }
-      // 
-      //     log_g_phi[i] = logDetInv*0.5 - (phi_Q + Q(B, F, u_vec, u_vec, n, nnIndx, nnIndxLU))*0.5;
-      //   }
-      // 
-      //   max_index = max_ind(log_g_phi,N_phi*N_phi);
-      //   a_phi = a_phi_vec[max_index/N_phi];
-      //   b_phi = b_phi_vec[max_index % N_phi];
-      // 
-      //   theta[phiIndx] = a_phi/(a_phi+b_phi)*(phimax - phimin) + phimin;;
-      // 
-      // 
-      //   updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
-      //            theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
-      // }
-      // clock_t start, mid, end;
-      // double cpu_time_used;
-      // start = clock();
       if(iter < phi_iter_max){
         
         double phi_Q = 0.0;
@@ -1842,7 +1608,6 @@ extern "C" {
         updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
                  theta[zetaSqIndx], up_phi, nu, covModel, bk, nuUnifb);
         
-        //phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
         phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
         update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
         logDetInv = 0.0;
@@ -1884,9 +1649,7 @@ extern "C" {
         updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
                  theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
       }
-      // end = clock();
-      // cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-      // printf("phi %f seconds to execute \n", cpu_time_used);
+
       if(verbose){
         Rprintf("the value of theta[%i phiIndx] : %f \n", phiIndx, theta[phiIndx]);
 #ifdef Win32
@@ -1902,35 +1665,19 @@ extern "C" {
       zeros(w_mu_temp2,n);
 
       product_B_F(B, F, w_mu, n, nnIndxLU, nnIndx, w_mu_temp);
-      //product_B_F(B, F, w_mu_temp, n, nnIndxLU, nnIndx, w_mu_temp2);
       product_B_F_vec(B, F, w_mu_temp, n, nnIndxLU, nnIndx, w_mu_temp2, cumnumIndxCol, numIndxCol, nnIndxCol, nnIndxnnCol);
 
       double gradient_mu = 0.0;
-      //Rprintf("w_mu_update: ");
       for(i = 0; i < n; i++){
-        //gradient_mu = ( - w_mu[i]/theta[tauSqIndx] - w_mu_temp2[i] + (y[i])/theta[tauSqIndx]);
         gradient_mu = ( - w_mu[i]/theta[tauSqIndx] - w_mu_temp2[i] + (y[i] - F77_NAME(ddot)(&p, &X[i], &n, beta, &inc))/theta[tauSqIndx]);
-
-        //Rprintf("%i ",gradient_mu);
-        //gradient_mu = ( - w_mu[i]/theta[tauSqIndx] - w_mu_temp2[i]/theta[zetaSqIndx] + (y[i])/theta[tauSqIndx]);
         E_mu_sq[i] = rho * E_mu_sq[i] + (1 - rho) * pow(gradient_mu,2);
         delta_mu[i] = sqrt(delta_mu_sq[i]+adadelta_noise)/sqrt(E_mu_sq[i]+adadelta_noise)*gradient_mu;
         delta_mu_sq[i] = rho*delta_mu_sq[i] + (1 - rho) * pow(delta_mu[i],2);
         w_mu_update[i] = w_mu[i] + delta_mu[i];
-        //Rprintf("%f ",w_mu_update[i]);
       }
 
       product_B_F(B, F, w_mu_update, n, nnIndxLU, nnIndx, w_mu_temp);
-      //product_B_F(B, F, w_mu_temp, n, nnIndxLU, nnIndx, w_mu_temp2);
       product_B_F_vec(B, F, w_mu_temp, n, nnIndxLU, nnIndx, w_mu_temp2, cumnumIndxCol, numIndxCol, nnIndxCol, nnIndxnnCol);
-
-
-      // zeros(gradient_const,n);
-      // for(i = 0; i < n; i++){
-      //   //gradient_const[i] = -w_mu_update[i]/theta[tauSqIndx] - w_mu_temp2[i] + (y[i])/theta[tauSqIndx];
-      //   gradient_const[i] = -w_mu_update[i]/theta[tauSqIndx] - w_mu_temp2[i] + (y[i] - F77_NAME(ddot)(&p, &X[i], &n, beta, &inc))/theta[tauSqIndx];
-      // }
-
 
       zeros(gradient,n);
       zeros(gamma_gradient_sum, n);
@@ -1942,10 +1689,6 @@ extern "C" {
           epsilon_vec[i] = rnorm(0, 1);
         }
 
-        // gamma_gradient_fun(u_vec, epsilon_vec, gamma_gradient, gradient_const, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi,
-        //                    B, F, nnIndx, nnIndxLU, theta, tauSqIndx, cumnumIndxCol, numIndxCol, nnIndxCol, nnIndxnnCol,
-        //                    cumnumIndxCol_vi, numIndxCol_vi, nnIndxCol_vi, nnIndxnnCol_vi,w_mu_temp,w_mu_temp2,gradient);
-
         gamma_gradient_fun(u_vec, epsilon_vec, gamma_gradient, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi,
                            B, F, nnIndx, nnIndxLU, theta, tauSqIndx, cumnumIndxCol, numIndxCol, nnIndxCol, nnIndxnnCol,
                            cumnumIndxCol_vi, numIndxCol_vi, nnIndxCol_vi, nnIndxnnCol_vi,w_mu_temp,w_mu_temp2,gradient);
@@ -1954,19 +1697,13 @@ extern "C" {
         vecsum(gamma_gradient_sum, gamma_gradient, Trace_N, n);
       }
 
-      //free(gamma_gradient);
-      //Rprintf("S_vi: ");
       for(i = 0; i < n; i++){
         E_gamma_sq[i] = rho * E_gamma_sq[i] + (1 - rho) * pow(gamma_gradient_sum[i],2);
         delta_gamma[i] = sqrt(delta_gamma_sq[i]+adadelta_noise)/sqrt(E_gamma_sq[i]+adadelta_noise)*gamma_gradient_sum[i];
         delta_gamma_sq[i] = rho*delta_gamma_sq[i] + (1 - rho) * pow(delta_gamma[i],2);
-        //gamma_vec[i] = gamma_vec[i] + delta_gamma[i];
-        //S_vi[i] = exp(pow((log(sqrt(S_vi[i])) + delta_gamma[i]),2));
         S_vi[i] = pow(exp(log(sqrt(S_vi[i])) + delta_gamma[i]),2);
-        //Rprintf("%f ",S_vi[i]);
-        //S_vi[i] = pow(exp(gamma_vec[i]),2);
       }
-      //Rprintf("\n");
+
       zeros(a_gradient,nIndx_vi);
       zeros(a_gradient_sum, nIndx_vi);
 
@@ -1976,10 +1713,6 @@ extern "C" {
           epsilon_vec[i] = rnorm(0, 1);
         }
 
-        // a_gradient_fun(u_vec, epsilon_vec, a_gradient, gradient_const, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi,
-        //                B, F, nnIndx, nnIndxLU, theta, tauSqIndx, cumnumIndxCol, numIndxCol, nnIndxCol, nnIndxnnCol,
-        //                w_mu_temp,w_mu_temp2);
-
         a_gradient_fun(u_vec, epsilon_vec, a_gradient, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi,
                        B, F, nnIndx, nnIndxLU, theta, tauSqIndx, cumnumIndxCol, numIndxCol, nnIndxCol, nnIndxnnCol,
                        w_mu_temp,w_mu_temp2);
@@ -1987,18 +1720,12 @@ extern "C" {
         vecsum(a_gradient_sum, a_gradient, Trace_N, nIndx_vi);
 
       }
-      //free(a_gradient);
-      //update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
 
-
-      //Rprintf("A_vi: ");
       for(i = 0; i < nIndx_vi; i++){
         E_a_sq[i] = rho * E_a_sq[i] + (1 - rho) * pow(a_gradient_sum[i],2);
         delta_a[i] = sqrt(delta_a_sq[i]+adadelta_noise)/sqrt(E_a_sq[i]+adadelta_noise)*a_gradient_sum[i];
         delta_a_sq[i] = rho*delta_a_sq[i] + (1 - rho) * pow(delta_a[i],2);
-        //gamma_vec[i] = gamma_vec[i] + delta_gamma[i];
         A_vi[i] = A_vi[i] + delta_a[i];
-        //Rprintf("%f ",A_vi[i]);
       }
       ELBO = 0.0;
       zeros(sum_v,n);
@@ -2036,17 +1763,6 @@ extern "C" {
       ELBO += -0.5*n;
 
       ELBO_vec[iter-1] = -ELBO;
-      // a_track[iter - 1] = A_vi[0];
-      // gamma_track[iter - 1] = S_vi[0];
-
-      // if(iter == 1){max_ELBO = - ELBO;}
-      // if(iter > min_iter & iter % 10){
-      //   if(- ELBO<max_ELBO){ELBO_convergence_count+=1;}else{ELBO_convergence_count=0;}
-      //   max_ELBO = max(max_ELBO, - ELBO);
-      //   if(stop_K){
-      //     indicator_converge = ELBO_convergence_count>=K;
-      //   }
-      // }
 
       if(iter == min_iter){max_ELBO = - ELBO;}
       if (iter > min_iter && iter % 10 == 0){
@@ -2110,113 +1826,6 @@ extern "C" {
 
     }
 
-//     {
-// 
-//         Rprintf("----------------------------------------\n");
-//         Rprintf("\tWrapping Up the results \n",iter);
-// #ifdef Win32
-//         R_FlushConsole();
-// #endif
-// 
-// 
-//       ///////////////
-//       //update beta
-//       ///////////////
-// 
-// 
-//       zeros(tau_sq_I, one_int);
-//       for(i = 0; i < n; i++){
-//         tmp_n[i] = y[i]-w_mu[i];
-//         tau_sq_I[0] += pow(tmp_n[i],2);
-//       }
-// 
-//       F77_NAME(dgemv)(ytran, &n, &p, &one, X, &n, tmp_n, &inc, &zero, tmp_p, &inc FCONE);
-// 
-//       for(i = 0; i < pp; i++){
-//         tmp_pp[i] = XtX[i];
-//       }
-// 
-//       F77_NAME(dpotrf)(lower, &p, tmp_pp, &p, &info FCONE); if(info != 0){error("c++ error: 2 dpotrf failed\n");}
-//       F77_NAME(dpotri)(lower, &p, tmp_pp, &p, &info FCONE); if(info != 0){error("c++ error: 2 dpotri failed\n");}
-// 
-//       F77_NAME(dsymv)(lower, &p, &one, tmp_pp, &p, tmp_p, &inc, &zero, tmp_p2, &inc FCONE);
-// 
-//       //F77_NAME(dpotrf)(lower, &p, tmp_pp, &p, &info FCONE); if(info != 0){error("c++ error: 3 dpotrf failed\n");}
-// 
-//       F77_NAME(dcopy)(&p, tmp_p2, &inc, beta, &inc);
-// 
-//       for (int i = 0; i < p; i++) {
-//         for (int j = 0; j <= i; j++) {
-//           // Calculate the index for column-major format
-//           int idx = i + j * p;
-//           beta_cov[idx] = tmp_pp[idx] * theta[tauSqIndx];
-//         }
-//       }
-// 
-// 
-//       ///////////////
-//       //update tausq
-//       ///////////////
-// 
-//       zeros(tau_sq_H, one_int);
-// 
-//       for(i = 0; i < p; i++){
-//         tau_sq_H[0] += tmp_p2[i]*tmp_p[i];
-//       }
-// 
-//       zeros(trace_vec,2);
-//       zeros(u_vec,n);
-// 
-//       int Trace_N_max = 2000;
-//       for(int i = 0; i < n; i++){
-//         epsilon_vec[i] = rnorm(0, 1);
-// 
-//       }
-//       update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
-// 
-//       for(int k = 0; k < Trace_N_max; k++){
-//         for(int i = 0; i < n; i++){
-//           epsilon_vec[i] = rnorm(0, 1);
-//         }
-//         update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
-// 
-//         double u_mean = 0.0;
-//         for(i = 0; i < n; i++){
-//           u_mean += u_vec[i];
-//         }
-//         u_mean = u_mean/n;
-// 
-//         for(i = 0; i < n; i++){
-//           trace_vec[0] += pow(u_vec[i]-u_mean,2);
-//         }
-// 
-//         trace_vec[1] += Q(B, F, u_vec, u_vec, n, nnIndx, nnIndxLU);
-//       }
-// 
-// 
-//       b_tau_update = tauSqIGb + (trace_vec[0]/Trace_N_max + p*theta[tauSqIndx] + *tau_sq_I - *tau_sq_H)*0.5;
-//       //b_tau_update = tauSqIGb + (trace_vec[0]/Trace_N + *tau_sq_I)*0.5;
-//       tau_sq = b_tau_update/a_tau_update;
-//       theta[tauSqIndx] = tau_sq;
-// 
-// 
-//       //Rprintf("the value of add_tau : %f \n", trace_vec[0]/Trace_N + *tau_sq_I);
-//       ///////////////
-//       //update zetasq
-//       ///////////////
-// 
-//       updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m, theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
-// 
-//       double zeta_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
-//       b_zeta_update = zetaSqIGb + (trace_vec[1]/Trace_N_max + zeta_Q)*theta[zetaSqIndx]*0.5;
-//       //Rprintf("zeta_Q: %f \n", zeta_Q);
-//       //b_zeta_update = zetaSqIGb + (trace_vec[1]/Trace_N + zeta_Q)*0.5;
-//       zeta_sq = b_zeta_update/a_zeta_update;
-//       //Rprintf("the value of add_zeta : %f \n", (trace_vec[1]/Trace_N + zeta_Q));
-//       theta[zetaSqIndx] = zeta_sq;
-// 
-//     }
-
     updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m, theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
 
     SEXP theta_para_r; PROTECT(theta_para_r = allocVector(REALSXP, nTheta+one_int)); nProtect++; double *theta_para = REAL(theta_para_r);
@@ -2227,12 +1836,6 @@ extern "C" {
     theta_para[tauSqIndx*2+0] = a_tau_update;
     theta_para[tauSqIndx*2+1] = b_tau_update;
 
-    // theta_para[phiIndx*2+0] = a_phi;
-    // theta_para[phiIndx*2+1] = b_phi;
-
-    //SEXP x_out; PROTECT(x_out = allocVector(REALSXP, n)); nProtect++;
-    //REAL(x_out)[0] = phi_can;
-    //F77_NAME(dcopy)(&n, w_mu, &inc, REAL(x_out), &inc);
     SEXP iter_r; PROTECT(iter_r = allocVector(INTSXP, 1)); nProtect++;
     INTEGER(iter_r)[0] = iter;
 
@@ -2314,22 +1917,6 @@ extern "C" {
     SET_VECTOR_ELT(result_r, 23, beta_cov_r);
     SET_VECTOR_ELT(resultName_r, 23, mkChar("beta_cov"));
 
-    // SET_VECTOR_ELT(result_r, 24, a_track_r);
-    // SET_VECTOR_ELT(resultName_r, 24, mkChar("a_track"));
-    // 
-    // SET_VECTOR_ELT(result_r, 25, gamma_track_r);
-    // SET_VECTOR_ELT(resultName_r, 25, mkChar("gamma_track"));
-
-
-    // SET_VECTOR_ELT(result_r, 20, uiIndx_r);
-    // SET_VECTOR_ELT(resultName_r, 20, mkChar("uiIndx"));
-    //
-    // SET_VECTOR_ELT(result_r, 21, uIndx_r);
-    // SET_VECTOR_ELT(resultName_r, 21, mkChar("uIndx"));
-    //
-    // SET_VECTOR_ELT(result_r, 22, uIndxLU_r);
-    // SET_VECTOR_ELT(resultName_r, 22, mkChar("uIndxLU"));
-
     namesgets(result_r, resultName_r);
     //unprotect
     UNPROTECT(nProtect);
@@ -2384,7 +1971,6 @@ extern "C" {
     int phi_iter_max = INTEGER(phi_iter_max_r)[0];
     int nThreads = INTEGER(nThreads_r)[0];
     int verbose = INTEGER(verbose_r)[0];
-    //double  vi_threshold  =  REAL(vi_threshold_r)[0];
     double  rho  =  REAL(rho_r)[0];
     //double  rho_phi  =  REAL(rho_phi_r)[0];
     //priors
@@ -2675,87 +2261,6 @@ extern "C" {
 
     updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m, theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
 
-//
-//     int nIndSqx = static_cast<int>(static_cast<double>(1+m)*(m+m+1)/6*m+(n-m-1)*m*m);
-//     double *F_inv = (double *) R_alloc(n, sizeof(double)); zeros(F_inv,n);
-//     double *B_over_F = (double *) R_alloc(nIndx, sizeof(double)); zeros(B_over_F,nIndx);
-//     double *Bmat_over_F = (double *) R_alloc(nIndSqx, sizeof(double)); zeros(Bmat_over_F,nIndSqx);
-//     int *nnIndxLUSq = (int *) R_alloc(2*n, sizeof(int));
-//     for(int i = n; i < 2*n; i++){
-//       nnIndxLUSq[i] = pow(nnIndxLU[i],2);
-//     }
-//
-//     nnIndxLUSq[0] = 0;
-//     for(int i = 1; i < n; i++){
-//       nnIndxLUSq[i] = nnIndxLUSq[i-1] + nnIndxLUSq[n+i-1];
-//     }
-//
-//     double F_inv_temp;
-//     for(i = 0; i < n; i++){
-//       F_inv[i] = 1/F[i];
-//
-//       for(j = 0; j < nnIndxLU[n+i]; j++){
-//         B_over_F[nnIndxLU[i]+j] = B[nnIndxLU[i]+j]/F[i];
-//       }
-//
-//       if(i > 0){
-//         F_inv_temp = 1/F[i];
-//         F77_NAME(dger)(&nnIndxLU[n+i], &nnIndxLU[n+i], &one, &B[nnIndxLU[i]], &inc, &B[nnIndxLU[i]], &inc, &Bmat_over_F[nnIndxLUSq[i]], &nnIndxLU[n+i]);
-//         F77_NAME(dscal)(&nnIndxLUSq[n+i], &F_inv_temp, &Bmat_over_F[nnIndxLUSq[i]], &inc);
-//       }
-//
-//     }
-//
-//     double q = 0;
-//     int num_m;
-//     for(i = 0; i < n; i++){
-//       a = 0;
-//       b = 0;
-//       num_m = nnIndxLU[n+i];
-//       for(j = 0; j < num_m; j++){
-//         a += B_over_F[nnIndxLU[i]+j]*y[nnIndx[nnIndxLU[i]+j]];
-//
-//         for(k = 0; k < num_m; k++){
-//           b += Bmat_over_F[nnIndxLUSq[i]+j*num_m+k]*y[nnIndx[nnIndxLU[i]+j]]*y[nnIndx[nnIndxLU[i]+k]];
-//         }
-//       }
-//       //Rprintf("b at i %i is %f ",i,b);
-//       q += y[i]*y[i]*F_inv[i] - 2*a*y[i] + b;
-//     }
-//
-//     Rprintf("q is %f ", q);
-//     Rprintf("Q is %f ", Q(B, F, y, y, n, nnIndx,nnIndxLU));
-    // Rprintf("\t nIndSqx is : %i\n", nIndSqx);
-    //
-    // Rprintf("\t nnIndxLU\n");
-    // for(int i = 0; i< 2*n; i++){
-    //   Rprintf("%i ",nnIndxLU[i]);
-    // }
-    // Rprintf("\n");
-    // Rprintf("\t nnIndxLUSq\n");
-    // for(int i = 0; i< 2*n; i++){
-    //   Rprintf("%i ",nnIndxLUSq[i]);
-    // }
-    // Rprintf("\n");
-    //
-    // for(int i = 0; i < n; i++){
-    //   Rprintf("B is ");
-    //   for (int l = 0; l < nnIndxLU[n + i]; l++){
-    //     Rprintf("%f ", B[nnIndxLU[i] + l]);
-    //   }
-    //   Rprintf("\n");
-    //   Rprintf("F is %f ", F[i]);
-    //   Rprintf("Bmat_over_F is ");
-    //   for (int k = 0; k < nnIndxLUSq[n + i]; k++){
-    //     Rprintf("%f ", Bmat_over_F[nnIndxLUSq[i] + k]);
-    //   }
-    //   Rprintf("\n");
-    // }
-
-    // int n_per = nIndx_vi * converge_per;
-    // int *sign_vec_old = (int *) R_alloc(n_per, sizeof(int));
-    // int *sign_vec_new = (int *) R_alloc(n_per, sizeof(int));
-    // int *check_vec = (int *) R_alloc(n_per, sizeof(int));
     int indicator_converge = 0;
 
     double *trace_vec = (double *) R_alloc(2, sizeof(double));
@@ -2763,7 +2268,6 @@ extern "C" {
     double *u_vec_mean = (double *) R_alloc(n, sizeof(double));
     double ELBO_MC = 0.0;
     double ELBO = 0.0;
-    //double *epsilon_vec = (double *) R_alloc(n, sizeof(double));
     double *w_mu_temp = (double *) R_alloc(n, sizeof(double));
     double *w_mu_temp2 = (double *) R_alloc(n, sizeof(double));
     double *gradient_const = (double *) R_alloc(n, sizeof(double));
@@ -2777,20 +2281,6 @@ extern "C" {
     double *ELBO_vec = REAL(ELBO_vec_r); zeros(ELBO_vec,max_iter);
     double max_ELBO = 0.0;
     int ELBO_convergence_count = 0;
-    // double *derivative_neighbour = (double *) R_alloc(n, sizeof(double));zeros(derivative_neighbour,n);
-    // double *derivative_neighbour_a = (double *) R_alloc(n, sizeof(double));zeros(derivative_neighbour_a,n);
-    //
-    // for(int i = 1; i < n; i++){
-    //   for (int l = 0; l < nnIndxLU_vi[n + i]; l++){
-    //     if((i-1) == (nnIndx_vi[nnIndxLU_vi[i] + l]) ){
-    //       derivative_neighbour[i] = 1;
-    //       //derivative_neighbour_a[i+1] = A_vi[nnIndxLU_vi[i] + l];
-    //     }
-    //   }
-    // }
-
-    // double *derivative_store = (double *) R_alloc(m_vi*n, sizeof(double)); zeros(derivative_store,m_vi*n);
-    // double *derivative_store_gamma = (double *) R_alloc(n, sizeof(double)); zeros(derivative_store_gamma,n);
     double eps = 0.001;
     double gradient_phi = 0.0; 
     double E_phi_sq = 0.0;
@@ -2837,25 +2327,6 @@ extern "C" {
       }
       update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
 
-      // for(int k = 0; k < Trace_N; k++){
-      //   for(int i = 0; i < n; i++){
-      //     epsilon_vec[i] = rnorm(0, 1);
-      //   }
-      //   update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
-      // 
-      //   double u_mean = 0.0;
-      //   for(i = 0; i < n; i++){
-      //     u_mean += u_vec[i];
-      //   }
-      //   u_mean = u_mean/n;
-      // 
-      //   for(i = 0; i < n; i++){
-      //     trace_vec[0] += pow(u_vec[i]-u_mean,2);
-      //   }
-      // 
-      //   trace_vec[1] += Q(B, F, u_vec, u_vec, n, nnIndx, nnIndxLU);
-      // }
-
       for(int k = 0; k < Trace_N; k++){
         for(int i = 0; i < n; i++){
           epsilon_vec[i] = rnorm(0, 1);
@@ -2869,10 +2340,8 @@ extern "C" {
         trace_vec[1] += Q(B, F, u_vec, u_vec, n, nnIndx, nnIndxLU);
       }
       
-      // b_tau_update = tauSqIGb + (trace_vec[0] + *tau_sq_I)*0.5;
+
       b_tau_update = tauSqIGb + (trace_vec[0]/Trace_N + *tau_sq_I)*0.5;
-      // Rprintf("trace_vec[0]/Trace_N is : %f \n",trace_vec[0]/Trace_N);
-      // Rprintf("b_tau_update is : %f \n",b_tau_update);
       tau_sq = b_tau_update/a_tau_update;
       theta[tauSqIndx] = tau_sq;
 
@@ -2884,7 +2353,6 @@ extern "C" {
 #endif
       }
 
-      //Rprintf("the value of add_tau : %f \n", trace_vec[0]/Trace_N + *tau_sq_I);
       ///////////////
       //update zetasq
       ///////////////
@@ -2893,14 +2361,8 @@ extern "C" {
 
       double zeta_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
       b_zeta_update = zetaSqIGb + (trace_vec[1]/Trace_N + zeta_Q)*theta[zetaSqIndx]*0.5;
-      //Rprintf("zeta_Q: %f \n", zeta_Q);
-      //b_zeta_update = zetaSqIGb + (trace_vec[1]/Trace_N + zeta_Q)*0.5;
       zeta_sq = b_zeta_update/a_zeta_update;
-      //Rprintf("the value of add_zeta : %f \n", (trace_vec[1]/Trace_N + zeta_Q));
       theta[zetaSqIndx] = zeta_sq;
-      // Rprintf("zeta_Q_mb is : %f \n",zeta_Q);
-      // Rprintf("trace_vec1_re/Trace_N is : %f \n",trace_vec[1]/Trace_N);
-      // Rprintf("b_zeta_update is : %f \n",b_zeta_update);
 
       if(verbose){
         Rprintf("the value of 1 over E[1/sigma_sq] : %f \n", zeta_sq);
@@ -2909,82 +2371,11 @@ extern "C" {
 #endif
       }
       updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m, theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
+      
       ///////////////
       //update phi
       ///////////////
-      // clock_t start, mid, end;
-      // double cpu_time_used;
-      // start = clock();
 
-      // if(iter < phi_iter_max){
-      // 
-      //   double *a_phi_vec = (double *) R_alloc(N_phi, sizeof(double));
-      //   double *b_phi_vec = (double *) R_alloc(N_phi, sizeof(double));
-      //   a_phi_vec[0] = a_phi;
-      //   b_phi_vec[0] = b_phi;
-      // 
-      //   for(int i = 1; i < N_phi; i++){
-      //     if (i % 2 == 0) {
-      //       a_phi_vec[i] = a_phi_vec[0] + 0.01*i;
-      //       b_phi_vec[i] = b_phi_vec[0] + 0.01*i;
-      //       // a_phi_vec[i] = a_phi_vec[0]*(1+0.1*i);
-      //       // b_phi_vec[i] = b_phi_vec[0]*(1+0.1*i);
-      //     } else {
-      //       a_phi_vec[i] = a_phi_vec[0] + 0.01*i*(-1);
-      //       b_phi_vec[i] = b_phi_vec[0] + 0.01*i*(-1);
-      //       // a_phi_vec[i] = a_phi_vec[0]*(1-0.1*i);
-      //       // b_phi_vec[i] = b_phi_vec[0]*(1-0.1*i);
-      //     }
-      // 
-      //   }
-      // 
-      //   double phi_Q = 0.0;
-      //   double diag_sigma_sq_sum = 0.0;
-      // 
-      //   int max_index;
-      //   zeros(phi_can_vec,N_phi*N_phi);
-      //   zeros(log_g_phi,N_phi*N_phi);
-      //   for(int i = 0; i < N_phi; i++){
-      //     for(int j = 0; j < N_phi; j++){
-      // 
-      //       for(int k = 0; k < Trace_N; k++){
-      //         phi_can_vec[i*N_phi+j] += rbeta(a_phi_vec[i], b_phi_vec[j]);  // Notice the indexing here
-      //       }
-      //       phi_can_vec[i*N_phi+j] /= Trace_N;
-      //       phi_can_vec[i*N_phi+j] = phi_can_vec[i*N_phi+j]*(phimax - phimin) + phimin;
-      //     }
-      //   }
-      // 
-      // 
-      //   for(i = 0; i < N_phi*N_phi; i++){
-      // 
-      //     updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
-      //              theta[zetaSqIndx], phi_can_vec[i], nu, covModel, bk, nuUnifb);
-      // 
-      //     //phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
-      //     phi_Q = Q(B, F, w_mu, w_mu, n, nnIndx, nnIndxLU);
-      //     update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
-      //     logDetInv = 0.0;
-      //     diag_sigma_sq_sum = 0.0;
-      //     for(j = 0; j < n; j++){
-      //       logDetInv += log(1/F[j]);
-      //     }
-      // 
-      //     log_g_phi[i] = logDetInv*0.5 - (phi_Q + Q(B, F, u_vec, u_vec, n, nnIndx, nnIndxLU))*0.5;
-      //   }
-      // 
-      //   max_index = max_ind(log_g_phi,N_phi*N_phi);
-      //   a_phi = a_phi_vec[max_index/N_phi];
-      //   b_phi = b_phi_vec[max_index % N_phi];
-      // 
-      //   theta[phiIndx] = a_phi/(a_phi+b_phi)*(phimax - phimin) + phimin;;
-      // 
-      //   updateBF(B, F, c, C, coords, nnIndx, nnIndxLU, n, m,
-      //            theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
-      // }
-      // clock_t start, mid, end;
-      // double cpu_time_used;
-      // start = clock();
       if(iter < phi_iter_max){
         
         double phi_Q = 0.0;
@@ -3041,9 +2432,7 @@ extern "C" {
                  theta[zetaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
       }
       
-      // end = clock();
-      // cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-      // printf("phi %f seconds to execute \n", cpu_time_used);
+
       if(verbose){
         Rprintf("the value of theta[%i phiIndx] : %f \n", phiIndx, theta[phiIndx]);
 #ifdef Win32
@@ -3059,33 +2448,20 @@ extern "C" {
       zeros(w_mu_temp2,n);
 
       product_B_F(B, F, w_mu, n, nnIndxLU, nnIndx, w_mu_temp);
-      //product_B_F(B, F, w_mu_temp, n, nnIndxLU, nnIndx, w_mu_temp2);
       product_B_F_vec(B, F, w_mu_temp, n, nnIndxLU, nnIndx, w_mu_temp2, cumnumIndxCol, numIndxCol, nnIndxCol, nnIndxnnCol);
 
       double gradient_mu = 0.0;
-      //Rprintf("w_mu_update: ");
       for(i = 0; i < n; i++){
         gradient_mu = ( - w_mu[i]/theta[tauSqIndx] - w_mu_temp2[i] + (y[i])/theta[tauSqIndx]);
-        //Rprintf("%i ",gradient_mu);
-        //gradient_mu = ( - w_mu[i]/theta[tauSqIndx] - w_mu_temp2[i]/theta[zetaSqIndx] + (y[i])/theta[tauSqIndx]);
         E_mu_sq[i] = rho * E_mu_sq[i] + (1 - rho) * pow(gradient_mu,2);
         delta_mu[i] = sqrt(delta_mu_sq[i]+adadelta_noise)/sqrt(E_mu_sq[i]+adadelta_noise)*gradient_mu;
         delta_mu_sq[i] = rho*delta_mu_sq[i] + (1 - rho) * pow(delta_mu[i],2);
         w_mu_update[i] = w_mu[i] + delta_mu[i];
-        //Rprintf("%f ",w_mu_update[i]);
       }
 
 
       product_B_F(B, F, w_mu_update, n, nnIndxLU, nnIndx, w_mu_temp);
-      //product_B_F(B, F, w_mu_temp, n, nnIndxLU, nnIndx, w_mu_temp2);
       product_B_F_vec(B, F, w_mu_temp, n, nnIndxLU, nnIndx, w_mu_temp2, cumnumIndxCol, numIndxCol, nnIndxCol, nnIndxnnCol);
-
-
-
-      // zeros(gradient_const,n);
-      // for(i = 0; i < n; i++){
-      //   gradient_const[i] = -w_mu_update[i]/theta[tauSqIndx] - w_mu_temp2[i] + (y[i])/theta[tauSqIndx];
-      // }
 
 
       zeros(gradient,n);
@@ -3097,10 +2473,6 @@ extern "C" {
         for(int i = 0; i < n; i++){
           epsilon_vec[i] = rnorm(0, 1);
         }
-        // gamma_gradient_fun(u_vec, epsilon_vec, gamma_gradient, gradient_const, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi,
-        //                    B, F, nnIndx, nnIndxLU, theta, tauSqIndx, cumnumIndxCol, numIndxCol, nnIndxCol, nnIndxnnCol,
-        //                    cumnumIndxCol_vi, numIndxCol_vi, nnIndxCol_vi, nnIndxnnCol_vi,w_mu_temp,w_mu_temp2,gradient);
-
         gamma_gradient_fun(u_vec, epsilon_vec, gamma_gradient, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi,
                            B, F, nnIndx, nnIndxLU, theta, tauSqIndx, cumnumIndxCol, numIndxCol, nnIndxCol, nnIndxnnCol,
                            cumnumIndxCol_vi, numIndxCol_vi, nnIndxCol_vi, nnIndxnnCol_vi,w_mu_temp,w_mu_temp2,gradient);
@@ -3108,19 +2480,12 @@ extern "C" {
         vecsum(gamma_gradient_sum, gamma_gradient, Trace_N, n);
       }
 
-      //free(gamma_gradient);
-      //Rprintf("S_vi: ");
       for(i = 0; i < n; i++){
         E_gamma_sq[i] = rho * E_gamma_sq[i] + (1 - rho) * pow(gamma_gradient_sum[i],2);
         delta_gamma[i] = sqrt(delta_gamma_sq[i]+adadelta_noise)/sqrt(E_gamma_sq[i]+adadelta_noise)*gamma_gradient_sum[i];
         delta_gamma_sq[i] = rho*delta_gamma_sq[i] + (1 - rho) * pow(delta_gamma[i],2);
-        //gamma_vec[i] = gamma_vec[i] + delta_gamma[i];
-        //S_vi[i] = exp(pow((log(sqrt(S_vi[i])) + delta_gamma[i]),2));
         S_vi[i] = pow(exp(log(sqrt(S_vi[i])) + delta_gamma[i]),2);
-        //Rprintf("%f ",S_vi[i]);
-        //S_vi[i] = pow(exp(gamma_vec[i]),2);
       }
-      //Rprintf("\n");
 
 
       zeros(a_gradient,nIndx_vi);
@@ -3132,34 +2497,19 @@ extern "C" {
           epsilon_vec[i] = rnorm(0, 1);
         }
 
-        // a_gradient_fun(u_vec, epsilon_vec, a_gradient, gradient_const, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi,
-        //                B, F, nnIndx, nnIndxLU, theta, tauSqIndx, cumnumIndxCol, numIndxCol, nnIndxCol, nnIndxnnCol,
-        //                w_mu_temp,w_mu_temp2);
-
         a_gradient_fun(u_vec, epsilon_vec, a_gradient, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi,
                        B, F, nnIndx, nnIndxLU, theta, tauSqIndx, cumnumIndxCol, numIndxCol, nnIndxCol, nnIndxnnCol,
                        w_mu_temp,w_mu_temp2);
-        //
-        // for(int i = 0; i < nIndx_vi; i++){
-        //   Rprintf("\tError is %i, %f \n",i, a_gradient[i]);
-        // }
+
         vecsum(a_gradient_sum, a_gradient, Trace_N, nIndx_vi);
-        // for(int i = 0; i < nIndx_vi; i++){
-        //   a_gradient_sum[i] = a_gradient[i];
-        // }
+
       }
-      //free(a_gradient);
-      //update_uvec(u_vec, epsilon_vec, A_vi, S_vi, n, nnIndxLU_vi, nnIndx_vi);
 
-
-      //Rprintf("A_vi: ");
       for(i = 0; i < nIndx_vi; i++){
         E_a_sq[i] = rho * E_a_sq[i] + (1 - rho) * pow(a_gradient_sum[i],2);
         delta_a[i] = sqrt(delta_a_sq[i]+adadelta_noise)/sqrt(E_a_sq[i]+adadelta_noise)*a_gradient_sum[i];
         delta_a_sq[i] = rho*delta_a_sq[i] + (1 - rho) * pow(delta_a[i],2);
-        //gamma_vec[i] = gamma_vec[i] + delta_gamma[i];
         A_vi[i] = A_vi[i] + delta_a[i];
-        //Rprintf("%f ",A_vi[i]);
       }
 
 
@@ -3272,13 +2622,7 @@ extern "C" {
 
     theta_para[tauSqIndx*2+0] = a_tau_update;
     theta_para[tauSqIndx*2+1] = b_tau_update;
-// 
-//     theta_para[phiIndx*2+0] = a_phi;
-//     theta_para[phiIndx*2+1] = b_phi;
 
-    //SEXP x_out; PROTECT(x_out = allocVector(REALSXP, n)); nProtect++;
-    //REAL(x_out)[0] = phi_can;
-    //F77_NAME(dcopy)(&n, w_mu, &inc, REAL(x_out), &inc);
     SEXP iter_r; PROTECT(iter_r = allocVector(INTSXP, 1)); nProtect++;
     INTEGER(iter_r)[0] = iter;
 
