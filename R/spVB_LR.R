@@ -1,4 +1,4 @@
-spVB_LR <- function(object, get_mat = TRUE, get_para = TRUE, n_omp = 1,
+spVB_LR <- function(object, get_mat = TRUE, get_para = TRUE, n_omp = 1, get_H = FALSE,
                     sigma.sq.IG = c(0.1,1), tau.sq.IG = c(0.1,0.1)) {
 
   Trace_N <- object$Trace_N
@@ -220,7 +220,14 @@ spVB_LR <- function(object, get_mat = TRUE, get_para = TRUE, n_omp = 1,
     result_list$F_mat <- F_mat
   }
   
-  
+  if(get_H){
+    H_mat  <- .Call("construct_H_nop", object$n, object$nnIndxLU, object$nnIndx,
+                                  object$numIndxCol, object$nnIndxnnCol, object$cumnumIndxCol,
+                                  object$B, object$F)
+    
+    result_list$H_mat <- H_mat
+    
+  }
   
 
   return(result_list)

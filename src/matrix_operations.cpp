@@ -62,7 +62,7 @@ extern "C" SEXP construct_I_VH(SEXP n_, SEXP X_, SEXP tau2_true_, SEXP nnIndxLU_
 
         for (int c = 0; c < nnIndxLU[n + k]; c++) {
           int neighbor_index = nnIndx[nnIndxLU[k] + c];
-          if(neighbor_index != i){
+          if(neighbor_index != i && i < neighbor_index){
             int row = i + 1;
             int col = nnIndx[nnIndxLU[k] + c] + 1;
             double value1 = B[nnIndxLU[k] + c]*B[nnIndxLU[k] + find_index]/F[k] * V_diag[row];
@@ -161,7 +161,7 @@ extern "C" SEXP construct_I_VH_p(SEXP n_, SEXP p_, SEXP X_, SEXP tau2_true_, SEX
 
         for (int c = 0; c < nnIndxLU[n + k]; c++) {
           int neighbor_index = nnIndx[nnIndxLU[k] + c];
-          if(neighbor_index != i){
+          if(neighbor_index != i && i < neighbor_index){
             int row = i + p;
             int col = nnIndx[nnIndxLU[k] + c] + p;
             double value1 = B[nnIndxLU[k] + c]*B[nnIndxLU[k] + find_index]/F[k] * V_diag[row];
@@ -233,7 +233,7 @@ extern "C" SEXP construct_I_VH_nop(SEXP n_, SEXP tau2_true_, SEXP nnIndxLU_, SEX
 
         for (int c = 0; c < nnIndxLU[n + k]; c++) {
           int neighbor_index = nnIndx[nnIndxLU[k] + c];
-          if(neighbor_index != i){
+          if(neighbor_index != i && i < neighbor_index){
             int row = i;
             int col = nnIndx[nnIndxLU[k] + c];
             double value1 = B[nnIndxLU[k] + c]*B[nnIndxLU[k] + find_index]/F[k] * V_diag[row];
@@ -247,6 +247,67 @@ extern "C" SEXP construct_I_VH_nop(SEXP n_, SEXP tau2_true_, SEXP nnIndxLU_, SEX
     }
   }
 
+  H.setFromTriplets(tripletList.begin(), tripletList.end());
+  return wrap(H);
+}
+
+extern "C" SEXP construct_H_nop(SEXP n_, SEXP nnIndxLU_, SEXP nnIndx_,
+                                  SEXP numIndxCol_, SEXP nnIndxnnCol_, SEXP cumnumIndxCol_,
+                                  SEXP B_, SEXP F_) {
+  
+  int n = as<int>(n_);
+  IntegerVector nnIndxLU(nnIndxLU_);
+  IntegerVector nnIndx(nnIndx_);
+  IntegerVector numIndxCol(numIndxCol_);
+  IntegerVector nnIndxnnCol(nnIndxnnCol_);
+  IntegerVector cumnumIndxCol(cumnumIndxCol_);
+  NumericVector B(B_);
+  NumericVector F(F_);
+  
+  Eigen::SparseMatrix<double> H(n, n);
+  std::vector<Triplet<double>> tripletList;
+  
+  for (int i = 0; i < n; ++i) {
+    int index = i;
+    
+    if (nnIndxLU[n + i] > 0) {
+      for (int l = 0; l < nnIndxLU[n + i]; l++) {
+        int row = i;
+        int col = nnIndx[nnIndxLU[i] + l];
+        double value1 = B[nnIndxLU[i] + l] / F[i];
+        double value2 = B[nnIndxLU[i] + l] / F[i];
+        tripletList.push_back(Triplet<double>(row, col, value1));
+        tripletList.push_back(Triplet<double>(col, row, value2));
+      }
+    }
+    
+    if(numIndxCol[i] > 0){
+      for (int j = 0; j < numIndxCol[i]; j++) {
+        int k = nnIndxnnCol[cumnumIndxCol[i] - i + j];
+        int find_index;
+        for (int c = 0; c < nnIndxLU[n + k]; c++) {
+          int neighbor_index = nnIndx[nnIndxLU[k] + c];
+          if (neighbor_index == i) {
+            find_index = c;
+          }
+        }
+        
+        for (int c = 0; c < nnIndxLU[n + k]; c++) {
+          int neighbor_index = nnIndx[nnIndxLU[k] + c];
+          if(neighbor_index != i && i < neighbor_index){
+            int row = i;
+            int col = nnIndx[nnIndxLU[k] + c];
+            double value1 = -B[nnIndxLU[k] + c]*B[nnIndxLU[k] + find_index]/F[k];
+            double value2 = -B[nnIndxLU[k] + c]*B[nnIndxLU[k] + find_index]/F[k];
+            
+            tripletList.push_back(Triplet<double>(row, col, value1));
+            tripletList.push_back(Triplet<double>(col, row, value2));
+          }
+        }
+      }
+    }
+  }
+  
   H.setFromTriplets(tripletList.begin(), tripletList.end());
   return wrap(H);
 }
