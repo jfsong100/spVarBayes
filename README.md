@@ -1,6 +1,10 @@
 # spVarBayes
 
-This R package is based on C/C++ and implements fast variational inference methods for spatial data using Nearest Neighbor Gaussian Processes (NNGP).
+An R package for fast variational Bayesian inference in large-scale geospatial regression using Nearest Neighbor Gaussian Processes (NNGP). It leverages closed-form gradient updates and linear response corrections to achieve calibrated uncertainty at reduced computational cost. 
+
+Authors: Jiafang Song (jsong100@jhu.edu), Abhirup Datta (abhidatta@jhu.edu)
+
+Acknowledgement: This work was supported by National Institute of Environmental Health Sciences (NIEHS) grant R01 ES033739
 
 ## Installation
 
@@ -64,5 +68,11 @@ Provides posterior samples using the **linear response corrected covariance stru
 ### `spVB_joint_sampling()`
 
 Draws posterior samples from the **joint variational distribution** of regression coefficients and spatial effects fitted by `spVB_NNGP(joint = TRUE)`. 
+
+## Citation
+
+Please cite the following paper when you use **spVarBayes**: 
+> Song, Jiafang, and Abhirup Datta. "Fast Variational Bayes for Large Spatial Data." arXiv preprint arXiv:2507.12251 (2025).
+
 
 
