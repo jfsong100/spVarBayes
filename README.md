@@ -2,7 +2,7 @@
 
 An R package for fast variational Bayesian inference in large-scale geospatial regression using Nearest Neighbor Gaussian Processes (NNGP). It leverages closed-form gradient updates and linear response corrections to achieve calibrated uncertainty at reduced computational cost. 
 
-Authors: Jiafang Song (jsong100@jhu.edu), Abhirup Datta (abhidatta@jhu.edu)
+Authors: Jiafang Song, Abhirup Datta 
 
 Acknowledgement: This work was supported by National Institute of Environmental Health Sciences (NIEHS) grant R01 ES033739
 

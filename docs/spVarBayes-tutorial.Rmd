@@ -1,6 +1,6 @@
 ---
 title: "Tutorial for spVarBayes"
-author: "Jiafang Song"
+author: "Jiafang Song, Abhi Datta"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Tutorial for spVarBayes}
