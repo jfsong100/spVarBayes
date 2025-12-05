@@ -87,45 +87,9 @@ R <- exp(-phi_true*D)
 w <- rmvn(1, rep(0,n), sigma2_true*R)
 y <- rnorm(n, x \%*\% B + w, sqrt(tau2_true))
 
-library(RANN)
-# Remove close points before fitting MFA with linear response
-remove_close_points = function(x, y, threshold) {
-  points <- cbind(x, y)
-  keep_indices <- seq_len(nrow(points))
-  
-  repeat {
-    neighbors <- nn2(data = points, k = 2, searchtype = "radius", radius = threshold)
-    distances <- neighbors$nn.dists[, 2]
-    
-    if (all(is.na(distances) | distances >= threshold)) {
-      break
-    }
-    
-    closest_index <- which.min(distances)
-    points <- points[-closest_index, ]
-    keep_indices <- keep_indices[-closest_index]
-  }
-  
-  list(
-    x = points[, 1],
-    y = points[, 2],
-    kept_indices = keep_indices,
-    removed_indices = setdiff(seq_along(x), keep_indices)
-  )
-}
-
-S_result = remove_close_points(coords[,1], coords[,2], 0.01)
-cleaned_x = S_result$x
-cleaned_y = S_result$y
-kept = S_result$kept_indices
-removed = S_result$removed_indices
-y_remove = y[-removed]
-x_remove = x[-remove,]
-coords_remove = coords[-removed,]
-
 ##Fit a MFA VB model
-MFA_pre_fit <- spVB_MFA(y = y_remove,X = x_remove,coords=coords_remove, covariates = TRUE, 
-                n.neighbors = 15, rho = 0.85, max_iter = 1000, LR = TRUE)
+MFA_pre_fit <- spVB_MFA(y = y,X = x, coords = coords, covariates = TRUE, 
+                n.neighbors = 15, rho = 0.85, max_iter = 3000, LR = TRUE)
 
 MFA_LR = spVB_LR(MFA_pre_fit, get_mat = TRUE, get_para = TRUE, n_omp = 5)
 

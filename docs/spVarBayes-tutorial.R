@@ -24,30 +24,6 @@ n <- 1500
 
 coords <- cbind(runif(n,0,5), runif(n,0,5))
 
-# Remove close points
-remove_close_points <- function(x, y, threshold) {
-
-  points <- cbind(x, y)
-  
-  repeat {
-    neighbors <- nn2(data = points, k = 2, searchtype = "radius", radius = threshold)
-    distances <- neighbors$nn.dists[, 2]
-    if (all(is.na(distances) | distances >= threshold)) {
-      break 
-    }
-    closest_index <- which.min(distances)
-    points <- points[-closest_index, ]
-  }
-  
-  list(x = points[, 1], y = points[, 2])
-}
-
-remove_coords <- remove_close_points(coords[,1], coords[,2], 0.015)
-cleaned_x <- remove_coords$x
-cleaned_y <- remove_coords$y
-
-coords <- cbind(cleaned_x,cleaned_y)
-
 n = nrow(coords)
 
 x <- cbind(rnorm(n), rnorm(n))
@@ -110,7 +86,7 @@ MFA_predict <- predict(MFA, coords.0 = coords_test, X.0 = x_test, covariates = T
 
 ## ----fig.align = "center", fig.width = 6, fig.height = 6----------------------
 MFA_pre_fit <- spVB_MFA(y = y_train,X = x_train,coords=coords_train, covariates = TRUE, 
-                   n.neighbors = 15, rho = 0.85, max_iter = 1000, LR = TRUE)
+                   n.neighbors = 15, rho = 0.85, max_iter = 2000, LR = TRUE)
 
 MFA_LR = spVB_LR(MFA_pre_fit, get_mat = TRUE, get_para = TRUE, n_omp = 5)
 
