@@ -5,7 +5,7 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
                      verbose = FALSE, max_iter = 2000, min_iter = 750, stop_K = FALSE, K = 20,
                      N_phi = 5, Trace_N = 30, phi_max_iter = 10, rho = 0.95,
                      mini_batch = FALSE, mini_batch_size = 256, ord_type = "Sum_coords", 
-                     LR = FALSE, tau_sq_input = NULL, sigma_sq_input = NULL){
+                     LR = FALSE, warm_up = FALSE, lr_adj = 1, tau_sq_input = NULL, sigma_sq_input = NULL){
 
 
 
@@ -48,6 +48,16 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
     stop("error: rho should be a value between 0 and 1")
   }
 
+  if(LR){
+    if(max_iter < 3000) warning('We recommend using larger iterations especially for spVB-MFA with LR.')
+  }
+  
+  if(warm_up){
+    if(lr_adj >= 1){
+      lr_adj = 0.01
+      warning('We recommend setting lr_adj = 0.01 when using the Adadelta warm start so that the early updates mimic plain gradient ascent.')
+    }
+  }
   ##Covariance model
   cov.model.names <- c("exponential","spherical","matern","gaussian")
   cov.model.indx <- which(cov.model == cov.model.names) - 1
@@ -251,6 +261,8 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
   storage.mode(initial_mu) <- "integer"
   storage.mode(phi_max_iter) <- "integer"
   storage.mode(mini_batch_size) <- "integer"
+  storage.mode(warm_up) <- "integer"
+  storage.mode(lr_adj) <- "double"
   #storage.mode(rho_phi) <- "double"
   # storage.mode(input_norm) <- "double"
 
@@ -272,7 +284,7 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
       cat("\n")
     }
     result <- .Call("spVarBayes_MFA_mb_beta_rephicpp",
-                    y, X, n, p, n.neighbors, coords, cov.model.indx, rho, sigma.sq.IG, tau.sq.IG, phi.range, nu.Unif, sigma.sq.starting, tau.sq.starting, phi.starting, nu.starting, search.type.indx, n.omp.threads, verbose, fix_nugget, N_phi, Trace_N, max_iter, var_input,phi, phi_max_iter,initial_mu,mini_batch_size, min_iter, K, stop_K, tau_sq_input, sigma_sq_input,LR,PACKAGE = "spVarBayes")
+                    y, X, n, p, n.neighbors, coords, cov.model.indx, rho, sigma.sq.IG, tau.sq.IG, phi.range, nu.Unif, sigma.sq.starting, tau.sq.starting, phi.starting, nu.starting, search.type.indx, n.omp.threads, verbose, fix_nugget, N_phi, Trace_N, max_iter, var_input,phi, phi_max_iter,initial_mu,mini_batch_size, min_iter, K, stop_K, tau_sq_input, sigma_sq_input,LR,warm_up,lr_adj,PACKAGE = "spVarBayes")
   }else{
     #print(c("No covariates"))
     if(mini_batch){

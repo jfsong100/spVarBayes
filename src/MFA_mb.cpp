@@ -41,7 +41,7 @@ extern "C" {
                                               SEXP var_input_r,
                                               SEXP phi_input_r, SEXP phi_iter_max_r, SEXP initial_mu_r,
                                               SEXP mini_batch_size_r,
-                                              SEXP min_iter_r, SEXP K_r, SEXP stop_K_r, SEXP tausq_input_r, SEXP zetasq_input_r, SEXP LR_r){
+                                              SEXP min_iter_r, SEXP K_r, SEXP stop_K_r, SEXP tausq_input_r, SEXP zetasq_input_r, SEXP LR_r ,SEXP warm_up_r, SEXP lr_adj_r){
 
     int h, i, j, k, l, s, info, nProtect=0;
     const int inc = 1;
@@ -83,6 +83,9 @@ extern "C" {
     int verbose = INTEGER(verbose_r)[0];
     //double  vi_threshold  =  REAL(vi_threshold_r)[0];
     double  rho  =  REAL(rho_r)[0];
+    
+    int warm_up = INTEGER(warm_up_r)[0];
+    double lr_adj = REAL(lr_adj_r)[0];
     //double  rho_phi  =  REAL(rho_phi_r)[0];
 
     //priors
@@ -500,6 +503,15 @@ extern "C" {
       nBatchLU_temp[i] = nBatchLU_temp[i-1] + tempsize_vec[i-1];
     }
 
+    double lr_mu = 1;
+    if(warm_up){
+      for (int i = 0; i < n; ++i) {
+        E_mu_sq[i]     = 1.0;
+        delta_mu_sq[i] = 1.0;
+      }
+      lr_mu          = lr_adj;
+    }
+    
     if(verbose){
       Rprintf("----------------------------------------\n");
       Rprintf("Initialize Process \n");
@@ -589,7 +601,7 @@ extern "C" {
         for(i = 0; i < n; i++){
           gradient_mu = ( - w_mu[i]/theta[tauSqIndx] - w_mu_temp2[i] + (y[i])/theta[tauSqIndx]);
           E_mu_sq[i] = rho * E_mu_sq[i] + (1 - rho) * pow(gradient_mu,2);
-          delta_mu[i] = sqrt(delta_mu_sq[i]+adadelta_noise)/sqrt(E_mu_sq[i]+adadelta_noise)*gradient_mu;
+          delta_mu[i] = lr_mu*sqrt(delta_mu_sq[i]+adadelta_noise)/sqrt(E_mu_sq[i]+adadelta_noise)*gradient_mu;
           delta_mu_sq[i] = rho*delta_mu_sq[i] + (1 - rho) * pow(delta_mu[i],2);
           w_mu_update[i] = w_mu[i] + delta_mu[i];
         }
@@ -895,12 +907,13 @@ extern "C" {
             gradient_mu_vec[i] = w_mu_temp_dF[i];
           }
 
+          double rho_mu = 0.99;
           for(i_mb = 0; i_mb < tempsize; i_mb++){
             i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
             gradient_mu = gradient_mu_vec[i];
-            E_mu_sq[i] = rho * E_mu_sq[i] + (1 - rho) * pow(gradient_mu,2);
-            delta_mu[i] = sqrt(delta_mu_sq[i]+adadelta_noise)/sqrt(E_mu_sq[i]+adadelta_noise)*gradient_mu;
-            delta_mu_sq[i] = rho*delta_mu_sq[i] + (1 - rho) * pow(delta_mu[i],2);
+            E_mu_sq[i] = rho_mu * E_mu_sq[i] + (1 - rho_mu) * pow(gradient_mu,2);
+            delta_mu[i] = lr_adj * sqrt(delta_mu_sq[i]+adadelta_noise)/sqrt(E_mu_sq[i]+adadelta_noise)*gradient_mu;
+            delta_mu_sq[i] = rho_mu*delta_mu_sq[i] + (1 - rho_mu) * pow(delta_mu[i],2);
             w_mu_update[i] = w_mu[i] + delta_mu[i];
           }
 
@@ -1134,7 +1147,7 @@ extern "C" {
                                        SEXP var_input_r,
                                        SEXP phi_input_r, SEXP phi_iter_max_r,SEXP initial_mu_r,
                                        SEXP mini_batch_size_r,
-                                       SEXP min_iter_r, SEXP K_r, SEXP stop_K_r, SEXP tausq_input_r, SEXP zetasq_input_r, SEXP LR_r){
+                                       SEXP min_iter_r, SEXP K_r, SEXP stop_K_r, SEXP tausq_input_r, SEXP zetasq_input_r, SEXP LR_r, SEXP warm_up_r, SEXP lr_adj_r){
 
     int h, i, j, k, l, s, info, nProtect=0;
     const int inc = 1;
@@ -1175,6 +1188,8 @@ extern "C" {
     int nThreads = INTEGER(nThreads_r)[0];
     int verbose = INTEGER(verbose_r)[0];
     int LR = INTEGER(LR_r)[0];
+    int warm_up = INTEGER(warm_up_r)[0];
+    double lr_adj = REAL(lr_adj_r)[0];
     double  rho  =  REAL(rho_r)[0];
 
     //priors
@@ -1642,7 +1657,15 @@ extern "C" {
         XtXmb[batch_index*pp+i] = XtX_temp[i];
       }
     }
-
+    
+    double lr_mu = 1;
+    if(warm_up){
+      for (int i = 0; i < n; ++i) {
+        E_mu_sq[i]     = 1.0;
+        delta_mu_sq[i] = 1.0;
+      }
+      lr_mu          = lr_adj;
+    }
 
     if(verbose){
       Rprintf("----------------------------------------\n");
@@ -2140,15 +2163,18 @@ extern "C" {
             gradient_mu_vec[i] = w_mu_temp_dF[i];
           }
 
+          double rho_mu = 0.99;
           for(i_mb = 0; i_mb < tempsize; i_mb++){
             i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
             gradient_mu = gradient_mu_vec[i];
-            E_mu_sq[i] = rho * E_mu_sq[i] + (1 - rho) * pow(gradient_mu,2);
-            delta_mu[i] = sqrt(delta_mu_sq[i]+adadelta_noise)/sqrt(E_mu_sq[i]+adadelta_noise)*gradient_mu;
-            delta_mu_sq[i] = rho*delta_mu_sq[i] + (1 - rho) * pow(delta_mu[i],2);
+            E_mu_sq[i] = rho_mu * E_mu_sq[i] + (1 - rho_mu) * pow(gradient_mu,2);
+            delta_mu[i] = lr_mu*sqrt(delta_mu_sq[i]+adadelta_noise)/sqrt(E_mu_sq[i]+adadelta_noise)*gradient_mu;
+            delta_mu_sq[i] = rho_mu*delta_mu_sq[i] + (1 - rho_mu) * pow(delta_mu[i],2);
             w_mu_update[i] = w_mu[i] + delta_mu[i];
+            // w_mu_update[i] = w_mu[i] + 0.01*gradient_mu_vec[i];
           }
 
+          
           MFA_sigmasq_grad_term1_rephi(n, nnIndx, nnIndxLU, nnIndxCol,
                                        BatchSize, nBatchLU, batch_index,
                                        numIndxCol, nnIndxnnCol, cumnumIndxCol,
@@ -2306,7 +2332,18 @@ extern "C" {
     }
 
     F77_NAME(dgemv)(ytran, &n, &p, &one, X, &n, tmp_n, &inc, &zero, tmp_p, &inc FCONE);
-
+    
+    // for(i = 0; i < pp; i++){
+    //   tmp_pp[i] = XtX[i];
+    // }
+    // 
+    // F77_NAME(dpotrf)(lower, &p, tmp_pp, &p, &info FCONE); if(info != 0){error("c++ error: 2 dpotrf failed\n");}
+    // F77_NAME(dpotri)(lower, &p, tmp_pp, &p, &info FCONE); if(info != 0){error("c++ error: 2 dpotri failed\n");}
+    // 
+    // F77_NAME(dsymv)(lower, &p, &one, tmp_pp, &p, tmp_p, &inc, &zero, tmp_p2, &inc FCONE);
+    // 
+    // F77_NAME(dcopy)(&p, tmp_p2, &inc, beta, &inc);
+    
     zeros(tau_sq_H, one_int);
     for(i = 0; i < p; i++){
       tau_sq_H[0] += tmp_p2[i]*tmp_p[i];
