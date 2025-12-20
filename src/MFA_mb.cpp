@@ -907,7 +907,10 @@ extern "C" {
             gradient_mu_vec[i] = w_mu_temp_dF[i];
           }
 
-          double rho_mu = 0.999;
+          double rho_mu = rho;
+          if(warm_up){
+            rho_mu = 0.999;
+          }
           for(i_mb = 0; i_mb < tempsize; i_mb++){
             i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
             gradient_mu = gradient_mu_vec[i];
@@ -2163,7 +2166,10 @@ extern "C" {
             gradient_mu_vec[i] = w_mu_temp_dF[i];
           }
 
-          double rho_mu = 0.999;
+          double rho_mu = rho;
+          if(warm_up){
+            rho_mu = 0.999;
+          }
           for(i_mb = 0; i_mb < tempsize; i_mb++){
             i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
             gradient_mu = gradient_mu_vec[i];
