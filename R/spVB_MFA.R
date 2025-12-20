@@ -55,7 +55,7 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
   if(warm_up){
     if(lr_adj >= 1){
       lr_adj = 0.01
-      warning('We recommend setting lr_adj = 0.01 when using the Adadelta warm start so that the early updates mimic plain gradient ascent.')
+      warning('We recommend setting lr_adj in 0.01 to 0.1 when using the Adadelta warm start so that the early updates mimic plain gradient ascent.')
     }
   }
   ##Covariance model
