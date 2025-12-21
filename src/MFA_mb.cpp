@@ -504,11 +504,13 @@ extern "C" {
     }
 
     double lr_mu = 1;
+    double rho_mu = rho;
     if(warm_up){
       for (int i = 0; i < n; ++i) {
         E_mu_sq[i]     = 1.0;
         delta_mu_sq[i] = 1.0;
       }
+      rho_mu = 0.99999;
       lr_mu          = lr_adj;
     }
     
@@ -907,15 +909,11 @@ extern "C" {
             gradient_mu_vec[i] = w_mu_temp_dF[i];
           }
 
-          double rho_mu = rho;
-          if(warm_up){
-            rho_mu = 0.999;
-          }
           for(i_mb = 0; i_mb < tempsize; i_mb++){
             i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
             gradient_mu = gradient_mu_vec[i];
             E_mu_sq[i] = rho_mu * E_mu_sq[i] + (1 - rho_mu) * pow(gradient_mu,2);
-            delta_mu[i] = lr_adj * sqrt(delta_mu_sq[i]+adadelta_noise)/sqrt(E_mu_sq[i]+adadelta_noise)*gradient_mu;
+            delta_mu[i] = lr_mu * sqrt(delta_mu_sq[i]+adadelta_noise)/sqrt(E_mu_sq[i]+adadelta_noise)*gradient_mu;
             delta_mu_sq[i] = rho_mu*delta_mu_sq[i] + (1 - rho_mu) * pow(delta_mu[i],2);
             w_mu_update[i] = w_mu[i] + delta_mu[i];
           }
@@ -1662,11 +1660,13 @@ extern "C" {
     }
     
     double lr_mu = 1;
+    double rho_mu = rho;
     if(warm_up){
       for (int i = 0; i < n; ++i) {
         E_mu_sq[i]     = 1.0;
         delta_mu_sq[i] = 1.0;
       }
+      rho_mu = 0.99999;
       lr_mu          = lr_adj;
     }
 
@@ -2166,10 +2166,6 @@ extern "C" {
             gradient_mu_vec[i] = w_mu_temp_dF[i];
           }
 
-          double rho_mu = rho;
-          if(warm_up){
-            rho_mu = 0.999;
-          }
           for(i_mb = 0; i_mb < tempsize; i_mb++){
             i = final_result_vec[nBatchLU_temp[batch_index] + i_mb];
             gradient_mu = gradient_mu_vec[i];

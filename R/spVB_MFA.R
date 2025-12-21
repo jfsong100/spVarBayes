@@ -55,7 +55,7 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
   if(warm_up){
     if(lr_adj >= 1){
       lr_adj = 0.01
-      warning('We recommend setting lr_adj in 0.01 to 0.1 when using the Adadelta warm start so that the early updates mimic plain gradient ascent.')
+      warning('We recommend adjusting lr_adj when using AdaDelta to micmic plain gradient ascent.')
     }
   }
   ##Covariance model
@@ -295,7 +295,7 @@ spVB_MFA <- function(y, X, coords, covariates = TRUE, n.neighbors = 15,
       cat("\n")
     }
     result <- .Call("spVarBayes_MFA_nocovariates_mb_beta_rephicpp",
-                    y,    n, p, n.neighbors, coords, cov.model.indx, rho, sigma.sq.IG, tau.sq.IG, phi.range, nu.Unif, sigma.sq.starting, tau.sq.starting, phi.starting, nu.starting, search.type.indx, n.omp.threads, verbose, fix_nugget, N_phi, Trace_N, max_iter, var_input,phi, phi_max_iter,initial_mu,mini_batch_size, min_iter, K, stop_K,tau_sq_input, sigma_sq_input,LR, PACKAGE = "spVarBayes")
+                    y,    n, p, n.neighbors, coords, cov.model.indx, rho, sigma.sq.IG, tau.sq.IG, phi.range, nu.Unif, sigma.sq.starting, tau.sq.starting, phi.starting, nu.starting, search.type.indx, n.omp.threads, verbose, fix_nugget, N_phi, Trace_N, max_iter, var_input,phi, phi_max_iter,initial_mu,mini_batch_size, min_iter, K, stop_K,tau_sq_input, sigma_sq_input,LR, warm_up,lr_adj,PACKAGE = "spVarBayes")
   }
 
 
