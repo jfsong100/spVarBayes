@@ -1,0 +1,514 @@
+---
+title: "Reproducing Results for Paper: Fast Variational Bayes for Large Spatial Data"
+author: "Jiafang Song, Abhirup Datta"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    number_sections: true
+  pdf_document:
+    toc: true
+    number_sections: true
+fontsize: 11pt
+geometry: margin=1in
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE
+)
+```
+
+# Overview
+
+This document describes how to reproduce all simulation, real-world, and supplementary results in the paper **Fast Variational Bayes for Large Spatial Data**.
+
+The workflow has three main components:
+
+1. **Environment setup**
+2. **Simulation studies**  
+   (Figures 1–3, Table 3)
+3. **Real-world data analysis**  
+   (Figures 4–7, Table 4)
+4. **Supplementary experiments**  
+   (Figures G.1–G.2, J.1–J.2, Figures H.1–H.6, I.1–I.2)
+
+> **Note:** For Large‐scale settings (`n_index = 4, 5`) and methods **DKLGP**, **VNNGP**, and **spVB-MFA-LR** require substantial memory.
+
+# Environment Setup
+
+## R / spVarBayes
+
+Install the `spVarBayes` package from GitHub:
+
+```{r install-spVarBayes, eval=FALSE}
+# Install devtools if needed
+install.packages("devtools")
+
+# Install spVarBayes
+devtools::install_github("jfsong100/spVarBayes")
+
+# Install spNNGP
+install.packages("spNNGP")
+```
+
+This package provides the following methods:
+
+- `spVB-MFA`
+- `spVB-MFA-LR`
+- `spVB-NNGP`
+- `spVB-NNGP-joint`
+
+Make sure your R version and system compilers are configured so that the package (and its C++/Rcpp components) install successfully.
+
+## Python / VNNGP Environment
+
+We recommend a dedicated conda environment for **VNNGP**.
+
+```bash
+# Create and activate environment
+conda create -n env_vnngp python=3.10
+conda activate env_vnngp
+
+# Core dependencies
+conda install pytorch==1.13.1
+conda install gpytorch==1.10
+conda install conda-forge::nb_conda
+conda install notebook==6.5.6
+conda install jupyter
+conda install h5py
+conda install pandas
+conda install matplotlib
+```
+
+You will use this environment when running `VNNGP.py` (both simulations and real-data analysis).
+
+## Python / DKLGP Environment
+
+Create a separate conda environment for **DKLGP**:
+
+```bash
+# Create and activate environment
+conda create -n env_dklgp python=3.10
+conda activate env_dklgp
+```
+
+Clone and install the DKLGP package:
+
+```bash
+# In a folder where you want the DKL-GP source
+git clone https://github.com/katzfuss-group/DKL-GP.git
+
+# Direct to that folder (change this)
+cd ~/DKL-GP
+
+# Install DKLGP and its Python dependencies
+source INSTALL
+```
+
+Install Jupyter-related dependencies:
+
+```bash
+conda install conda-forge::nb_conda
+conda install notebook==6.5.6
+conda install jupyter
+conda install h5py
+conda install matplotlib
+```
+
+You will use this environment when running `DKLGP.py` and `DKLGP_default.py`.
+
+# Simulation Studies
+
+## Data Generation
+
+**Script:** `data_generation.R`
+
+- **Inputs:**
+  - `n_index` (controls sample size)
+  - `t` (seed)
+- **Usage (example from shell):**
+
+```bash
+## Example: generate data for n_index = 1 t = 1
+Rscript data_generation.R n_index=1 t=1
+```
+
+```bash
+## Example: generate data for n_index = 1, 2 and t = 1, 2, 3
+for n_index in 1 2 3; do
+  for t in 1 2; do
+    Rscript data_generation.R n_index=${n_index} t=${t}
+  done
+done
+```
+
+- **Output:**
+  - Creates a folder: `data_sim/`
+  - For each combination of `n_index` and `t`, saves simulated data.
+  - For `n_index = 1, 2, 3`:
+    - Also saves the empirical covariance matrix (large files).
+  - For `n_index = 4, 5`:
+    - Empirical covariance is **not** saved due to memory limits.
+    - Only outcomes, covariates, and coordinates are saved.
+
+Details for each scenario are described in Section 4 of the paper.
+
+## R-based Methods: spVarBayes + spNNGP
+
+**Script:** `spVB_spNNGP.R`
+
+- **Inputs:**
+  - `n_index`
+  - `t` (seed)
+- **Usage (example):**
+
+```bash
+## Example: run analysis for n_index = 1 t = 1
+Rscript spVB_spNNGP.R n_index=1 t=1
+```
+
+```bash
+# e.g. for multiple runs
+for n_index in 1 2 3; do
+  for t in 1 2; do
+    Rscript spVB_spNNGP.R n_index=${n_index} t=${t}
+  done
+done
+```
+
+- **What it does:**
+  - Reads data from `data_sim/`.
+  - Runs:
+    - `spVB-MFA`
+    - `spVB-MFA-LR`
+    - `spVB-NNGP`
+    - `spVB-NNGP-joint`
+    - `spNNGP`
+  - Creates a folder: `R_results/`.
+
+- **Saved outputs in `R_results/` include:**
+  - **Fixed effects:**
+    - `output_beta_vector`: point estimates of $\beta$
+    - `CI_beta`: confidence intervals for $\beta$
+  - **Hyperparameters:**
+    - `output_theta_vector`: point estimates for $\theta=\{\sigma^2,\tau^2,\phi\}$
+  - **Random effects summaries:**
+    - `output_list`:
+      - Empirical mean and variance
+      - Variational approximated mean and variance
+      - spNNGP approximated mean and variance
+  - **Coverage and interval metrics for random effects:**
+    - `CI_w`: confidence intervals, coverage, CRPS, interval scores
+  - **KL and timing (per method):**
+    - `output_vector`: summarizes KL divergence and running time
+
+## DKLGP Simulations
+
+**Script:** `DKLGP.py` `DKLGP_default.py`
+
+- **Note:** the only difference between `DKLGP.py` and `DKLGP_default.py` is convergence options inside the file
+  - **DKLGP-default:** set `converged = FALSE`
+  - **DKLGP:** set `converged = TRUE`
+
+- **Environment:**
+
+```bash
+conda activate env_dklgp
+```
+
+- **Inputs:**
+  - `n_index`
+  - `seed` (t)
+  - A `setups.yaml` file in the **same folder** as `DKLGP.py` and `DKLGP_default.py`, containing default settings from the DKLGP paper.
+
+- **Usage (example):**
+
+```bash
+python3 DKLGP.py <seed> <n_index>
+# e.g.
+python3 DKLGP.py 1 1 
+```
+
+```bash
+# e.g. for multiple runs
+for n_index in 1 2 3; do
+  for seed in 1 2; do
+    python3 DKLGP.py ${seed} ${n_index}
+    python3 DKLGP_default.py ${seed} ${n_index}
+  done
+done
+```
+
+- **Output:**
+  - Creates `DKLGP_results/` with:
+    - $\theta$ point estimates
+    - CRPS, interval scores, coverage for $w$
+    - Running time (e.g., `KL_vec`)
+    - `output_data` (DKLGP approximated mean/variance)
+
+After running:
+
+```bash
+conda deactivate
+```
+
+> **Memory note:** For `n_index = 4, 5`, DKLGP requires large memory.
+
+## VNNGP Simulations
+
+**Script:** `VNNGP.py`
+
+- **Environment:**
+
+```bash
+conda activate env_vnngp
+```
+
+- **Inputs:**
+  - `n_index`
+  - `seed` (t)
+
+- **Usage (example):**
+
+```bash
+python3 VNNGP.py <seed> <n_index>
+# e.g.
+python3 VNNGP.py 1 1
+```
+
+```bash
+# e.g. for multiple runs
+for n_index in 1 2 3; do
+  for seed in 1 2; do
+    python3 VNNGP.py ${seed} ${n_index}
+  done
+done
+```
+
+- **What it does:**
+  - Reads data from `data_sim/`.
+  - Runs VNNGP.
+
+- **Output:**
+  - Creates `VNNGP_results/` with:
+    - θ point estimates
+    - CRPS, interval scores, coverage for w
+    - Running time (`KL_vec` or similar)
+    - `output_data` (VNNGP approximated mean/variance)
+
+After running:
+
+```bash
+conda deactivate
+```
+
+> **Memory note:** `n_index = 4, 5` also require large memory for VNNGP.
+
+## Simulation Summary and Figures
+
+Once **all** `n_index` and seed combinations have been run for all methods (at least run n_index = 3):
+
+1. **Combined simulation summary:**
+
+   **Script:** `summary.R`
+   This script uses `R_results/`, `DKLGP_results/`, and `VNNGP_results/` to create:
+
+   ```bash
+   Rscript summary.R
+   ```
+
+2. **This script creates:**
+   - Figure 1
+   - Figure H.1, H.2  
+   - Figure 2  
+   - Figure H.3, H.4, H.5, H.6  
+   - Figure 3  
+   - Figure I.1, I.2  
+
+Make sure the paths expected in `summary.R` match your folder structure.
+
+# Real-World Data Analysis
+
+## Data Processing
+
+**Script:** `process_data.R`
+
+- **Usage:**
+
+```bash
+Rscript process_data.R
+```
+
+- **Output:**
+  - Creates a `data/` folder with:
+    - Training data and Test data
+
+## R-based Methods on Real Data
+
+Run the following R scripts (each reads from `data/` and saves results accordingly):
+
+```bash
+Rscript spVB_MFA.R
+Rscript spVB_MFA_LR.R
+Rscript spVB_NNGP_ind.R
+Rscript spVB_NNGP_joint.R
+Rscript spNNGP.R
+```
+
+These fit:
+
+- `spVB-MFA`
+- `spVB-MFA-LR`
+- `spVB-NNGP` (independent)
+- `spVB-NNGP` (joint)
+- `spNNGP`
+
+> **Memory note:** `spVB-MFA-LR` require large memory for storing the whole covariance matrix
+
+## DKLGP and VNNGP on Real Data
+
+Run DKLGP (default) in the DKLGP environment:
+
+```bash
+conda activate env_dklgp
+python3 DKLGP_default.py
+conda deactivate
+```
+
+Run VNNGP in the VNNGP environment:
+
+```bash
+conda activate env_vnngp
+python3 VNNGP.py
+conda deactivate
+```
+
+Both scripts read from the processed `data/` folder and produce outputs compatible with the R-based methods.
+
+## Real-Data Summary and Figures
+
+1. **Combine DKLGP and VNNGP outputs:**
+
+   **Script:** `summary_DKLGP_VNNGP.R`
+
+   ```bash
+   Rscript summary_DKLGP_VNNGP.R
+   ```
+
+   This stores combined results in an `output/` folder.
+
+2. **Create real-data figures and Table 4:**
+
+   **Script:** `summary.R` (real-data version)
+
+   ```bash
+   Rscript summary.R
+   ```
+
+   - Produces:
+     - Figure 4  
+     - Figure 5  
+     - Figure 6  
+     - Figure 7  
+     - Table 4  
+   - Output is saved in the `fig/` folder.
+
+# Supplementary Experiments
+
+## Choice of Number of Nearest Neighbors (Figures G.1–G.2)
+
+Folder: `G_choices_nn/`  
+Script: `n_neighbor.R`
+
+- **Usage:**
+
+```bash
+cd G_choices_nn
+Rscript n_neighbor.R
+```
+
+- **Output:**
+  - Figure G.1  
+  - Figure G.2  
+
+These illustrate different choices for the number of nearest neighbors for the NNGP prior and the variational family.
+
+## Prediction Study (Figures J.1–J.2)
+
+Folder: `J_predictions/`
+
+1. **Data generation:**
+
+   Script: `data_generation_prediction.R` (or the exact name in your folder)
+
+   ```bash
+   cd J_predictions
+   for n_index in 1; do
+      for t in 1 2 3; do
+        Rscript data_generation_prediction.R n_index=${n_index} t=${t}
+      done
+   done
+   ```
+
+   Saves prediction-study data in `data_sim/` under `J_predictions/`.
+
+2. **R-based methods:**
+
+   Script: `spVB_spNNGP_pred.R`
+
+   ```bash
+   for n_index in 1; do
+      for t in 1 2 3; do
+        Rscript spVB_spNNGP_pred.R n_index=${n_index} t=${t}
+      done
+   done
+   ```
+
+   Runs all R-based methods for the prediction study.
+
+3. **VNNGP and DKLGP:**
+
+   ```bash
+   # DKLGP (default version and converged version)
+   conda activate env_dklgp
+   for n_index in 1; do
+      for seed in 1 2 3; do
+        python3 DKLGP.py ${seed} ${n_index}
+        python3 DKLGP_default.py ${seed} ${n_index}
+      done
+   done
+   conda deactivate
+
+   # VNNGP
+   conda activate env_vnngp
+   for n_index in 1; do
+      for seed in 1 2 3; do
+        python3 VNNGP.py ${seed} ${n_index}
+      done
+   done
+   conda deactivate
+   ```
+
+4. **Summary and prediction figures:**
+
+   Script: `summary.R` (prediction version)
+
+   ```bash
+   Rscript summary.R
+   ```
+
+   - Produces:
+     - Figure J.1  
+     - Figure J.2  
+
+# Notes on Memory and Runtime
+
+- **Large-scale simulations (`n_index = 4, 5`):**
+  - Require large memory for R and Python.
+  - **DKLGP**, **VNNGP**, and **spVB-MFA-LR** can be particularly demanding.
+- On a cluster:
+  - Request sufficient RAM in your job script (e.g. 150–300 GB, depending on `n_index` and method).
+  - Running different methods and `n_index` combinations in parallel jobs can speed up the complete reproduction.
