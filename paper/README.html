@@ -357,7 +357,11 @@ Variational Bayes for Large Spatial Data</h1>
 
 <div id="TOC">
 <ul>
-<li><a href="#overview" id="toc-overview"><span class="toc-section-number">1</span> Overview</a></li>
+<li><a href="#overview" id="toc-overview"><span class="toc-section-number">1</span> Overview</a>
+<ul>
+<li><a href="#get-only-the-paper-folder" id="toc-get-only-the-paper-folder"><span class="toc-section-number">1.1</span> Get only the <code>paper/</code>
+folder</a></li>
+</ul></li>
 <li><a href="#environment-setup" id="toc-environment-setup"><span class="toc-section-number">2</span> Environment Setup</a>
 <ul>
 <li><a href="#r-spvarbayes" id="toc-r-spvarbayes"><span class="toc-section-number">2.1</span> R / spVarBayes</a></li>
@@ -402,6 +406,16 @@ J.1–J.2)</a></li>
 <p>This document describes how to reproduce all simulation, real-world,
 and supplementary results in the paper <strong>Fast Variational Bayes
 for Large Spatial Data</strong>.</p>
+<div id="get-only-the-paper-folder" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> Get only the
+<code>paper/</code> folder</h2>
+<p>If only need the manuscript files in <code>paper/</code> and do not
+want to check out the full repository, use Git sparse checkout.</p>
+<pre class="bash"><code>git clone --filter=blob:none --no-checkout https://github.com/jfsong100/spVarBayes.git
+cd spVarBayes
+git sparse-checkout init --cone
+git sparse-checkout set paper
+git checkout main</code></pre>
 <p>The workflow has the following components:</p>
 <ol style="list-style-type: decimal">
 <li><strong>Environment setup</strong></li>
@@ -418,6 +432,7 @@ for Large Spatial Data</strong>.</p>
 <strong>VNNGP</strong>, and <strong>spVB-MFA-LR</strong> require
 substantial memory.</p>
 </blockquote>
+</div>
 </div>
 <div id="environment-setup" class="section level1" number="2">
 <h1><span class="header-section-number">2</span> Environment Setup</h1>
@@ -439,7 +454,7 @@ install.packages(&quot;spNNGP&quot;)</code></pre>
 <li><code>spVB-NNGP</code></li>
 <li><code>spVB-NNGP-joint</code></li>
 </ul>
-<p>Make sure your R version and system compilers are configured so that
+<p>Make sure the R version and system compilers are configured so that
 the package (and its C++/Rcpp components) install successfully.</p>
 </div>
 <div id="python-vnngp-environment" class="section level2" number="2.2">
@@ -460,8 +475,8 @@ conda install jupyter
 conda install h5py
 conda install pandas
 conda install matplotlib</code></pre>
-<p>You will use this environment when running <code>VNNGP.py</code>
-(both simulations and real-data analysis).</p>
+<p>Use this environment when running <code>VNNGP.py</code> (both
+simulations and real-data analysis).</p>
 </div>
 <div id="python-dklgp-environment" class="section level2" number="2.3">
 <h2><span class="header-section-number">2.3</span> Python / DKLGP
@@ -485,7 +500,7 @@ conda install notebook==6.5.6
 conda install jupyter
 conda install h5py
 conda install matplotlib</code></pre>
-<p>You will use this environment when running <code>DKLGP.py</code> and
+<p>Use this environment when running <code>DKLGP.py</code> and
 <code>DKLGP_default.py</code>.</p>
 </div>
 </div>
