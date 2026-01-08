@@ -9,7 +9,20 @@ This document describes how to reproduce all simulation, real-world, and
 supplementary results in the paper **Fast Variational Bayes for Large
 Spatial Data**.
 
-The workflow has three main components:
+## Get only the `paper/` folder
+
+If only need the manuscript files in `paper/` and do not want to check
+out the full repository, use Git sparse checkout.
+
+``` bash
+git clone --filter=blob:none --no-checkout https://github.com/jfsong100/spVarBayes.git
+cd spVarBayes
+git sparse-checkout init --cone
+git sparse-checkout set paper
+git checkout main
+```
+
+The workflow has the following components:
 
 1.  **Environment setup**
 2.  **Simulation studies**  
@@ -46,7 +59,7 @@ This package provides the following methods:
 - `spVB-NNGP`
 - `spVB-NNGP-joint`
 
-Make sure your R version and system compilers are configured so that the
+Make sure the R version and system compilers are configured so that the
 package (and its C++/Rcpp components) install successfully.
 
 ## Python / VNNGP Environment
@@ -69,8 +82,8 @@ conda install pandas
 conda install matplotlib
 ```
 
-You will use this environment when running `VNNGP.py` (both simulations
-and real-data analysis).
+Use this environment when running `VNNGP.py` (both simulations and
+real-data analysis).
 
 ## Python / DKLGP Environment
 
@@ -105,10 +118,16 @@ conda install h5py
 conda install matplotlib
 ```
 
-You will use this environment when running `DKLGP.py` and
-`DKLGP_default.py`.
+Use this environment when running `DKLGP.py` and `DKLGP_default.py`.
 
 # Simulation Studies
+
+The simulation studies in the paper consider sample sizes
+$`n = 1000,5000,10000,50000,100000`$, with the corresponding n_index
+values $`1,2,3,4,5`$. For a quick code check, we recommend running
+`n_index=3`, which reproduces the results for $`n=10000`$. To fully
+reproduce the paper’s simulation results, run all n_index values and set
+the seed from 1 to 100.
 
 ## Data Generation
 
@@ -120,12 +139,12 @@ You will use this environment when running `DKLGP.py` and
 - **Usage (example from shell):**
 
 ``` bash
-## Example: generate data for n_index = 1 t = 1
-Rscript data_generation.R n_index=1 t=1
+## Example: generate data for n_index = 3 t = 1
+Rscript data_generation.R n_index=3 t=1
 ```
 
 ``` bash
-## Example: generate data for n_index = 1, 2 and t = 1, 2, 3
+## Example: generate data for n_index = 1, 2, 3 and t = 1, 2
 for n_index in 1 2 3; do
   for t in 1 2; do
     Rscript data_generation.R n_index=${n_index} t=${t}
@@ -154,8 +173,8 @@ Details for each scenario are described in Section 4 of the paper.
 - **Usage (example):**
 
 ``` bash
-## Example: run analysis for n_index = 1 t = 1
-Rscript spVB_spNNGP.R n_index=1 t=1
+## Example: run analysis for n_index = 3 t = 1
+Rscript spVB_spNNGP.R n_index=3 t=1
 ```
 
 ``` bash
@@ -209,7 +228,7 @@ conda activate env_dklgp
 
 - **Inputs:**
   - `n_index`
-  - `seed` (t)
+  - `seed`
   - A `setups.yaml` file in the **same folder** as `DKLGP.py` and
     `DKLGP_default.py`, containing default settings from the DKLGP
     paper.
@@ -218,7 +237,7 @@ conda activate env_dklgp
 ``` bash
 python3 DKLGP.py <seed> <n_index>
 # e.g.
-python3 DKLGP.py 1 1 
+python3 DKLGP.py 1 3
 ```
 
 ``` bash
@@ -231,18 +250,16 @@ for n_index in 1 2 3; do
 done
 ```
 
+``` bash
+conda deactivate
+```
+
 - **Output:**
   - Creates `DKLGP_results/` with:
     - $`\theta`$ point estimates
     - CRPS, interval scores, coverage for $`w`$
     - Running time (e.g., `KL_vec`)
     - `output_data` (DKLGP approximated mean/variance)
-
-After running:
-
-``` bash
-conda deactivate
-```
 
 > **Memory note:** For `n_index = 4, 5`, DKLGP requires large memory.
 
@@ -258,13 +275,13 @@ conda activate env_vnngp
 
 - **Inputs:**
   - `n_index`
-  - `seed` (t)
+  - `seed`
 - **Usage (example):**
 
 ``` bash
 python3 VNNGP.py <seed> <n_index>
 # e.g.
-python3 VNNGP.py 1 1
+python3 VNNGP.py 1 3
 ```
 
 ``` bash
@@ -276,6 +293,10 @@ for n_index in 1 2 3; do
 done
 ```
 
+``` bash
+conda deactivate
+```
+
 - **What it does:**
   - Reads data from `data_sim/`.
   - Runs VNNGP.
@@ -285,12 +306,6 @@ done
     - CRPS, interval scores, coverage for w
     - Running time (`KL_vec` or similar)
     - `output_data` (VNNGP approximated mean/variance)
-
-After running:
-
-``` bash
-conda deactivate
-```
 
 > **Memory note:** `n_index = 4, 5` also require large memory for VNNGP.
 
@@ -310,11 +325,8 @@ methods (at least run n_index = 3):
 
 2.  **This script creates:**
 
-    - Figure 1
-    - Figure H.1, H.2  
-    - Figure 2  
-    - Figure H.3, H.4, H.5, H.6  
-    - Figure 3  
+    - Figure 1, 2, 3
+    - Figure H.1, H.2, H.3, H.4, H.5, H.6
     - Figure I.1, I.2
 
 Make sure the paths expected in `summary.R` match your folder structure.
@@ -401,10 +413,7 @@ compatible with the R-based methods.
     ```
 
     - Produces:
-      - Figure 4  
-      - Figure 5  
-      - Figure 6  
-      - Figure 7  
+      - Figure 4,5,6,7  
       - Table 4  
     - Output is saved in the `fig/` folder.
 
@@ -423,11 +432,10 @@ Rscript n_neighbor.R
 ```
 
 - **Output:**
-  - Figure G.1  
-  - Figure G.2
+  - Figure G.1, G.2
 
 These illustrate different choices for the number of nearest neighbors
-for the NNGP prior and the variational family.
+for the NNGP variational family.
 
 ## Prediction Study (Figures J.1–J.2)
 
@@ -440,8 +448,8 @@ Folder: `J_predictions/`
 
     ``` bash
     cd J_predictions
-    for n_index in 1; do
-       for t in 1 2 3; do
+    for n_index in 1 2; do
+       for t in 1 2; do
          Rscript data_generation_prediction.R n_index=${n_index} t=${t}
        done
     done
@@ -454,8 +462,8 @@ Folder: `J_predictions/`
     Script: `spVB_spNNGP_pred.R`
 
     ``` bash
-    for n_index in 1; do
-       for t in 1 2 3; do
+    for n_index in 1 2; do
+       for t in 1 2; do
          Rscript spVB_spNNGP_pred.R n_index=${n_index} t=${t}
        done
     done
@@ -468,8 +476,8 @@ Folder: `J_predictions/`
     ``` bash
     # DKLGP (default version and converged version)
     conda activate env_dklgp
-    for n_index in 1; do
-       for seed in 1 2 3; do
+    for n_index in 1 2; do
+       for seed in 1 2; do
          python3 DKLGP.py ${seed} ${n_index}
          python3 DKLGP_default.py ${seed} ${n_index}
        done
@@ -478,8 +486,8 @@ Folder: `J_predictions/`
 
     # VNNGP
     conda activate env_vnngp
-    for n_index in 1; do
-       for seed in 1 2 3; do
+    for n_index in 1 2; do
+       for seed in 1 2; do
          python3 VNNGP.py ${seed} ${n_index}
        done
     done
@@ -495,8 +503,7 @@ Folder: `J_predictions/`
     ```
 
     - Produces:
-      - Figure J.1  
-      - Figure J.2
+      - Figure J.1, J.2
 
 # Notes on Memory and Runtime
 
