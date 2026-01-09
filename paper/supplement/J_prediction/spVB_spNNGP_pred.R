@@ -14,7 +14,7 @@ library(BRISC)
 library(MASS)
 library(fields)
 library(Matrix)
-library(rhdf5)
+library(hdf5r)
 library(spNNGP)
 library(spVarBayes)
 library(scoringutils)
@@ -37,20 +37,27 @@ n=n_vec[n_index]
 ######################################
 # load data
 ######################################
-base_dir  = file.path(getwd())
-data.path = file.path(base_dir,"data_sim")
-scenario_path = paste0("n_",format(n_vec[n_index], scientific = FALSE),"_seed_",t)
-h5_file_path = paste0(data.path, "/",scenario_path, "_data.h5")
+base_dir = file.path(getwd())
+data.path = file.path(base_dir, "data_sim")
+scenario_path = paste0("n_", format(n_vec[n_index], scientific = FALSE), "_seed_", t)
+h5_file_path = file.path(data.path, paste0(scenario_path, "_data.h5"))
 
-n          = n_vec[n_index]
-y_train    = as.vector(h5read(h5_file_path, "y_train"))
-X_train    = h5read(h5_file_path, "X_train")
-w_train    = as.vector(h5read(h5_file_path, "f_train"))
-S_train    = h5read(h5_file_path, "S_train")
-y_test     = as.vector(h5read(h5_file_path, "y_test"))
-X_test     = h5read(h5_file_path, "X_test")
-w_test     = as.vector(h5read(h5_file_path, "f_test"))
-S_test     = h5read(h5_file_path, "S_test")
+n = n_vec[n_index]
+
+h5f = hdf5r::H5File$new(h5_file_path, mode = "r")
+
+y_train = as.vector(h5f[["y_train"]][] )
+X_train = h5f[["X_train"]][] 
+w_train = as.vector(h5f[["f_train"]][] )
+S_train = h5f[["S_train"]][] 
+
+y_test  = as.vector(h5f[["y_test"]][] )
+X_test  = h5f[["X_test"]][] 
+w_test  = as.vector(h5f[["f_test"]][] )
+S_test  = h5f[["S_test"]][] 
+
+h5f$close_all()
+
 p = ncol(X_train)
 
 ######################################

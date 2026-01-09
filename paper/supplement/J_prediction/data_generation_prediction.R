@@ -17,7 +17,7 @@ library(BRISC)
 library(MASS)
 library(fields)
 library(Matrix)
-library(rhdf5)
+library(hdf5r)
 
 ######################################
 # Simulation settings
@@ -93,16 +93,18 @@ if(save_files){
   if (file.exists(h5_file_path)) {
     file.remove(h5_file_path)
   }
-  h5createFile(h5_file_path)
+  h5f = hdf5r::H5File$new(h5_file_path, mode = "w")
   
-  # Write each dataset to the HDF5 file
-  h5write(y_train, h5_file_path, "y_train")
-  h5write(X_train, h5_file_path, "X_train")
-  h5write(w_train, h5_file_path, "f_train")
-  h5write(S_train, h5_file_path, "S_train")
+  h5f[["y_train"]] = y_train
+  h5f[["X_train"]] = X_train
+  h5f[["f_train"]] = w_train
+  h5f[["S_train"]] = S_train
   
-  h5write(y_test, h5_file_path, "y_test")
-  h5write(X_test, h5_file_path, "X_test")
-  h5write(w_test, h5_file_path, "f_test")
-  h5write(S_test, h5_file_path, "S_test")
+  h5f[["y_test"]]  = y_test
+  h5f[["X_test"]]  = X_test
+  h5f[["f_test"]]  = w_test
+  h5f[["S_test"]]  = S_test
+  
+  h5f$close_all()
+  
 }

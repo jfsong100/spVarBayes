@@ -11,8 +11,8 @@ Spatial Data**.
 
 ## Get only the `paper/` folder
 
-If only need the manuscript files in `paper/` and do not want to check
-out the full repository, use Git sparse checkout.
+If only need the code in `paper/` to reproduce the results and do not
+want to check out the full repository, use Git sparse checkout.
 
 ``` bash
 git clone --no-checkout https://github.com/jfsong100/spVarBayes.git
@@ -39,7 +39,7 @@ The workflow has the following components:
 
 ## R / spVarBayes
 
-Install the `spVarBayes` package from GitHub:
+Install the `spVarBayes` package from GitHub in R:
 
 ``` r
 # Install devtools if needed
@@ -50,6 +50,17 @@ devtools::install_github("jfsong100/spVarBayes")
 
 # Install spNNGP
 install.packages("spNNGP")
+
+# Install necessary packages for supporting analysis
+pkgs = c(
+  "BRISC","MASS","fields","Matrix","hdf5r","scoringutils","dplyr","parallel",
+  "ggplot2","viridis","patchwork","cowplot","tidyverse","ggrastr","tidyr","scales",
+  "gridExtra"
+)
+missing = pkgs[!vapply(pkgs, requireNamespace, quietly = TRUE, FUN.VALUE = logical(1))]
+if (length(missing) > 0) {
+  install.packages(missing, dependencies = TRUE)
+}
 ```
 
 This package provides the following methods:
@@ -128,6 +139,11 @@ values $`1,2,3,4,5`$. For a quick code check, we recommend running
 `n_index=3`, which reproduces the results for $`n=10000`$. To fully
 reproduce the paper’s simulation results, run all n_index values and set
 the seed from 1 to 100.
+
+``` bash
+# Change to the simulations directory
+cd ~/spVarBayes/paper/simulations
+```
 
 ## Data Generation
 
@@ -333,6 +349,11 @@ Make sure the paths expected in `summary.R` match your folder structure.
 
 # Real-World Data Analysis
 
+``` bash
+# Change to the Real-World Data directory
+cd ~/spVarBayes/paper/real_world
+```
+
 ## Data Processing
 
 **Script:** `process_data.R`
@@ -419,6 +440,11 @@ compatible with the R-based methods.
 
 # Supplementary Experiments
 
+``` bash
+# Change to the correct directory in the supplementary folder
+cd ~/spVarBayes/paper/supplement/G_choices_nn
+```
+
 ## Choice of Number of Nearest Neighbors (Figures G.1–G.2)
 
 Folder: `G_choices_nn/`  
@@ -438,6 +464,11 @@ These illustrate different choices for the number of nearest neighbors
 for the NNGP variational family.
 
 ## Prediction Study (Figures J.1–J.2)
+
+``` bash
+# Change to the correct directory in the supplementary folder
+cd ~/spVarBayes/paper/supplement/J_predictions
+```
 
 Folder: `J_predictions/`
 

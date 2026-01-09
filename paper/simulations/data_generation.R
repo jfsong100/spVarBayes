@@ -14,7 +14,7 @@ n_index
 library(BRISC)
 library(fields)
 library(Matrix)
-library(rhdf5)
+library(hdf5r)
 
 ######################################
 # Simulation settings
@@ -40,11 +40,11 @@ s = cbind(x_axis,y_axis)
 
 if(maxmin_order){
   ord_maxmin = BRISC_order(s, order = "AMMD")
-  S_ordered <- s[ord_maxmin,]
+  S_ordered = s[ord_maxmin,]
   ord = 1:n
 }else{
-  ord_sum <- order(s[,1] + s[,2])
-  S_ordered <- s[ord_sum,]
+  ord_sum = order(s[,1] + s[,2])
+  S_ordered = s[ord_sum,]
   ord = 1:n
 }
 
@@ -62,7 +62,7 @@ if(n <= 10000){
   #### calculates nngp precision matrix (without storing the full distance matrix)
   #### s=matrix of locations (each row is a location)
   #### m=neighbor size, phi=exponential decay
-  myknn <- function(i,s,m){
+  myknn = function(i,s,m){
     if(m>=(i-1)) im<-1:(i-1)
     else 	
     {
@@ -77,8 +77,8 @@ if(n <= 10000){
     
     n=nrow(s)
     m=min(m,n-1)
-    imvec <- sapply(2:n,myknn,s,m)
-    Dimvec <- sapply(2:n,Dimgen,imvec,s)
+    imvec = sapply(2:n,myknn,s,m)
+    Dimvec = sapply(2:n,Dimgen,imvec,s)
     colind = c(1:n,unlist(imvec))
     mi=c(1:(m-1),rep(m,n-m))
     rowind = c(1:n,unlist(sapply(2:n, function(i,mi) rep(i,mi[i-1]), mi)))
@@ -117,15 +117,19 @@ if(save_files){
   }
   h5createFile(h5_file_path)
   
-  # Write each dataset to the HDF5 file
-  h5write(y, h5_file_path, "y_gen")
-  h5write(X, h5_file_path, "X")
-  h5write(w, h5_file_path, "f")
-  h5write(S_ordered, h5_file_path, "S_ordered")
-  if(n<=10000){
-    h5write(empirical_mu, h5_file_path, "empirical_mu")
-    h5write(diag(empirical_V), h5_file_path, "empirical_var")
-    h5write(empirical_V, h5_file_path, "empirical_V")
+  h5f = hdf5r::H5File$new(h5_file_path, mode = "w")
+  
+  h5f[["y_gen"]]     = y
+  h5f[["X"]]         = X
+  h5f[["f"]]         = w
+  h5f[["S_ordered"]] = S_ordered
+  
+  if (n <= 10000) {
+    h5f[["empirical_mu"]]  = empirical_mu
+    h5f[["empirical_var"]] = diag(empirical_V)
+    h5f[["empirical_V"]]   = empirical_V
   }
+  
+  h5f$close_all()
 }
 

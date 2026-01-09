@@ -11,7 +11,7 @@ library(rstan)
 library(Matrix)
 library(magrittr)
 library(reticulate)
-library(rhdf5)
+library(hdf5r)
 library(scoringutils)
 library(spVarBayes)
 library(spNNGP)
@@ -22,7 +22,7 @@ library(spNNGP)
 t = 12
 n_index = 2
 
-base_dir  = file.path(getwd())
+base_dir  = normalizePath(file.path(getwd(), "..", ".."), mustWork = TRUE)
 data.path = file.path(base_dir, "simulations")
 source(file.path(data.path,"data_generation.R"))
 

@@ -16,7 +16,7 @@ library(BRISC)
 library(MASS)
 library(fields)
 library(Matrix)
-library(rhdf5)
+library(hdf5r)
 library(spNNGP)
 library(spVarBayes)
 library(scoringutils)
@@ -36,21 +36,24 @@ sigma2_true = 10         # spatial variance
 ######################################
 # load data
 ######################################
-base_dir  = file.path(getwd())
-data.path = file.path(base_dir,"data_sim")
-scenario_path = paste0("n_",format(n_vec[n_index], scientific = FALSE),"_seed_",t)
-h5_file_path = paste0(data.path, "/",scenario_path, "_data.h5")
+base_dir = file.path(getwd())
+data.path = file.path(base_dir, "data_sim")
+scenario_path = paste0("n_", format(n_vec[n_index], scientific = FALSE), "_seed_", t)
+h5_file_path = file.path(data.path, paste0(scenario_path, "_data.h5"))
 
-n             = n_vec[n_index]
-y             = as.vector(h5read(h5_file_path, "y_gen"))
-X             = h5read(h5_file_path, "X")
-w             = as.vector(h5read(h5_file_path, "f"))
-S_ordered     = h5read(h5_file_path, "S_ordered")
-if(n<=10000){
-  empirical_mu  = as.vector(h5read(h5_file_path, "empirical_mu"))
-  empirical_var = as.vector(h5read(h5_file_path, "empirical_var"))
-  empirical_V   = h5read(h5_file_path, "empirical_V")
+n = n_vec[n_index]
+h5f = hdf5r::H5File$new(h5_file_path, mode = "r")
+y = as.vector(h5f[["y_gen"]][] )
+X = h5f[["X"]][] 
+w = as.vector(h5f[["f"]][] )
+S_ordered = h5f[["S_ordered"]][] 
+if (n <= 10000) {
+  empirical_mu  = as.vector(h5f[["empirical_mu"]][] )
+  empirical_var = as.vector(h5f[["empirical_var"]][] )
+  empirical_V   = h5f[["empirical_V"]][] 
 }
+h5f$close_all()
+
 p = ncol(X)
 
 ######################################

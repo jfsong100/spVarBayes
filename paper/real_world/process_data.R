@@ -1,6 +1,6 @@
 library(spNNGP)
 library(BRISC)
-library(rhdf5)
+library(hdf5r)
 library(dplyr)
 library(ggplot2)
 
@@ -60,18 +60,21 @@ s_test_scaled = cbind(rescale_to_range(s_test[,1]),rescale_to_range(s_test[,2]))
 
 save.image(file = file.path(data.path,"BCEF_data.RData"))
 
-# save data for python read
-h5_file_path =  file.path(data.path, "BCEF_data.h5")
-if (file.exists(h5_file_path)) {
-  file.remove(h5_file_path)
+# save data for python read (hdf5r)
+h5_file_path = file.path(data.path, "BCEF_data.h5")
+if (file.exists(h5_file_path)) { 
+  file.remove(h5_file_path) 
 }
-h5createFile(h5_file_path)
 
-# Write each dataset to the HDF5 file
-h5write(y, h5_file_path, "y")
-h5write(as.matrix(X), h5_file_path, "X")
-h5write(as.matrix(S_ordered_scaled), h5_file_path, "S_ordered_scaled")
-h5write(y_test, h5_file_path, "y_test")
-h5write(as.matrix(X_test), h5_file_path, "X_test")
-h5write(as.matrix(s_test_scaled), h5_file_path, "s_test_scaled")
+h5f = hdf5r::H5File$new(h5_file_path, mode = "w")
+
+h5f[["y"]]               = y
+h5f[["X"]]               = as.matrix(X)
+h5f[["S_ordered_scaled"]]= as.matrix(S_ordered_scaled)
+h5f[["y_test"]]          = y_test
+h5f[["X_test"]]          = as.matrix(X_test)
+h5f[["s_test_scaled"]]   = as.matrix(s_test_scaled)
+
+h5f$close_all()
+
 

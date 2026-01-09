@@ -644,8 +644,9 @@ and supplementary results in the paper <strong>Fast Variational Bayes
 for Large Spatial Data</strong>.</p>
 <h2 id="get-only-the-paper-folder">Get only the <code>paper/</code>
 folder</h2>
-<p>If only need the manuscript files in <code>paper/</code> and do not
-want to check out the full repository, use Git sparse checkout.</p>
+<p>If only need the code in <code>paper/</code> to reproduce the results
+and do not want to check out the full repository, use Git sparse
+checkout.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">git</span> clone <span class="at">--no-checkout</span> https://github.com/jfsong100/spVarBayes.git</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="bu">cd</span> spVarBayes</span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">git</span> sparse-checkout init <span class="at">--no-cone</span></span>
@@ -669,7 +670,7 @@ substantial memory.</p>
 </blockquote>
 <h1 id="environment-setup">Environment Setup</h1>
 <h2 id="r--spvarbayes">R / spVarBayes</h2>
-<p>Install the <code>spVarBayes</code> package from GitHub:</p>
+<p>Install the <code>spVarBayes</code> package from GitHub in R:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Install devtools if needed</span></span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;devtools&quot;</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
@@ -677,7 +678,18 @@ substantial memory.</p>
 <span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;jfsong100/spVarBayes&quot;</span>)</span>
 <span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a></span>
 <span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co"># Install spNNGP</span></span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;spNNGP&quot;</span>)</span></code></pre></div>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;spNNGP&quot;</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co"># Install necessary packages for supporting analysis</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>pkgs <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>  <span class="st">&quot;BRISC&quot;</span>,<span class="st">&quot;MASS&quot;</span>,<span class="st">&quot;fields&quot;</span>,<span class="st">&quot;Matrix&quot;</span>,<span class="st">&quot;hdf5r&quot;</span>,<span class="st">&quot;scoringutils&quot;</span>,<span class="st">&quot;dplyr&quot;</span>,<span class="st">&quot;parallel&quot;</span>,</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>  <span class="st">&quot;ggplot2&quot;</span>,<span class="st">&quot;viridis&quot;</span>,<span class="st">&quot;patchwork&quot;</span>,<span class="st">&quot;cowplot&quot;</span>,<span class="st">&quot;tidyverse&quot;</span>,<span class="st">&quot;ggrastr&quot;</span>,<span class="st">&quot;tidyr&quot;</span>,<span class="st">&quot;scales&quot;</span>,</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>  <span class="st">&quot;gridExtra&quot;</span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>)</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>missing <span class="ot">=</span> pkgs[<span class="sc">!</span><span class="fu">vapply</span>(pkgs, requireNamespace, <span class="at">quietly =</span> <span class="cn">TRUE</span>, <span class="at">FUN.VALUE =</span> <span class="fu">logical</span>(<span class="dv">1</span>))]</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(missing) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>  <span class="fu">install.packages</span>(missing, <span class="at">dependencies =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>}</span></code></pre></div>
 <p>This package provides the following methods:</p>
 <ul>
 <li><code>spVB-MFA</code></li>
@@ -734,6 +746,8 @@ recommend running <code>n_index=3</code>, which reproduces the results
 for <span class="math inline">\(n=10000\)</span>. To fully reproduce the
 paper’s simulation results, run all n_index values and set the seed from
 1 to 100.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Change to the simulations directory</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="bu">cd</span> ~/spVarBayes/paper/simulations</span></code></pre></div>
 <h2 id="data-generation">Data Generation</h2>
 <p><strong>Script:</strong> <code>data_generation.R</code></p>
 <ul>
@@ -744,14 +758,14 @@ paper’s simulation results, run all n_index values and set the seed from
 </ul></li>
 <li><strong>Usage (example from shell):</strong></li>
 </ul>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co">## Example: generate data for n_index = 3 t = 1</span></span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="ex">Rscript</span> data_generation.R n_index=3 t=1</span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co">## Example: generate data for n_index = 1, 2, 3 and t = 1, 2</span></span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="cf">for</span> n_index <span class="kw">in</span> 1 2 3<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="cf">for</span> t <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>    <span class="ex">Rscript</span> data_generation.R n_index=<span class="va">${n_index}</span> t=<span class="va">${t}</span></span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  <span class="cf">done</span></span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co">## Example: generate data for n_index = 3 t = 1</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="ex">Rscript</span> data_generation.R n_index=3 t=1</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co">## Example: generate data for n_index = 1, 2, 3 and t = 1, 2</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="cf">for</span> n_index <span class="kw">in</span> 1 2 3<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="cf">for</span> t <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>    <span class="ex">Rscript</span> data_generation.R n_index=<span class="va">${n_index}</span> t=<span class="va">${t}</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>  <span class="cf">done</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
 <ul>
 <li><strong>Output:</strong>
 <ul>
@@ -783,14 +797,14 @@ paper.</p>
 </ul></li>
 <li><strong>Usage (example):</strong></li>
 </ul>
-<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co">## Example: run analysis for n_index = 3 t = 1</span></span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="ex">Rscript</span> spVB_spNNGP.R n_index=3 t=1</span></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># e.g. for multiple runs</span></span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="cf">for</span> n_index <span class="kw">in</span> 1 2 3<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  <span class="cf">for</span> t <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>    <span class="ex">Rscript</span> spVB_spNNGP.R n_index=<span class="va">${n_index}</span> t=<span class="va">${t}</span></span>
-<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>  <span class="cf">done</span></span>
-<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co">## Example: run analysis for n_index = 3 t = 1</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="ex">Rscript</span> spVB_spNNGP.R n_index=3 t=1</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># e.g. for multiple runs</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="cf">for</span> n_index <span class="kw">in</span> 1 2 3<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  <span class="cf">for</span> t <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>    <span class="ex">Rscript</span> spVB_spNNGP.R n_index=<span class="va">${n_index}</span> t=<span class="va">${t}</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>  <span class="cf">done</span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
 <ul>
 <li><strong>What it does:</strong>
 <ul>
@@ -851,7 +865,7 @@ options inside the file
 </ul></li>
 <li><strong>Environment:</strong></li>
 </ul>
-<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="ex">conda</span> activate env_dklgp</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="ex">conda</span> activate env_dklgp</span></code></pre></div>
 <ul>
 <li><strong>Inputs:</strong>
 <ul>
@@ -863,17 +877,17 @@ default settings from the DKLGP paper.</li>
 </ul></li>
 <li><strong>Usage (example):</strong></li>
 </ul>
-<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="ex">python3</span> DKLGP.py <span class="op">&lt;</span>seed<span class="op">&gt;</span> <span class="op">&lt;</span>n_index<span class="op">&gt;</span></span>
-<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="co"># e.g.</span></span>
-<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="ex">python3</span> DKLGP.py 1 3</span></code></pre></div>
-<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># e.g. for multiple runs</span></span>
-<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="cf">for</span> n_index <span class="kw">in</span> 1 2 3<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>  <span class="cf">for</span> seed <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>    <span class="ex">python3</span> DKLGP.py <span class="va">${seed}</span> <span class="va">${n_index}</span></span>
-<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>    <span class="ex">python3</span> DKLGP_default.py <span class="va">${seed}</span> <span class="va">${n_index}</span></span>
-<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a>  <span class="cf">done</span></span>
-<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
-<div class="sourceCode" id="cb14"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="ex">conda</span> deactivate</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="ex">python3</span> DKLGP.py <span class="op">&lt;</span>seed<span class="op">&gt;</span> <span class="op">&lt;</span>n_index<span class="op">&gt;</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="co"># e.g.</span></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="ex">python3</span> DKLGP.py 1 3</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># e.g. for multiple runs</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="cf">for</span> n_index <span class="kw">in</span> 1 2 3<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>  <span class="cf">for</span> seed <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>    <span class="ex">python3</span> DKLGP.py <span class="va">${seed}</span> <span class="va">${n_index}</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>    <span class="ex">python3</span> DKLGP_default.py <span class="va">${seed}</span> <span class="va">${n_index}</span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>  <span class="cf">done</span></span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="ex">conda</span> deactivate</span></code></pre></div>
 <ul>
 <li><strong>Output:</strong>
 <ul>
@@ -895,7 +909,7 @@ requires large memory.</p>
 <ul>
 <li><strong>Environment:</strong></li>
 </ul>
-<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="ex">conda</span> activate env_vnngp</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="ex">conda</span> activate env_vnngp</span></code></pre></div>
 <ul>
 <li><strong>Inputs:</strong>
 <ul>
@@ -904,16 +918,16 @@ requires large memory.</p>
 </ul></li>
 <li><strong>Usage (example):</strong></li>
 </ul>
-<div class="sourceCode" id="cb16"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="ex">python3</span> VNNGP.py <span class="op">&lt;</span>seed<span class="op">&gt;</span> <span class="op">&lt;</span>n_index<span class="op">&gt;</span></span>
-<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="co"># e.g.</span></span>
-<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="ex">python3</span> VNNGP.py 1 3</span></code></pre></div>
-<div class="sourceCode" id="cb17"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co"># e.g. for multiple runs</span></span>
-<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="cf">for</span> n_index <span class="kw">in</span> 1 2 3<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>  <span class="cf">for</span> seed <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a>    <span class="ex">python3</span> VNNGP.py <span class="va">${seed}</span> <span class="va">${n_index}</span></span>
-<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>  <span class="cf">done</span></span>
-<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
-<div class="sourceCode" id="cb18"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="ex">conda</span> deactivate</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="ex">python3</span> VNNGP.py <span class="op">&lt;</span>seed<span class="op">&gt;</span> <span class="op">&lt;</span>n_index<span class="op">&gt;</span></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="co"># e.g.</span></span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="ex">python3</span> VNNGP.py 1 3</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="co"># e.g. for multiple runs</span></span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a><span class="cf">for</span> n_index <span class="kw">in</span> 1 2 3<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>  <span class="cf">for</span> seed <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>    <span class="ex">python3</span> VNNGP.py <span class="va">${seed}</span> <span class="va">${n_index}</span></span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a>  <span class="cf">done</span></span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="ex">conda</span> deactivate</span></code></pre></div>
 <ul>
 <li><strong>What it does:</strong>
 <ul>
@@ -944,7 +958,7 @@ have been run for all methods (at least run n_index = 3):</p>
 <p><strong>Script:</strong> <code>summary.R</code> This script uses
 <code>R_results/</code>, <code>DKLGP_results/</code>, and
 <code>VNNGP_results/</code> to create:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="ex">Rscript</span> summary.R</span></code></pre></div></li>
+<div class="sourceCode" id="cb20"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="ex">Rscript</span> summary.R</span></code></pre></div></li>
 <li><p><strong>This script creates:</strong></p>
 <ul>
 <li>Figure 1, 2, 3</li>
@@ -955,12 +969,14 @@ have been run for all methods (at least run n_index = 3):</p>
 <p>Make sure the paths expected in <code>summary.R</code> match your
 folder structure.</p>
 <h1 id="real-world-data-analysis">Real-World Data Analysis</h1>
+<div class="sourceCode" id="cb21"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="co"># Change to the Real-World Data directory</span></span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a><span class="bu">cd</span> ~/spVarBayes/paper/real_world</span></code></pre></div>
 <h2 id="data-processing">Data Processing</h2>
 <p><strong>Script:</strong> <code>process_data.R</code></p>
 <ul>
 <li><strong>Usage:</strong></li>
 </ul>
-<div class="sourceCode" id="cb20"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="ex">Rscript</span> process_data.R</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="ex">Rscript</span> process_data.R</span></code></pre></div>
 <ul>
 <li><strong>Output:</strong>
 <ul>
@@ -973,11 +989,11 @@ folder structure.</p>
 <h2 id="r-based-methods-on-real-data">R-based Methods on Real Data</h2>
 <p>Run the following R scripts (each reads from <code>data/</code> and
 saves results accordingly):</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="ex">Rscript</span> spVB_MFA.R</span>
-<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a><span class="ex">Rscript</span> spVB_MFA_LR.R</span>
-<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a><span class="ex">Rscript</span> spVB_NNGP_ind.R</span>
-<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a><span class="ex">Rscript</span> spVB_NNGP_joint.R</span>
-<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a><span class="ex">Rscript</span> spNNGP.R</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="ex">Rscript</span> spVB_MFA.R</span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a><span class="ex">Rscript</span> spVB_MFA_LR.R</span>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a><span class="ex">Rscript</span> spVB_NNGP_ind.R</span>
+<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a><span class="ex">Rscript</span> spVB_NNGP_joint.R</span>
+<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a><span class="ex">Rscript</span> spNNGP.R</span></code></pre></div>
 <p>These fit:</p>
 <ul>
 <li><code>spVB-MFA</code></li>
@@ -992,13 +1008,13 @@ memory for storing the whole covariance matrix</p>
 </blockquote>
 <h2 id="dklgp-and-vnngp-on-real-data">DKLGP and VNNGP on Real Data</h2>
 <p>Run DKLGP (default) in the DKLGP environment:</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="ex">conda</span> activate env_dklgp</span>
-<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a><span class="ex">python3</span> DKLGP_default.py</span>
-<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a><span class="ex">conda</span> deactivate</span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="ex">conda</span> activate env_dklgp</span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a><span class="ex">python3</span> DKLGP_default.py</span>
+<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a><span class="ex">conda</span> deactivate</span></code></pre></div>
 <p>Run VNNGP in the VNNGP environment:</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="ex">conda</span> activate env_vnngp</span>
-<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a><span class="ex">python3</span> VNNGP.py</span>
-<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a><span class="ex">conda</span> deactivate</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="ex">conda</span> activate env_vnngp</span>
+<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a><span class="ex">python3</span> VNNGP.py</span>
+<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a><span class="ex">conda</span> deactivate</span></code></pre></div>
 <p>Both scripts read from the processed <code>data/</code> folder and
 produce outputs compatible with the R-based methods.</p>
 <h2 id="real-data-summary-and-figures">Real-Data Summary and
@@ -1006,13 +1022,13 @@ Figures</h2>
 <ol style="list-style-type: decimal">
 <li><p><strong>Combine DKLGP and VNNGP outputs:</strong></p>
 <p><strong>Script:</strong> <code>summary_DKLGP_VNNGP.R</code></p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="ex">Rscript</span> summary_DKLGP_VNNGP.R</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="ex">Rscript</span> summary_DKLGP_VNNGP.R</span></code></pre></div>
 <p>This stores combined results in an <code>output/</code>
 folder.</p></li>
 <li><p><strong>Create real-data figures and Table 4:</strong></p>
 <p><strong>Script:</strong> <code>summary.R</code> (real-data
 version)</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="ex">Rscript</span> summary.R</span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="ex">Rscript</span> summary.R</span></code></pre></div>
 <ul>
 <li>Produces:
 <ul>
@@ -1023,6 +1039,8 @@ version)</p>
 </ul></li>
 </ol>
 <h1 id="supplementary-experiments">Supplementary Experiments</h1>
+<div class="sourceCode" id="cb28"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="co"># Change to the correct directory in the supplementary folder</span></span>
+<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a><span class="bu">cd</span> ~/spVarBayes/paper/supplement/G_choices_nn</span></code></pre></div>
 <h2 id="choice-of-number-of-nearest-neighbors-figures-g1g2">Choice of
 Number of Nearest Neighbors (Figures G.1–G.2)</h2>
 <p>Folder: <code>G_choices_nn/</code><br />
@@ -1030,8 +1048,8 @@ Script: <code>n_neighbor.R</code></p>
 <ul>
 <li><strong>Usage:</strong></li>
 </ul>
-<div class="sourceCode" id="cb26"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="bu">cd</span> G_choices_nn</span>
-<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a><span class="ex">Rscript</span> n_neighbor.R</span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="bu">cd</span> G_choices_nn</span>
+<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a><span class="ex">Rscript</span> n_neighbor.R</span></code></pre></div>
 <ul>
 <li><strong>Output:</strong>
 <ul>
@@ -1042,49 +1060,51 @@ Script: <code>n_neighbor.R</code></p>
 neighbors for the NNGP variational family.</p>
 <h2 id="prediction-study-figures-j1j2">Prediction Study (Figures
 J.1–J.2)</h2>
+<div class="sourceCode" id="cb30"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="co"># Change to the correct directory in the supplementary folder</span></span>
+<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a><span class="bu">cd</span> ~/spVarBayes/paper/supplement/J_predictions</span></code></pre></div>
 <p>Folder: <code>J_predictions/</code></p>
 <ol style="list-style-type: decimal">
 <li><p><strong>Data generation:</strong></p>
 <p>Script: <code>data_generation_prediction.R</code> (or the exact name
 in your folder)</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="bu">cd</span> J_predictions</span>
-<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a><span class="cf">for</span> n_index <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a>   <span class="cf">for</span> t <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a>     <span class="ex">Rscript</span> data_generation_prediction.R n_index=<span class="va">${n_index}</span> t=<span class="va">${t}</span></span>
-<span id="cb27-5"><a href="#cb27-5" tabindex="-1"></a>   <span class="cf">done</span></span>
-<span id="cb27-6"><a href="#cb27-6" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="bu">cd</span> J_predictions</span>
+<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a><span class="cf">for</span> n_index <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a>   <span class="cf">for</span> t <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb31-4"><a href="#cb31-4" tabindex="-1"></a>     <span class="ex">Rscript</span> data_generation_prediction.R n_index=<span class="va">${n_index}</span> t=<span class="va">${t}</span></span>
+<span id="cb31-5"><a href="#cb31-5" tabindex="-1"></a>   <span class="cf">done</span></span>
+<span id="cb31-6"><a href="#cb31-6" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
 <p>Saves prediction-study data in <code>data_sim/</code> under
 <code>J_predictions/</code>.</p></li>
 <li><p><strong>R-based methods:</strong></p>
 <p>Script: <code>spVB_spNNGP_pred.R</code></p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="cf">for</span> n_index <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a>   <span class="cf">for</span> t <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a>     <span class="ex">Rscript</span> spVB_spNNGP_pred.R n_index=<span class="va">${n_index}</span> t=<span class="va">${t}</span></span>
-<span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a>   <span class="cf">done</span></span>
-<span id="cb28-5"><a href="#cb28-5" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="cf">for</span> n_index <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a>   <span class="cf">for</span> t <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a>     <span class="ex">Rscript</span> spVB_spNNGP_pred.R n_index=<span class="va">${n_index}</span> t=<span class="va">${t}</span></span>
+<span id="cb32-4"><a href="#cb32-4" tabindex="-1"></a>   <span class="cf">done</span></span>
+<span id="cb32-5"><a href="#cb32-5" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
 <p>Runs all R-based methods for the prediction study.</p></li>
 <li><p><strong>VNNGP and DKLGP:</strong></p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="co"># DKLGP (default version and converged version)</span></span>
-<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a><span class="ex">conda</span> activate env_dklgp</span>
-<span id="cb29-3"><a href="#cb29-3" tabindex="-1"></a><span class="cf">for</span> n_index <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb29-4"><a href="#cb29-4" tabindex="-1"></a>   <span class="cf">for</span> seed <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb29-5"><a href="#cb29-5" tabindex="-1"></a>     <span class="ex">python3</span> DKLGP.py <span class="va">${seed}</span> <span class="va">${n_index}</span></span>
-<span id="cb29-6"><a href="#cb29-6" tabindex="-1"></a>     <span class="ex">python3</span> DKLGP_default.py <span class="va">${seed}</span> <span class="va">${n_index}</span></span>
-<span id="cb29-7"><a href="#cb29-7" tabindex="-1"></a>   <span class="cf">done</span></span>
-<span id="cb29-8"><a href="#cb29-8" tabindex="-1"></a><span class="cf">done</span></span>
-<span id="cb29-9"><a href="#cb29-9" tabindex="-1"></a><span class="ex">conda</span> deactivate</span>
-<span id="cb29-10"><a href="#cb29-10" tabindex="-1"></a></span>
-<span id="cb29-11"><a href="#cb29-11" tabindex="-1"></a><span class="co"># VNNGP</span></span>
-<span id="cb29-12"><a href="#cb29-12" tabindex="-1"></a><span class="ex">conda</span> activate env_vnngp</span>
-<span id="cb29-13"><a href="#cb29-13" tabindex="-1"></a><span class="cf">for</span> n_index <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb29-14"><a href="#cb29-14" tabindex="-1"></a>   <span class="cf">for</span> seed <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb29-15"><a href="#cb29-15" tabindex="-1"></a>     <span class="ex">python3</span> VNNGP.py <span class="va">${seed}</span> <span class="va">${n_index}</span></span>
-<span id="cb29-16"><a href="#cb29-16" tabindex="-1"></a>   <span class="cf">done</span></span>
-<span id="cb29-17"><a href="#cb29-17" tabindex="-1"></a><span class="cf">done</span></span>
-<span id="cb29-18"><a href="#cb29-18" tabindex="-1"></a><span class="ex">conda</span> deactivate</span></code></pre></div></li>
+<div class="sourceCode" id="cb33"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a><span class="co"># DKLGP (default version and converged version)</span></span>
+<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a><span class="ex">conda</span> activate env_dklgp</span>
+<span id="cb33-3"><a href="#cb33-3" tabindex="-1"></a><span class="cf">for</span> n_index <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb33-4"><a href="#cb33-4" tabindex="-1"></a>   <span class="cf">for</span> seed <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb33-5"><a href="#cb33-5" tabindex="-1"></a>     <span class="ex">python3</span> DKLGP.py <span class="va">${seed}</span> <span class="va">${n_index}</span></span>
+<span id="cb33-6"><a href="#cb33-6" tabindex="-1"></a>     <span class="ex">python3</span> DKLGP_default.py <span class="va">${seed}</span> <span class="va">${n_index}</span></span>
+<span id="cb33-7"><a href="#cb33-7" tabindex="-1"></a>   <span class="cf">done</span></span>
+<span id="cb33-8"><a href="#cb33-8" tabindex="-1"></a><span class="cf">done</span></span>
+<span id="cb33-9"><a href="#cb33-9" tabindex="-1"></a><span class="ex">conda</span> deactivate</span>
+<span id="cb33-10"><a href="#cb33-10" tabindex="-1"></a></span>
+<span id="cb33-11"><a href="#cb33-11" tabindex="-1"></a><span class="co"># VNNGP</span></span>
+<span id="cb33-12"><a href="#cb33-12" tabindex="-1"></a><span class="ex">conda</span> activate env_vnngp</span>
+<span id="cb33-13"><a href="#cb33-13" tabindex="-1"></a><span class="cf">for</span> n_index <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb33-14"><a href="#cb33-14" tabindex="-1"></a>   <span class="cf">for</span> seed <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb33-15"><a href="#cb33-15" tabindex="-1"></a>     <span class="ex">python3</span> VNNGP.py <span class="va">${seed}</span> <span class="va">${n_index}</span></span>
+<span id="cb33-16"><a href="#cb33-16" tabindex="-1"></a>   <span class="cf">done</span></span>
+<span id="cb33-17"><a href="#cb33-17" tabindex="-1"></a><span class="cf">done</span></span>
+<span id="cb33-18"><a href="#cb33-18" tabindex="-1"></a><span class="ex">conda</span> deactivate</span></code></pre></div></li>
 <li><p><strong>Summary and prediction figures:</strong></p>
 <p>Script: <code>summary.R</code> (prediction version)</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="ex">Rscript</span> summary.R</span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a><span class="ex">Rscript</span> summary.R</span></code></pre></div>
 <ul>
 <li>Produces:
 <ul>
