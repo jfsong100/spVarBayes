@@ -115,8 +115,7 @@ if(save_files){
   if (file.exists(h5_file_path)) {
     file.remove(h5_file_path)
   }
-  h5createFile(h5_file_path)
-  
+
   h5f = hdf5r::H5File$new(h5_file_path, mode = "w")
   
   h5f[["y_gen"]]     = y
