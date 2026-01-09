@@ -141,8 +141,8 @@ reproduce the paper’s simulation results, run all n_index values and set
 the seed from 1 to 100.
 
 ``` bash
-# Change to the simulations directory
-cd ~/spVarBayes/paper/simulations
+# Inside spVarBayes folder, change to the simulations directory
+cd paper/simulations
 ```
 
 ## Data Generation
@@ -350,8 +350,8 @@ Make sure the paths expected in `summary.R` match your folder structure.
 # Real-World Data Analysis
 
 ``` bash
-# Change to the Real-World Data directory
-cd ~/spVarBayes/paper/real_world
+# Inside spVarBayes folder, change to the Real-World Data directory
+cd paper/real_world
 ```
 
 ## Data Processing
@@ -441,8 +441,8 @@ compatible with the R-based methods.
 # Supplementary Experiments
 
 ``` bash
-# Change to the correct directory in the supplementary folder
-cd ~/spVarBayes/paper/supplement/G_choices_nn
+# Inside spVarBayes folder, change to the correct directory in the supplementary folder
+cd paper/supplement/G_choices_nn
 ```
 
 ## Choice of Number of Nearest Neighbors (Figures G.1–G.2)
@@ -466,8 +466,8 @@ for the NNGP variational family.
 ## Prediction Study (Figures J.1–J.2)
 
 ``` bash
-# Change to the correct directory in the supplementary folder
-cd ~/spVarBayes/paper/supplement/J_predictions
+# Inside spVarBayes folder, change to the correct directory in the supplementary folder
+cd paper/supplement/J_predictions
 ```
 
 Folder: `J_predictions/`
