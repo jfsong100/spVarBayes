@@ -238,7 +238,7 @@ ggsave(file.path(output.path,"NNGP_ind_metric.pdf"), plot = p1,
        width = 12.2, height = 8.64, units = "in",
        dpi = 300, device = cairo_pdf)
 
-w_var_df = map2_dfr(w_var_list_NNGP, 1:20, ~{
+w_var_df = map2_dfr(w_var_list_NNGP, 1:test_n.neighbors.vi, ~{
   tibble(
     idx = 1:length(.x),
     var_est = .x,
@@ -255,7 +255,7 @@ plot_df = left_join(w_var_df, spNNGP_df, by = "idx")
 
 plot_df$neighbors = factor(
   paste0("mq = ", plot_df$neighbors),
-  levels = paste0("mq = ", 1:20)
+  levels = paste0("mq = ", 1:test_n.neighbors.vi)
 )
 
 p2 = ggplot(plot_df, aes(x = spNNGP_var, y = var_est)) +

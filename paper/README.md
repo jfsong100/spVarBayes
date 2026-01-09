@@ -364,6 +364,9 @@ cd paper/real_world
 Rscript process_data.R
 ```
 
+Note: for a quick test for the code, set `test_code = TRUE` in
+process_data.R file.
+
 - **Output:**
   - Creates a `data/` folder with:
     - Training data and Test data
@@ -453,7 +456,6 @@ Script: `n_neighbor.R`
 - **Usage:**
 
 ``` bash
-cd G_choices_nn
 Rscript n_neighbor.R
 ```
 
@@ -467,10 +469,10 @@ for the NNGP variational family.
 
 ``` bash
 # Inside spVarBayes folder, change to the correct directory in the supplementary folder
-cd paper/supplement/J_predictions
+cd paper/supplement/J_prediction
 ```
 
-Folder: `J_predictions/`
+Folder: `J_prediction/`
 
 1.  **Data generation:**
 
@@ -478,7 +480,6 @@ Folder: `J_predictions/`
     folder)
 
     ``` bash
-    cd J_predictions
     for n_index in 1 2; do
        for t in 1 2; do
          Rscript data_generation_prediction.R n_index=${n_index} t=${t}

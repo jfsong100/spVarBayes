@@ -977,6 +977,8 @@ folder structure.</p>
 <li><strong>Usage:</strong></li>
 </ul>
 <div class="sourceCode" id="cb22"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="ex">Rscript</span> process_data.R</span></code></pre></div>
+<p>Note: for a quick test for the code, set
+<code>test_code = TRUE</code> in process_data.R file.</p>
 <ul>
 <li><strong>Output:</strong>
 <ul>
@@ -1048,8 +1050,7 @@ Script: <code>n_neighbor.R</code></p>
 <ul>
 <li><strong>Usage:</strong></li>
 </ul>
-<div class="sourceCode" id="cb29"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="bu">cd</span> G_choices_nn</span>
-<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a><span class="ex">Rscript</span> n_neighbor.R</span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="ex">Rscript</span> n_neighbor.R</span></code></pre></div>
 <ul>
 <li><strong>Output:</strong>
 <ul>
@@ -1061,18 +1062,17 @@ neighbors for the NNGP variational family.</p>
 <h2 id="prediction-study-figures-j1j2">Prediction Study (Figures
 J.1–J.2)</h2>
 <div class="sourceCode" id="cb30"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="co"># Inside spVarBayes folder, change to the correct directory in the supplementary folder</span></span>
-<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a><span class="bu">cd</span> paper/supplement/J_predictions</span></code></pre></div>
-<p>Folder: <code>J_predictions/</code></p>
+<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a><span class="bu">cd</span> paper/supplement/J_prediction</span></code></pre></div>
+<p>Folder: <code>J_prediction/</code></p>
 <ol style="list-style-type: decimal">
 <li><p><strong>Data generation:</strong></p>
 <p>Script: <code>data_generation_prediction.R</code> (or the exact name
 in your folder)</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="bu">cd</span> J_predictions</span>
-<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a><span class="cf">for</span> n_index <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a>   <span class="cf">for</span> t <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb31-4"><a href="#cb31-4" tabindex="-1"></a>     <span class="ex">Rscript</span> data_generation_prediction.R n_index=<span class="va">${n_index}</span> t=<span class="va">${t}</span></span>
-<span id="cb31-5"><a href="#cb31-5" tabindex="-1"></a>   <span class="cf">done</span></span>
-<span id="cb31-6"><a href="#cb31-6" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="cf">for</span> n_index <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a>   <span class="cf">for</span> t <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a>     <span class="ex">Rscript</span> data_generation_prediction.R n_index=<span class="va">${n_index}</span> t=<span class="va">${t}</span></span>
+<span id="cb31-4"><a href="#cb31-4" tabindex="-1"></a>   <span class="cf">done</span></span>
+<span id="cb31-5"><a href="#cb31-5" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
 <p>Saves prediction-study data in <code>data_sim/</code> under
 <code>J_predictions/</code>.</p></li>
 <li><p><strong>R-based methods:</strong></p>

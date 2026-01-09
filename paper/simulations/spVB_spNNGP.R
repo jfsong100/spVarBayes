@@ -44,13 +44,13 @@ h5_file_path = file.path(data.path, paste0(scenario_path, "_data.h5"))
 n = n_vec[n_index]
 h5f = hdf5r::H5File$new(h5_file_path, mode = "r")
 y = as.vector(h5f[["y_gen"]][] )
-X = h5f[["X"]][] 
+X = h5f[["X"]]$read() 
 w = as.vector(h5f[["f"]][] )
-S_ordered = h5f[["S_ordered"]][] 
+S_ordered = h5f[["S_ordered"]]$read()
 if (n <= 10000) {
   empirical_mu  = as.vector(h5f[["empirical_mu"]][] )
   empirical_var = as.vector(h5f[["empirical_var"]][] )
-  empirical_V   = h5f[["empirical_V"]][] 
+  empirical_V   = h5f[["empirical_V"]]$read() 
 }
 h5f$close_all()
 

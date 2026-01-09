@@ -44,17 +44,17 @@ h5_file_path = file.path(data.path, paste0(scenario_path, "_data.h5"))
 
 n = n_vec[n_index]
 
-h5f = hdf5r::H5File$new(h5_file_path, mode = "r")
+h5f = H5File$new(h5_file_path, mode = "r")
 
 y_train = as.vector(h5f[["y_train"]][] )
-X_train = h5f[["X_train"]][] 
+X_train = h5f[["X_train"]]$read() 
 w_train = as.vector(h5f[["f_train"]][] )
-S_train = h5f[["S_train"]][] 
+S_train = h5f[["S_train"]]$read() 
 
 y_test  = as.vector(h5f[["y_test"]][] )
-X_test  = h5f[["X_test"]][] 
+X_test  = h5f[["X_test"]]$read() 
 w_test  = as.vector(h5f[["f_test"]][] )
-S_test  = h5f[["S_test"]][] 
+S_test  = h5f[["S_test"]]$read() 
 
 h5f$close_all()
 
