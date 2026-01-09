@@ -15,10 +15,10 @@ If only need the manuscript files in `paper/` and do not want to check
 out the full repository, use Git sparse checkout.
 
 ``` bash
-git clone --filter=blob:none --no-checkout https://github.com/jfsong100/spVarBayes.git
+git clone --no-checkout https://github.com/jfsong100/spVarBayes.git
 cd spVarBayes
-git sparse-checkout init --cone
-git sparse-checkout set paper
+git sparse-checkout init --no-cone
+echo "paper/" > .git/info/sparse-checkout
 git checkout main
 ```
 
