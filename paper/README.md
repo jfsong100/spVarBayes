@@ -18,7 +18,7 @@ want to check out the full repository, use Git sparse checkout.
 git clone --no-checkout https://github.com/jfsong100/spVarBayes.git
 cd spVarBayes
 git sparse-checkout init --no-cone
-echo "paper/" > .git/info/sparse-checkout
+git sparse-checkout set "paper/"
 git checkout main
 ```
 
@@ -32,8 +32,17 @@ The workflow has the following components:
 4.  **Supplementary experiments**  
     (Figures G.1–G.2, J.1–J.2, Figures H.1–H.6, I.1–I.2)
 
-> **Note:** For Large‐scale settings (`n_index = 4, 5`) and methods
-> **DKLGP**, **VNNGP**, and **spVB-MFA-LR** require substantial memory.
+# Notes on Memory and Runtime
+
+- **Large-scale simulations (`n_index = 4, 5`):**
+  - Require large memory for **DKLGP**, **VNNGP**, and **spVB-MFA-LR**
+    can be particularly demanding (e.g. 100–150 GB for `n_index = 4`,
+    300 GB for `n_index = 5`).
+- The numerical results of this paper is running on a cluster:
+  - Request sufficient RAM in the job script (e.g. 150–300 GB, depending
+    on `n_index` and method).
+  - Running different methods and `n_index` combinations in parallel
+    jobs can speed up the complete reproduction.
 
 # Environment Setup
 
@@ -360,12 +369,12 @@ cd paper/real_world
 
 - **Usage:**
 
+Note: for a quick test for the code, set `test_code = TRUE` in
+process_data.R file.
+
 ``` bash
 Rscript process_data.R
 ```
-
-Note: for a quick test for the code, set `test_code = TRUE` in
-process_data.R file.
 
 - **Output:**
   - Creates a `data/` folder with:
@@ -375,6 +384,10 @@ process_data.R file.
 
 Run the following R scripts (each reads from `data/` and saves results
 accordingly):
+
+> **Note:** **spVB-MFA-LR** requires substantial memory and may need to
+> be run on a computing cluster. All other scripts could run on a local
+> laptop.
 
 ``` bash
 Rscript spVB_MFA.R
@@ -396,6 +409,9 @@ These fit:
 > whole covariance matrix
 
 ## DKLGP and VNNGP on Real Data
+
+> **Note:** **DKLGP (default)** and **VNNGP** requires substantial
+> memory and may need to be run on a computing cluster.
 
 Run DKLGP (default) in the DKLGP environment:
 
@@ -515,16 +531,18 @@ Folder: `J_prediction/`
        done
     done
     conda deactivate
-
-    # VNNGP
-    conda activate env_vnngp
-    for n_index in 1 2; do
-       for seed in 1 2; do
-         python3 VNNGP.py ${seed} ${n_index}
-       done
-    done
-    conda deactivate
     ```
+
+``` bash
+ # VNNGP
+ conda activate env_vnngp
+ for n_index in 1 2; do
+    for seed in 1 2; do
+      python3 VNNGP.py ${seed} ${n_index}
+    done
+ done
+ conda deactivate
+```
 
 4.  **Summary and prediction figures:**
 
@@ -536,15 +554,3 @@ Folder: `J_prediction/`
 
     - Produces:
       - Figure J.1, J.2
-
-# Notes on Memory and Runtime
-
-- **Large-scale simulations (`n_index = 4, 5`):**
-  - Require large memory for R and Python.
-  - **DKLGP**, **VNNGP**, and **spVB-MFA-LR** can be particularly
-    demanding.
-- On a cluster:
-  - Request sufficient RAM in your job script (e.g. 150–300 GB,
-    depending on `n_index` and method).
-  - Running different methods and `n_index` combinations in parallel
-    jobs can speed up the complete reproduction.

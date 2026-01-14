@@ -650,7 +650,7 @@ checkout.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">git</span> clone <span class="at">--no-checkout</span> https://github.com/jfsong100/spVarBayes.git</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="bu">cd</span> spVarBayes</span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">git</span> sparse-checkout init <span class="at">--no-cone</span></span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;paper/&quot;</span> <span class="op">&gt;</span> .git/info/sparse-checkout</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">git</span> sparse-checkout set <span class="st">&quot;paper/&quot;</span></span>
 <span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">git</span> checkout main</span></code></pre></div>
 <p>The workflow has the following components:</p>
 <ol style="list-style-type: decimal">
@@ -662,12 +662,24 @@ checkout.</p>
 <li><strong>Supplementary experiments</strong><br />
 (Figures G.1–G.2, J.1–J.2, Figures H.1–H.6, I.1–I.2)</li>
 </ol>
-<blockquote>
-<p><strong>Note:</strong> For Large‐scale settings
-(<code>n_index = 4, 5</code>) and methods <strong>DKLGP</strong>,
-<strong>VNNGP</strong>, and <strong>spVB-MFA-LR</strong> require
-substantial memory.</p>
-</blockquote>
+<h1 id="notes-on-memory-and-runtime">Notes on Memory and Runtime</h1>
+<ul>
+<li><strong>Large-scale simulations
+(<code>n_index = 4, 5</code>):</strong>
+<ul>
+<li>Require large memory for <strong>DKLGP</strong>,
+<strong>VNNGP</strong>, and <strong>spVB-MFA-LR</strong> can be
+particularly demanding (e.g. 100–150 GB for <code>n_index = 4</code>,
+300 GB for <code>n_index = 5</code>).</li>
+</ul></li>
+<li>The numerical results of this paper is running on a cluster:
+<ul>
+<li>Request sufficient RAM in the job script (e.g. 150–300 GB, depending
+on <code>n_index</code> and method).</li>
+<li>Running different methods and <code>n_index</code> combinations in
+parallel jobs can speed up the complete reproduction.</li>
+</ul></li>
+</ul>
 <h1 id="environment-setup">Environment Setup</h1>
 <h2 id="r--spvarbayes">R / spVarBayes</h2>
 <p>Install the <code>spVarBayes</code> package from GitHub in R:</p>
@@ -976,9 +988,9 @@ folder structure.</p>
 <ul>
 <li><strong>Usage:</strong></li>
 </ul>
-<div class="sourceCode" id="cb22"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="ex">Rscript</span> process_data.R</span></code></pre></div>
 <p>Note: for a quick test for the code, set
 <code>test_code = TRUE</code> in process_data.R file.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="ex">Rscript</span> process_data.R</span></code></pre></div>
 <ul>
 <li><strong>Output:</strong>
 <ul>
@@ -991,6 +1003,11 @@ folder structure.</p>
 <h2 id="r-based-methods-on-real-data">R-based Methods on Real Data</h2>
 <p>Run the following R scripts (each reads from <code>data/</code> and
 saves results accordingly):</p>
+<blockquote>
+<p><strong>Note:</strong> <strong>spVB-MFA-LR</strong> requires
+substantial memory and may need to be run on a computing cluster. All
+other scripts could run on a local laptop.</p>
+</blockquote>
 <div class="sourceCode" id="cb23"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="ex">Rscript</span> spVB_MFA.R</span>
 <span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a><span class="ex">Rscript</span> spVB_MFA_LR.R</span>
 <span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a><span class="ex">Rscript</span> spVB_NNGP_ind.R</span>
@@ -1009,6 +1026,11 @@ saves results accordingly):</p>
 memory for storing the whole covariance matrix</p>
 </blockquote>
 <h2 id="dklgp-and-vnngp-on-real-data">DKLGP and VNNGP on Real Data</h2>
+<blockquote>
+<p><strong>Note:</strong> <strong>DKLGP (default)</strong> and
+<strong>VNNGP</strong> requires substantial memory and may need to be
+run on a computing cluster.</p>
+</blockquote>
 <p>Run DKLGP (default) in the DKLGP environment:</p>
 <div class="sourceCode" id="cb24"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="ex">conda</span> activate env_dklgp</span>
 <span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a><span class="ex">python3</span> DKLGP_default.py</span>
@@ -1092,19 +1114,20 @@ in your folder)</p>
 <span id="cb33-6"><a href="#cb33-6" tabindex="-1"></a>     <span class="ex">python3</span> DKLGP_default.py <span class="va">${seed}</span> <span class="va">${n_index}</span></span>
 <span id="cb33-7"><a href="#cb33-7" tabindex="-1"></a>   <span class="cf">done</span></span>
 <span id="cb33-8"><a href="#cb33-8" tabindex="-1"></a><span class="cf">done</span></span>
-<span id="cb33-9"><a href="#cb33-9" tabindex="-1"></a><span class="ex">conda</span> deactivate</span>
-<span id="cb33-10"><a href="#cb33-10" tabindex="-1"></a></span>
-<span id="cb33-11"><a href="#cb33-11" tabindex="-1"></a><span class="co"># VNNGP</span></span>
-<span id="cb33-12"><a href="#cb33-12" tabindex="-1"></a><span class="ex">conda</span> activate env_vnngp</span>
-<span id="cb33-13"><a href="#cb33-13" tabindex="-1"></a><span class="cf">for</span> n_index <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb33-14"><a href="#cb33-14" tabindex="-1"></a>   <span class="cf">for</span> seed <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb33-15"><a href="#cb33-15" tabindex="-1"></a>     <span class="ex">python3</span> VNNGP.py <span class="va">${seed}</span> <span class="va">${n_index}</span></span>
-<span id="cb33-16"><a href="#cb33-16" tabindex="-1"></a>   <span class="cf">done</span></span>
-<span id="cb33-17"><a href="#cb33-17" tabindex="-1"></a><span class="cf">done</span></span>
-<span id="cb33-18"><a href="#cb33-18" tabindex="-1"></a><span class="ex">conda</span> deactivate</span></code></pre></div></li>
+<span id="cb33-9"><a href="#cb33-9" tabindex="-1"></a><span class="ex">conda</span> deactivate</span></code></pre></div></li>
+</ol>
+<div class="sourceCode" id="cb34"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a> <span class="co"># VNNGP</span></span>
+<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a> <span class="ex">conda</span> activate env_vnngp</span>
+<span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a> <span class="cf">for</span> n_index <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb34-4"><a href="#cb34-4" tabindex="-1"></a>    <span class="cf">for</span> seed <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb34-5"><a href="#cb34-5" tabindex="-1"></a>      <span class="ex">python3</span> VNNGP.py <span class="va">${seed}</span> <span class="va">${n_index}</span></span>
+<span id="cb34-6"><a href="#cb34-6" tabindex="-1"></a>    <span class="cf">done</span></span>
+<span id="cb34-7"><a href="#cb34-7" tabindex="-1"></a> <span class="cf">done</span></span>
+<span id="cb34-8"><a href="#cb34-8" tabindex="-1"></a> <span class="ex">conda</span> deactivate</span></code></pre></div>
+<ol start="4" style="list-style-type: decimal">
 <li><p><strong>Summary and prediction figures:</strong></p>
 <p>Script: <code>summary.R</code> (prediction version)</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a><span class="ex">Rscript</span> summary.R</span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a><span class="ex">Rscript</span> summary.R</span></code></pre></div>
 <ul>
 <li>Produces:
 <ul>
@@ -1112,23 +1135,6 @@ in your folder)</p>
 </ul></li>
 </ul></li>
 </ol>
-<h1 id="notes-on-memory-and-runtime">Notes on Memory and Runtime</h1>
-<ul>
-<li><strong>Large-scale simulations
-(<code>n_index = 4, 5</code>):</strong>
-<ul>
-<li>Require large memory for R and Python.</li>
-<li><strong>DKLGP</strong>, <strong>VNNGP</strong>, and
-<strong>spVB-MFA-LR</strong> can be particularly demanding.</li>
-</ul></li>
-<li>On a cluster:
-<ul>
-<li>Request sufficient RAM in your job script (e.g. 150–300 GB,
-depending on <code>n_index</code> and method).</li>
-<li>Running different methods and <code>n_index</code> combinations in
-parallel jobs can speed up the complete reproduction.</li>
-</ul></li>
-</ul>
 
 </body>
 </html>

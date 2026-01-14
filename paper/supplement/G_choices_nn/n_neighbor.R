@@ -24,9 +24,10 @@ n_index = 2
 
 base_dir  = normalizePath(file.path(getwd(), "..", ".."), mustWork = TRUE)
 data.path = file.path(base_dir, "simulations")
+output.path = file.path(base_dir, "supplement","G_choices_nn")
 source(file.path(data.path,"data_generation.R"))
 
-output.path = file.path(base_dir, "supplement","G_choices_nn")
+
 ######################################
 # Helper function
 ######################################
@@ -199,12 +200,12 @@ long_df = output_df_NNGP %>%
   select(-n) %>%
   pivot_longer(cols = -m, names_to = "metric", values_to = "value")
 
-ggplot(long_df, aes(x = m, y = value)) +
-  geom_line() +
-  geom_point() +
-  facet_wrap(~metric, scales = "free_y", ncol = 2) +
-  labs(x = "Number of Nearest Neighbors for the Variational Family", y = "Value") +
-  theme_minimal()
+# ggplot(long_df, aes(x = m, y = value)) +
+#   geom_line() +
+#   geom_point() +
+#   facet_wrap(~metric, scales = "free_y", ncol = 2) +
+#   labs(x = "Number of Nearest Neighbors for the Variational Family", y = "Value") +
+#   theme_minimal()
 
 long_df$metric = recode(long_df$metric,
                          "coverage" = "95% Coverage",
