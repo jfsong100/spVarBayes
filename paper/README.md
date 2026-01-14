@@ -34,10 +34,9 @@ The workflow has the following components:
 
 # Notes on Memory and Runtime
 
-- **Large-scale simulations (`n_index = 4, 5`):**
+- Large-scale simulations (`n_index = 4, 5`):
   - Require large memory for **DKLGP**, **VNNGP**, and **spVB-MFA-LR**
-    can be particularly demanding (e.g. 100–150 GB for `n_index = 4`,
-    300 GB for `n_index = 5`).
+    (e.g. 100–150 GB for `n_index = 4`, 300 GB for `n_index = 5`).
 - The numerical results of this paper is running on a cluster:
   - Request sufficient RAM in the job script (e.g. 150–300 GB, depending
     on `n_index` and method).
@@ -533,16 +532,16 @@ Folder: `J_prediction/`
     conda deactivate
     ```
 
-``` bash
- # VNNGP
- conda activate env_vnngp
- for n_index in 1 2; do
-    for seed in 1 2; do
-      python3 VNNGP.py ${seed} ${n_index}
+    ``` bash
+    # VNNGP
+    conda activate env_vnngp
+    for n_index in 1 2; do
+       for seed in 1 2; do
+         python3 VNNGP.py ${seed} ${n_index}
+       done
     done
- done
- conda deactivate
-```
+    conda deactivate
+    ```
 
 4.  **Summary and prediction figures:**
 

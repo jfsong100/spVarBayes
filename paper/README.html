@@ -664,13 +664,12 @@ checkout.</p>
 </ol>
 <h1 id="notes-on-memory-and-runtime">Notes on Memory and Runtime</h1>
 <ul>
-<li><strong>Large-scale simulations
-(<code>n_index = 4, 5</code>):</strong>
+<li>Large-scale simulations (<code>n_index = 4, 5</code>):
 <ul>
 <li>Require large memory for <strong>DKLGP</strong>,
-<strong>VNNGP</strong>, and <strong>spVB-MFA-LR</strong> can be
-particularly demanding (e.g. 100–150 GB for <code>n_index = 4</code>,
-300 GB for <code>n_index = 5</code>).</li>
+<strong>VNNGP</strong>, and <strong>spVB-MFA-LR</strong> (e.g. 100–150
+GB for <code>n_index = 4</code>, 300 GB for
+<code>n_index = 5</code>).</li>
 </ul></li>
 <li>The numerical results of this paper is running on a cluster:
 <ul>
@@ -1114,17 +1113,15 @@ in your folder)</p>
 <span id="cb33-6"><a href="#cb33-6" tabindex="-1"></a>     <span class="ex">python3</span> DKLGP_default.py <span class="va">${seed}</span> <span class="va">${n_index}</span></span>
 <span id="cb33-7"><a href="#cb33-7" tabindex="-1"></a>   <span class="cf">done</span></span>
 <span id="cb33-8"><a href="#cb33-8" tabindex="-1"></a><span class="cf">done</span></span>
-<span id="cb33-9"><a href="#cb33-9" tabindex="-1"></a><span class="ex">conda</span> deactivate</span></code></pre></div></li>
-</ol>
-<div class="sourceCode" id="cb34"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a> <span class="co"># VNNGP</span></span>
-<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a> <span class="ex">conda</span> activate env_vnngp</span>
-<span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a> <span class="cf">for</span> n_index <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb34-4"><a href="#cb34-4" tabindex="-1"></a>    <span class="cf">for</span> seed <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb34-5"><a href="#cb34-5" tabindex="-1"></a>      <span class="ex">python3</span> VNNGP.py <span class="va">${seed}</span> <span class="va">${n_index}</span></span>
-<span id="cb34-6"><a href="#cb34-6" tabindex="-1"></a>    <span class="cf">done</span></span>
-<span id="cb34-7"><a href="#cb34-7" tabindex="-1"></a> <span class="cf">done</span></span>
-<span id="cb34-8"><a href="#cb34-8" tabindex="-1"></a> <span class="ex">conda</span> deactivate</span></code></pre></div>
-<ol start="4" style="list-style-type: decimal">
+<span id="cb33-9"><a href="#cb33-9" tabindex="-1"></a><span class="ex">conda</span> deactivate</span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a><span class="co"># VNNGP</span></span>
+<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a><span class="ex">conda</span> activate env_vnngp</span>
+<span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a><span class="cf">for</span> n_index <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb34-4"><a href="#cb34-4" tabindex="-1"></a>   <span class="cf">for</span> seed <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb34-5"><a href="#cb34-5" tabindex="-1"></a>     <span class="ex">python3</span> VNNGP.py <span class="va">${seed}</span> <span class="va">${n_index}</span></span>
+<span id="cb34-6"><a href="#cb34-6" tabindex="-1"></a>   <span class="cf">done</span></span>
+<span id="cb34-7"><a href="#cb34-7" tabindex="-1"></a><span class="cf">done</span></span>
+<span id="cb34-8"><a href="#cb34-8" tabindex="-1"></a><span class="ex">conda</span> deactivate</span></code></pre></div></li>
 <li><p><strong>Summary and prediction figures:</strong></p>
 <p>Script: <code>summary.R</code> (prediction version)</p>
 <div class="sourceCode" id="cb35"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a><span class="ex">Rscript</span> summary.R</span></code></pre></div>
