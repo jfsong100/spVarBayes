@@ -26,11 +26,11 @@ The workflow has the following components:
 
 1.  **Environment setup**
 2.  **Simulation studies**  
-    (Figures 1–3, Table 3)
+    (Figures 1–3)
 3.  **Real-world data analysis**  
-    (Figures 4–7, Table 4)
+    (Figures 4–7, Table 2)
 4.  **Supplementary experiments**  
-    (Figures G.1–G.2, J.1–J.2, Figures H.1–H.6, I.1–I.2)
+    (Figures G.1–G.2, H.1–H.6, J.1–J.2, K.1–K.2, Table 6)
 
 # Notes on Memory and Runtime
 
@@ -351,7 +351,8 @@ methods (at least run n_index = 3):
 
     - Figure 1, 2, 3
     - Figure H.1, H.2, H.3, H.4, H.5, H.6
-    - Figure I.1, I.2
+    - Figure J.1, J.2
+    - Table 6
 
 Make sure the paths expected in `summary.R` match your folder structure.
 
@@ -453,7 +454,7 @@ compatible with the R-based methods.
 
     - Produces:
       - Figure 4,5,6,7  
-      - Table 4  
+      - Table 2  
     - Output is saved in the `fig/` folder.
 
 # Supplementary Experiments
@@ -487,7 +488,7 @@ for the NNGP variational family.
 cd paper/supplement/J_prediction
 ```
 
-Folder: `J_prediction/`
+Folder: `K_prediction/`
 
 1.  **Data generation:**
 
@@ -502,7 +503,7 @@ Folder: `J_prediction/`
     done
     ```
 
-    Saves prediction-study data in `data_sim/` under `J_predictions/`.
+    Saves prediction-study data in `data_sim/` under `K_predictions/`.
 
 2.  **R-based methods:**
 
@@ -552,4 +553,4 @@ Folder: `J_prediction/`
     ```
 
     - Produces:
-      - Figure J.1, J.2
+      - Figure K.1, K.2

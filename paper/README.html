@@ -656,11 +656,11 @@ checkout.</p>
 <ol style="list-style-type: decimal">
 <li><strong>Environment setup</strong></li>
 <li><strong>Simulation studies</strong><br />
-(Figures 1–3, Table 3)</li>
+(Figures 1–3)</li>
 <li><strong>Real-world data analysis</strong><br />
-(Figures 4–7, Table 4)</li>
+(Figures 4–7, Table 2)</li>
 <li><strong>Supplementary experiments</strong><br />
-(Figures G.1–G.2, J.1–J.2, Figures H.1–H.6, I.1–I.2)</li>
+(Figures G.1–G.2, H.1–H.6, J.1–J.2, K.1–K.2, Table 6)</li>
 </ol>
 <h1 id="notes-on-memory-and-runtime">Notes on Memory and Runtime</h1>
 <ul>
@@ -974,7 +974,8 @@ have been run for all methods (at least run n_index = 3):</p>
 <ul>
 <li>Figure 1, 2, 3</li>
 <li>Figure H.1, H.2, H.3, H.4, H.5, H.6</li>
-<li>Figure I.1, I.2</li>
+<li>Figure J.1, J.2</li>
+<li>Table 6</li>
 </ul></li>
 </ol>
 <p>Make sure the paths expected in <code>summary.R</code> match your
@@ -1056,7 +1057,7 @@ version)</p>
 <li>Produces:
 <ul>
 <li>Figure 4,5,6,7</li>
-<li>Table 4</li>
+<li>Table 2</li>
 </ul></li>
 <li>Output is saved in the <code>fig/</code> folder.</li>
 </ul></li>
@@ -1084,7 +1085,7 @@ neighbors for the NNGP variational family.</p>
 J.1–J.2)</h2>
 <div class="sourceCode" id="cb30"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="co"># Inside spVarBayes folder, change to the correct directory in the supplementary folder</span></span>
 <span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a><span class="bu">cd</span> paper/supplement/J_prediction</span></code></pre></div>
-<p>Folder: <code>J_prediction/</code></p>
+<p>Folder: <code>K_prediction/</code></p>
 <ol style="list-style-type: decimal">
 <li><p><strong>Data generation:</strong></p>
 <p>Script: <code>data_generation_prediction.R</code> (or the exact name
@@ -1095,7 +1096,7 @@ in your folder)</p>
 <span id="cb31-4"><a href="#cb31-4" tabindex="-1"></a>   <span class="cf">done</span></span>
 <span id="cb31-5"><a href="#cb31-5" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
 <p>Saves prediction-study data in <code>data_sim/</code> under
-<code>J_predictions/</code>.</p></li>
+<code>K_predictions/</code>.</p></li>
 <li><p><strong>R-based methods:</strong></p>
 <p>Script: <code>spVB_spNNGP_pred.R</code></p>
 <div class="sourceCode" id="cb32"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="cf">for</span> n_index <span class="kw">in</span> 1 2<span class="kw">;</span> <span class="cf">do</span></span>
@@ -1128,7 +1129,7 @@ in your folder)</p>
 <ul>
 <li>Produces:
 <ul>
-<li>Figure J.1, J.2</li>
+<li>Figure K.1, K.2</li>
 </ul></li>
 </ul></li>
 </ol>

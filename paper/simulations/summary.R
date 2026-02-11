@@ -724,7 +724,7 @@ ggsave(file.path(output.path,"Figure_H6_coverage_all.pdf"), plot = coverage_all,
 
 
 ##################################################
-# Create Table 3
+# Create Table 6
 ##################################################
 method_recode <- c(
   MFA        = "spVB-MFA",
@@ -815,7 +815,7 @@ ggsave(file.path(output.path,"Figure_3_time_sub.pdf"),  plot = time_sub,
 
 
 ##################################################
-# Create Figure I1 I2
+# Create Figure J1 J2
 ##################################################
 methods = c("NNGP", "NNGP_joint", "MFA", "MFA_LR", "spNNGP", "DKL", "DKL_default", "VNNGP")
 methods_sub = c("NNGP", "NNGP_joint", "MFA", "MFA_LR", "spNNGP")
@@ -874,7 +874,7 @@ tau_fig = ggplot(tausq_df, aes(x = method, y = tausq, fill = method)) +
   )
 # tau_fig
 
-ggsave(file.path(output.path,"Figure_I2_tausq_point.pdf"), plot = tau_fig,
+ggsave(file.path(output.path,"Figure_tausq_point.pdf"), plot = tau_fig,
        width = 9.82, height = 5.05, units = "in", 
        device = cairo_pdf)
 
@@ -934,7 +934,7 @@ sigma_fig = ggplot(sigmasq_df, aes(x = method, y = sigmasq, fill = method)) +
 
 # sigma_fig
 
-ggsave(file.path(output.path,"Figure_I1_sigmasq_point.pdf"), plot = sigma_fig,
+ggsave(file.path(output.path,"Figure_sigmasq_point.pdf"), plot = sigma_fig,
        width = 9.82, height = 5.05, units = "in", 
        device = cairo_pdf)
 
