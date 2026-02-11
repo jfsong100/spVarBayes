@@ -481,11 +481,11 @@ Rscript n_neighbor.R
 These illustrate different choices for the number of nearest neighbors
 for the NNGP variational family.
 
-## Prediction Study (Figures J.1–J.2)
+## Prediction Study (Figures K.1–K.2)
 
 ``` bash
 # Inside spVarBayes folder, change to the correct directory in the supplementary folder
-cd paper/supplement/J_prediction
+cd paper/supplement/K_prediction
 ```
 
 Folder: `K_prediction/`
