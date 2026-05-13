@@ -20,6 +20,11 @@ You can view the full tutorial here:
 
 [View HTML Tutorial](https://jfsong100.github.io/spVarBayes/spVarBayes-tutorial.html)
 
+## Reproducibility
+
+Additional running examples and code for reproducing the numerical results in the paper **Fast Variational Bayes for Large Spatial Data** are available in the companion repository:
+
+https://github.com/jfsong100/spVarBayes-paper
 
 ## `spVB_NNGP()`
 
